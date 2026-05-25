@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FinX Discovery Widget — Specification</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --ink:   #0F1E2E;
+  --ink2:  #3A5068;
+  --ink3:  #7A96AA;
+  --bg:    #F4F7FA;
+  --w:     #FFFFFF;
+  --bd:    #D5E0EB;
+  --acc:   #2563EB;
+  --acc-bg:#EEF3FD;
+  --bull:  #0A8A58;
+  --bear:  #C5303A;
+  --warn:  #B05800;
+  --blue:  #1D5FD4;
+  --font: -apple-system, 'Inter', 'Segoe UI', sans-serif;
+}
+
+html, body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* ── PAGE LAYOUT ── */
+.page {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 48px 32px 80px;
+}
+
+/* ── COVER ── */
+.cover {
+  background: var(--acc);
+  color: #fff;
+  border-radius: 12px;
+  padding: 40px 44px 36px;
+  margin-bottom: 40px;
+}
+.cover-label {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  opacity: .65;
+  margin-bottom: 12px;
+}
+.cover h1 {
+  font-size: 28px;
+  font-weight: 900;
+  line-height: 1.2;
+  margin-bottom: 10px;
+}
+.cover-sub {
+  font-size: 14px;
+  opacity: .8;
+  margin-bottom: 28px;
+}
+.cover-meta {
+  display: flex;
+  gap: 28px;
+  flex-wrap: wrap;
+}
+.cover-meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.cover-meta-item .k {
+  font-size: 9.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .8px;
+  opacity: .6;
+}
+.cover-meta-item .v {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* ── SECTION SEPARATOR ── */
+.audience-divider {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 48px 0 32px;
+}
+.audience-divider .ad-pill {
+  padding: 5px 16px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .8px;
+  white-space: nowrap;
+}
+.ad-pill.vp   { background: #1D5FD4; color: #fff; }
+.ad-pill.dev  { background: #0A8A58; color: #fff; }
+.audience-divider .ad-line { flex: 1; height: 1px; background: var(--bd); }
+
+/* ── HEADINGS ── */
+h2 {
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--ink);
+  margin: 36px 0 12px;
+}
+h3 {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--ink2);
+  text-transform: uppercase;
+  letter-spacing: .6px;
+  margin: 28px 0 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--bd);
+}
+h4 {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 20px 0 8px;
+}
+p { margin-bottom: 12px; color: var(--ink2); }
+ul, ol { padding-left: 20px; color: var(--ink2); margin-bottom: 12px; }
+li { margin-bottom: 4px; }
+
+/* ── CARD ── */
+.card {
+  background: var(--w);
+  border: 1px solid var(--bd);
+  border-radius: 10px;
+  padding: 20px 24px;
+  margin-bottom: 16px;
+}
+.card.accent {
+  border-left: 4px solid var(--acc);
+  padding-left: 20px;
+}
+
+/* ── TABLE ── */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+  margin-bottom: 16px;
+}
+thead th {
+  background: var(--bg);
+  color: var(--ink2);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .7px;
+  padding: 8px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--bd);
+}
+tbody td {
+  padding: 9px 12px;
+  border-bottom: 1px solid #EBF0F7;
+  vertical-align: top;
+  color: var(--ink);
+}
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover td { background: #F8FAFD; }
+code {
+  font-family: 'SF Mono','Fira Code','Consolas',monospace;
+  font-size: 11.5px;
+  background: var(--bg);
+  border: 1px solid var(--bd);
+  border-radius: 4px;
+  padding: 1px 5px;
+  color: #1A4B8A;
+}
+
+/* ── BADGE ── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: .3px;
+  white-space: nowrap;
+}
+.badge.entry  { background: rgba(10,138,88,.12);  color: #0A8A58; }
+.badge.inplay { background: rgba(37,99,235,.12);  color: #2563EB; }
+.badge.watch  { background: rgba(176,88,0,.12);   color: #B05800; }
+.badge.fading { background: rgba(90,120,146,.12); color: #4A6A8E; }
+.badge.bull   { background: rgba(10,138,88,.10);  color: #0A8A58; }
+.badge.bear   { background: rgba(197,48,58,.10);  color: #C5303A; }
+.badge.cover  { background: rgba(176,88,0,.10);   color: #B05800; }
+.badge.unwind { background: rgba(74,106,142,.10); color: #4A6A8E; }
+
+/* ── SIGNAL BOX ── */
+.sig-flow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.sig-box {
+  background: var(--w);
+  border: 1px solid var(--bd);
+  border-radius: 8px;
+  padding: 14px 16px;
+}
+.sig-box .sb-type {
+  font-size: 11px;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+.sig-box .sb-rule {
+  font-size: 11.5px;
+  color: var(--ink2);
+  line-height: 1.5;
+}
+.sig-box .sb-rule b { color: var(--ink); }
+
+/* ── STATUS DECISION TABLE ── */
+.decision-table table { font-size: 12px; }
+.decision-table thead th { background: #EEF3FD; color: var(--acc); }
+
+/* ── CODE BLOCK ── */
+pre {
+  background: #0F1E2E;
+  color: #C8D8E8;
+  border-radius: 8px;
+  padding: 16px 18px;
+  font-size: 12px;
+  font-family: 'SF Mono','Fira Code','Consolas',monospace;
+  overflow-x: auto;
+  margin-bottom: 14px;
+  line-height: 1.55;
+}
+pre .cm  { color: #7AA6C2; font-style: italic; }
+pre .kw  { color: #82AAFF; }
+pre .str { color: #C3E88D; }
+pre .num { color: #F78C6C; }
+pre .op  { color: #89DDFF; }
+
+/* ── NOTE CALLOUT ── */
+.note {
+  display: flex;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 12.5px;
+}
+.note.info  { background: #EEF3FD; border-left: 3px solid var(--acc); }
+.note.warn  { background: #FFF3E6; border-left: 3px solid var(--warn); }
+.note .note-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+.note p { margin: 0; color: var(--ink); }
+
+/* ── FOOTER ── */
+.doc-footer {
+  margin-top: 60px;
+  padding-top: 20px;
+  border-top: 1px solid var(--bd);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11.5px;
+  color: var(--ink3);
+}
+
+/* ── TOC ── */
+.toc {
+  background: var(--w);
+  border: 1px solid var(--bd);
+  border-radius: 10px;
+  padding: 20px 24px;
+  margin-bottom: 36px;
+  column-count: 2;
+  column-gap: 32px;
+}
+.toc-head {
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .8px;
+  color: var(--ink3);
+  margin-bottom: 12px;
+  column-span: all;
+}
+.toc a {
+  display: block;
+  font-size: 12.5px;
+  color: var(--acc);
+  text-decoration: none;
+  padding: 3px 0;
+  font-weight: 500;
+  break-inside: avoid;
+}
+.toc a:hover { text-decoration: underline; }
+.toc .toc-sec { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: var(--ink3); margin-top: 10px; margin-bottom: 4px; break-inside: avoid; }
+
+@media print {
+  body { background: #fff; }
+  .page { padding: 20px; }
+  .cover { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ══════════════════════════════════════════════
+       COVER
+  ══════════════════════════════════════════════ -->
+  <div class="cover">
+    <div class="cover-label">FinX · StrikeX Platform</div>
+    <h1>Discovery Widget<br>Specification</h1>
+    <div class="cover-sub">OI Flow + IV Spikes — Data, Logic &amp; UX Decisions</div>
+    <div class="cover-meta">
+      <div class="cover-meta-item"><span class="k">Version</span><span class="v">v5</span></div>
+      <div class="cover-meta-item"><span class="k">Last Updated</span><span class="v">May 2026</span></div>
+      <div class="cover-meta-item"><span class="k">Audiences</span><span class="v">VP Review · Engineering</span></div>
+      <div class="cover-meta-item"><span class="k">Status</span><span class="v">For Review</span></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       TABLE OF CONTENTS
+  ══════════════════════════════════════════════ -->
+  <div class="toc">
+    <div class="toc-head">Contents</div>
+    <div class="toc-sec">Executive</div>
+    <a href="#what-it-does">What the Widget Does</a>
+    <a href="#two-modules">Two Modules at a Glance</a>
+    <a href="#signal-types">OI Signal Types</a>
+    <a href="#status-logic">Status Logic (Decision Table)</a>
+    <div class="toc-sec">Technical</div>
+    <a href="#oi-index-fields">OI Flow — Index Fields</a>
+    <a href="#oi-stock-fields">OI Flow — Stock Fields</a>
+    <a href="#iv-fields">IV Spikes Fields</a>
+    <a href="#constants">Session Constants</a>
+    <a href="#story-code">Signal Story Code</a>
+    <a href="#status-code">Status Derivation Code</a>
+    <a href="#strike-context">Strike Context Formula</a>
+    <a href="#timeframes">Time Frame Windows</a>
+    <a href="#countdown">Market Countdown</a>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════════
+       PART 1 — EXECUTIVE SUMMARY (VP)
+  ══════════════════════════════════════════════ -->
+  <div class="audience-divider">
+    <div class="ad-pill vp">Part 1 — Executive Summary</div>
+    <div class="ad-line"></div>
+    <span style="font-size:11px;color:var(--ink3);white-space:nowrap;">For VPs &amp; Product</span>
+  </div>
+
+  <h2 id="what-it-does">What the Widget Does</h2>
+  <div class="card accent">
+    <p style="margin:0;color:var(--ink);font-size:14px;line-height:1.7;">
+      The <strong>FinX Discovery Widget</strong> surfaces the most significant option market moves happening
+      <em>right now</em> — before traders have to dig through chains, scanners, or news feeds.
+      It is a live, signal-first surface embedded in the StrikeX platform that tells a trader
+      <strong>what is happening, how strong the move is, and whether they should act now or wait.</strong>
+    </p>
+  </div>
+
+  <h2 id="two-modules">Two Modules at a Glance</h2>
+  <table>
+    <thead>
+      <tr><th>Module</th><th>What It Scans</th><th>Who It's For</th><th>Key Output</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>OI Flow</strong></td>
+        <td>Open Interest changes in NIFTY, SENSEX, and F&amp;O stocks</td>
+        <td>Directional traders — spotting fresh positions by big players</td>
+        <td>Strike, OI change, signal type (Bull / Bear / Cover / Unwind), Status badge</td>
+      </tr>
+      <tr>
+        <td><strong>IV Spikes</strong></td>
+        <td>Implied Volatility jumping above 30-day average after big price moves</td>
+        <td>Option writers — selling premium after fear spikes</td>
+        <td>Best strike to write, premium, margin required, yield %</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2 id="signal-types">OI Signal Types — Plain English</h2>
+  <p>Every OI Flow signal is one of four types. They are <strong>deterministic</strong> — derived
+     from combining the direction of OI change and price change. No human judgment involved.</p>
+
+  <div class="sig-flow">
+    <div class="sig-box">
+      <div class="sb-type"><span class="badge bull">Bull Flow</span></div>
+      <div class="sb-rule">
+        <b>OI going up + Price going up</b><br>
+        New <em>long</em> positions being added. Smart money is buying calls (or the underlying).
+        Bullish signal.
+      </div>
+    </div>
+    <div class="sig-box">
+      <div class="sb-type"><span class="badge bear">Bear Pressure</span></div>
+      <div class="sb-rule">
+        <b>OI going up + Price going down</b><br>
+        New <em>short</em> positions being added. Sellers are piling in.
+        Bearish signal.
+      </div>
+    </div>
+    <div class="sig-box">
+      <div class="sb-type"><span class="badge cover">Short Cover</span></div>
+      <div class="sb-rule">
+        <b>OI going down + Price going up</b><br>
+        Existing shorts are <em>being forced to cover</em>. Price rises as shorts buy back.
+        Bullish (reactive).
+      </div>
+    </div>
+    <div class="sig-box">
+      <div class="sb-type"><span class="badge unwind">Unwinding</span></div>
+      <div class="sb-rule">
+        <b>OI going down + Price going down</b><br>
+        Existing longs are <em>exiting</em>. Loss of conviction.
+        Bearish (weakening).
+      </div>
+    </div>
+  </div>
+
+  <h2 id="status-logic">Status — The Action Badge</h2>
+  <p>
+    The <strong>Status</strong> column tells the trader what to do. It collapses three inputs — signal
+    direction, how fresh the signal is, and volume confirmation — into a single actionable badge.
+    No raw data interpretation needed.
+  </p>
+
+  <div class="card">
+    <table>
+      <thead>
+        <tr><th>Badge</th><th>Color</th><th>Meaning</th><th>Trader Action</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="badge entry">ENTRY</span></td><td>Green</td><td>Fresh signal, confirmed by high volume</td><td>Act now — opportunity is live</td></tr>
+        <tr><td><span class="badge inplay">IN PLAY</span></td><td>Blue</td><td>Signal is live, position still valid</td><td>Ride it — signal ongoing</td></tr>
+        <tr><td><span class="badge watch">WATCH</span></td><td>Amber</td><td>Signal present but not yet confirmed</td><td>Wait for volume or price follow-through</td></tr>
+        <tr><td><span class="badge fading">FADING</span></td><td>Grey</td><td>Signal is old — momentum may be gone</td><td>Don't chase — wait for next signal</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="note info">
+    <span class="note-icon">💡</span>
+    <p>The sub-line below every Status badge shows <strong>signal age</strong> (e.g., "4 min ago") —
+       so traders always know if they are looking at a real-time alert or something from an hour ago.</p>
+  </div>
+
+  <h3>How Status is Decided</h3>
+  <p>Three inputs are combined:</p>
+  <ul>
+    <li><strong>Direction</strong> — is the signal bullish (Bull / Cover) or bearish (Bear / Unwind)?</li>
+    <li><strong>Age</strong> — how many minutes ago was the OI move detected? Thresholds differ by time window.</li>
+    <li><strong>Volume</strong> — is today's volume ≥ 4× the daily average? If yes, the signal is confirmed.</li>
+  </ul>
+
+  <div class="decision-table">
+    <table>
+      <thead>
+        <tr><th>Direction</th><th>Signal Age</th><th>Volume</th><th>→ Status</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Bullish</td><td>FRESH</td><td>≥ 4× average</td><td><span class="badge entry">ENTRY</span></td></tr>
+        <tr><td>Bullish</td><td>FRESH</td><td>&lt; 4× average</td><td><span class="badge watch">WATCH</span></td></tr>
+        <tr><td>Bullish</td><td>ACTIVE</td><td>Any</td><td><span class="badge inplay">IN PLAY</span></td></tr>
+        <tr><td>Bullish</td><td>AGING</td><td>Any</td><td><span class="badge fading">FADING</span></td></tr>
+        <tr><td>Bearish</td><td>FRESH</td><td>Any</td><td><span class="badge watch">WATCH</span></td></tr>
+        <tr><td>Bearish</td><td>ACTIVE or AGING</td><td>Any</td><td><span class="badge fading">FADING</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="note warn">
+    <span class="note-icon">⚠️</span>
+    <p><strong>Why bearish signals never show ENTRY:</strong> Bear and Unwind signals are intentionally
+       held at WATCH/FADING — acting on the short side requires more confirmation. This is a deliberate
+       product decision to reduce false bearish entries.</p>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════════
+       PART 2 — TECHNICAL SPECIFICATION (DEV)
+  ══════════════════════════════════════════════ -->
+  <div class="audience-divider" style="margin-top:56px;">
+    <div class="ad-pill dev">Part 2 — Technical Specification</div>
+    <div class="ad-line"></div>
+    <span style="font-size:11px;color:var(--ink3);white-space:nowrap;">For Engineering</span>
+  </div>
+
+  <!-- ── OI FLOW: INDEX FIELDS ── -->
+  <h2 id="oi-index-fields">OI Flow — Index Signal Fields</h2>
+  <p>One object per signal row in the index (NIFTY / SENSEX) table.</p>
+  <table>
+    <thead>
+      <tr><th>Field</th><th>Type</th><th>Description</th><th>Example</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>idx</code></td><td>string</td><td>Index identifier</td><td><code>"NIFTY"</code>, <code>"SENSEX"</code></td></tr>
+      <tr><td><code>stk</code></td><td>number</td><td>Strike price</td><td><code>25000</code>, <code>82500</code></td></tr>
+      <tr><td><code>t</code></td><td><code>"ce"</code> / <code>"pe"</code></td><td>Option type — Call or Put</td><td><code>"ce"</code></td></tr>
+      <tr><td><code>ltp</code></td><td>string</td><td>Last Traded Price of the option (premium)</td><td><code>"₹112"</code></td></tr>
+      <tr><td><code>chg</code></td><td>string</td><td>Option premium % change vs previous close</td><td><code>"+22%"</code></td></tr>
+      <tr><td><code>cc</code></td><td><code>"up"</code> / <code>"dn"</code></td><td>Color class for <code>chg</code> display</td><td><code>"up"</code></td></tr>
+      <tr><td><code>oc</code></td><td>string</td><td>OI change in lots (absolute, pre-formatted)</td><td><code>"+9L"</code>, <code>"−22L"</code></td></tr>
+      <tr><td><code>occ</code></td><td><code>"up"</code> / <code>"dn"</code></td><td>Direction of OI change (for arrow icon)</td><td><code>"up"</code></td></tr>
+      <tr><td><code>ocp</code></td><td>string</td><td>OI change as percentage</td><td><code>"+14.2%"</code></td></tr>
+      <tr><td><code>bpct</code></td><td>number (0–100)</td><td>Bar fill % for OI visual bar — relative to session high OI change</td><td><code>45</code></td></tr>
+      <tr><td><code>vol</code></td><td>string</td><td>Today's volume ÷ daily average (formatted)</td><td><code>"3.8×"</code></td></tr>
+      <tr><td><code>sig</code></td><td><code>"bull"</code> / <code>"bear"</code> / <code>"cover"</code> / <code>"unwind"</code></td><td>OI signal type (see §4)</td><td><code>"bull"</code></td></tr>
+      <tr><td><code>time</code></td><td>string</td><td>Clock time when signal was detected (display only)</td><td><code>"14:14"</code></td></tr>
+      <tr><td><code>ts</code></td><td>number</td><td>Minutes since 9:15 AM when signal detected. Used to compute age and Status.</td><td><code>299</code></td></tr>
+    </tbody>
+  </table>
+
+  <!-- ── OI FLOW: STOCK FIELDS ── -->
+  <h2 id="oi-stock-fields">OI Flow — Stock Signal Fields</h2>
+  <p>Same fields as Index, except the strike/index identifiers are replaced with:</p>
+  <table>
+    <thead>
+      <tr><th>Field</th><th>Type</th><th>Description</th><th>Example</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>n</code></td><td>string</td><td>Stock ticker / symbol</td><td><code>"RELIANCE"</code></td></tr>
+      <tr><td><code>sub</code></td><td>string</td><td>Full company name (sub-line display)</td><td><code>"Reliance Industries"</code></td></tr>
+      <tr><td><code>ltp</code></td><td>string</td><td>Stock's Last Traded Price (not option premium)</td><td><code>"₹1,452"</code></td></tr>
+    </tbody>
+  </table>
+  <p>All other fields (<code>chg</code>, <code>cc</code>, <code>oc</code>, <code>occ</code>, <code>ocp</code>, <code>bpct</code>, <code>vol</code>, <code>sig</code>, <code>time</code>, <code>ts</code>) are identical to the Index spec above.</p>
+
+  <!-- ── IV SPIKES FIELDS ── -->
+  <h2 id="iv-fields">IV Spikes — Fields Per Row</h2>
+  <table>
+    <thead>
+      <tr><th>Field</th><th>Type</th><th>Description</th><th>Example</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>n</code></td><td>string</td><td>Stock ticker</td><td><code>"BAJFINANCE"</code></td></tr>
+      <tr><td><code>sub</code></td><td>string</td><td>Full company name</td><td><code>"Bajaj Finance"</code></td></tr>
+      <tr><td><code>ltp</code></td><td>string</td><td>Current stock LTP</td><td><code>"₹6,844"</code></td></tr>
+      <tr><td><code>chg</code></td><td>string</td><td>Stock price % change today</td><td><code>"−5.2%"</code></td></tr>
+      <tr><td><code>cc</code></td><td><code>"up"</code> / <code>"dn"</code></td><td>Color class for price change</td><td><code>"dn"</code></td></tr>
+      <tr><td><code>iv</code></td><td>string</td><td>Current Implied Volatility (ATM option)</td><td><code>"58%"</code></td></tr>
+      <tr><td><code>iva</code></td><td>string</td><td>30-day average IV for this stock</td><td><code>"34%"</code></td></tr>
+      <tr><td><code>spk</code></td><td>string</td><td>IV spike % above the 30-day average</td><td><code>"+71%"</code></td></tr>
+      <tr><td><code>stk</code></td><td>string</td><td>Recommended strike for writing (pre-selected by system)</td><td><code>"6800 PE"</code></td></tr>
+      <tr><td><code>pre</code></td><td>string</td><td>Current option premium for that strike</td><td><code>"₹182"</code></td></tr>
+      <tr><td><code>mgn</code></td><td>string</td><td>SPAN writing margin required</td><td><code>"₹84,200"</code></td></tr>
+      <tr><td><code>yld</code></td><td>string</td><td>Yield % = (Premium × Lot Size) ÷ Writing Margin</td><td><code>"21.7%"</code></td></tr>
+    </tbody>
+  </table>
+
+  <h3>IV Spikes — Data Structure</h3>
+  <p>The IV data feed is keyed by direction and move threshold:</p>
+  <pre><span class="cm">// IVD[direction][threshold] → array of rows</span>
+IVD = {
+  <span class="str">'drops'</span>: {              <span class="cm">// Top Losers (stocks that fell)</span>
+    <span class="str">'2'</span>: [ <span class="cm">/* stocks that fell &gt;2% */</span> ],
+    <span class="str">'4'</span>: [ <span class="cm">/* stocks that fell &gt;4% */</span> ],
+    <span class="str">'6'</span>: [ <span class="cm">/* stocks that fell &gt;6% */</span> ],
+  },
+  <span class="str">'rises'</span>: {             <span class="cm">// Top Gainers (stocks that rose)</span>
+    <span class="str">'2'</span>: [ <span class="cm">/* stocks that rose &gt;2% */</span> ],
+    <span class="str">'4'</span>: [ <span class="cm">/* stocks that rose &gt;4% */</span> ],
+    <span class="str">'6'</span>: [ <span class="cm">/* stocks that rose &gt;6% */</span> ],
+  }
+}</pre>
+
+  <!-- ── SESSION CONSTANTS ── -->
+  <h2 id="constants">Session Constants</h2>
+  <p>These values come from the market data feed and are used across all rendering logic.</p>
+  <table>
+    <thead>
+      <tr><th>Constant</th><th>Type</th><th>Description</th><th>Example</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>NOW_TS</code></td><td>number</td><td>Current time in minutes since 9:15 AM. e.g. 308 = 14:23.</td><td><code>308</code></td></tr>
+      <tr><td><code>SESSION</code></td><td>number</td><td>Total session length in minutes (9:15–15:30 = 375).</td><td><code>375</code></td></tr>
+      <tr><td><code>ATM.NIFTY</code></td><td>number</td><td>Current ATM strike for NIFTY</td><td><code>24850</code></td></tr>
+      <tr><td><code>ATM.SENSEX</code></td><td>number</td><td>Current ATM strike for SENSEX</td><td><code>82200</code></td></tr>
+      <tr><td><code>STEP.NIFTY</code></td><td>number</td><td>Strike interval for NIFTY</td><td><code>50</code></td></tr>
+      <tr><td><code>STEP.SENSEX</code></td><td>number</td><td>Strike interval for SENSEX</td><td><code>100</code></td></tr>
+    </tbody>
+  </table>
+
+  <!-- ── SIGNAL STORY ── -->
+  <h2 id="story-code">Signal Story — Derived Text</h2>
+  <p>The "Signal Story" column text is derived from two fields: <code>sig</code> and <code>vol</code>. High volume = confirmation. Low volume = early/forming signal.</p>
+
+  <table>
+    <thead>
+      <tr><th>sig</th><th>vol condition</th><th>→ Text</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>"bull"</code></td><td>vol ≥ 5×</td><td>Strong Bull Flow</td></tr>
+      <tr><td><code>"bull"</code></td><td>vol &lt; 5×</td><td>Bull Flow Building</td></tr>
+      <tr><td><code>"cover"</code></td><td>vol ≥ 5×</td><td>Short Squeeze</td></tr>
+      <tr><td><code>"cover"</code></td><td>vol &lt; 5×</td><td>Shorts Retreating</td></tr>
+      <tr><td><code>"bear"</code></td><td>vol ≥ 5×</td><td>Bear Pressure Rising</td></tr>
+      <tr><td><code>"bear"</code></td><td>vol &lt; 5×</td><td>Bear Pressure</td></tr>
+      <tr><td><code>"unwind"</code></td><td>vol ≥ 4×</td><td>Longs Unwinding</td></tr>
+      <tr><td><code>"unwind"</code></td><td>vol &lt; 4×</td><td>OI Draining</td></tr>
+    </tbody>
+  </table>
+
+  <pre><span class="kw">function</span> getStory(sig, vol) {
+  <span class="kw">var</span> v = parseFloat(vol);         <span class="cm">// vol comes in as "3.8×"</span>
+  <span class="kw">var</span> map = {
+    bull:   v &gt;= <span class="num">5</span> ? <span class="str">'Strong Bull Flow'</span>      : <span class="str">'Bull Flow Building'</span>,
+    cover:  v &gt;= <span class="num">5</span> ? <span class="str">'Short Squeeze'</span>         : <span class="str">'Shorts Retreating'</span>,
+    bear:   v &gt;= <span class="num">5</span> ? <span class="str">'Bear Pressure Rising'</span>  : <span class="str">'Bear Pressure'</span>,
+    unwind: v &gt;= <span class="num">4</span> ? <span class="str">'Longs Unwinding'</span>       : <span class="str">'OI Draining'</span>
+  };
+  <span class="kw">return</span> map[sig] || <span class="str">'Signal Forming'</span>;
+}</pre>
+
+  <!-- ── STATUS DERIVATION ── -->
+  <h2 id="status-code">Status Derivation — Full Logic</h2>
+  <p>Status is computed from <code>sig</code>, <code>ts</code> (signal timestamp), <code>vol</code>, and the active time window.</p>
+
+  <h4>Step 1 — Signal Direction</h4>
+  <pre>isBullish = (sig === <span class="str">'bull'</span> || sig === <span class="str">'cover'</span>)</pre>
+
+  <h4>Step 2 — Signal Age Thresholds (by active time window)</h4>
+  <table>
+    <thead>
+      <tr><th>Time Window</th><th>FRESH (≤)</th><th>ACTIVE (range)</th><th>AGING (&gt;)</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>5 MIN</td><td>2 min</td><td>3–4 min</td><td>4 min</td></tr>
+      <tr><td>15 MIN</td><td>5 min</td><td>6–12 min</td><td>12 min</td></tr>
+      <tr><td>1 HOUR</td><td>15 min</td><td>16–40 min</td><td>40 min</td></tr>
+      <tr><td>TODAY</td><td>30 min</td><td>31–120 min</td><td>120 min</td></tr>
+      <tr><td>Stocks</td><td>20 min</td><td>21–60 min</td><td>60 min</td></tr>
+    </tbody>
+  </table>
+  <pre><span class="kw">var</span> thresholds = {
+  <span class="str">'5m'</span>:  [<span class="num">2</span>,  <span class="num">4</span>],
+  <span class="str">'15m'</span>: [<span class="num">5</span>,  <span class="num">12</span>],
+  <span class="str">'1h'</span>:  [<span class="num">15</span>, <span class="num">40</span>],
+  <span class="str">'1d'</span>:  [<span class="num">30</span>, <span class="num">120</span>],
+  <span class="str">'stk'</span>: [<span class="num">20</span>, <span class="num">60</span>]
+};
+<span class="kw">var</span> age       = NOW_TS - row.ts;     <span class="cm">// minutes since signal was detected</span>
+<span class="kw">var</span> [fresh, active] = thresholds[window];
+<span class="kw">var</span> ageClass  = age &lt;= fresh ? <span class="str">'FRESH'</span> : age &lt;= active ? <span class="str">'ACTIVE'</span> : <span class="str">'AGING'</span>;</pre>
+
+  <h4>Step 3 — Volume Confirmation</h4>
+  <pre>isConfirmed = parseFloat(row.vol) >= <span class="num">4</span>;   <span class="cm">// vol field: "3.8×" → 3.8</span></pre>
+
+  <h4>Step 4 — Final Decision</h4>
+  <pre><span class="kw">if</span> (isBullish) {
+  <span class="kw">if</span> (ageClass === <span class="str">'FRESH'</span> && isConfirmed)   → <span class="str">'ENTRY'</span>   <span class="cm">// green</span>
+  <span class="kw">if</span> (ageClass === <span class="str">'FRESH'</span> && !isConfirmed)  → <span class="str">'WATCH'</span>   <span class="cm">// amber</span>
+  <span class="kw">if</span> (ageClass === <span class="str">'ACTIVE'</span>)               → <span class="str">'IN PLAY'</span> <span class="cm">// blue</span>
+  <span class="kw">if</span> (ageClass === <span class="str">'AGING'</span>)                → <span class="str">'FADING'</span>  <span class="cm">// grey</span>
+} <span class="kw">else</span> {                                             <span class="cm">// bearish</span>
+  <span class="kw">if</span> (ageClass === <span class="str">'FRESH'</span>)                → <span class="str">'WATCH'</span>   <span class="cm">// amber</span>
+  <span class="kw">else</span>                                    → <span class="str">'FADING'</span>  <span class="cm">// grey</span>
+}</pre>
+
+  <!-- ── STRIKE CONTEXT ── -->
+  <h2 id="strike-context">Strike Context Formula</h2>
+  <p>For Index signals, a context label is derived showing how far the signal strike is from the current ATM.</p>
+  <pre><span class="kw">var</span> diff = Math.round((stk - ATM[idx]) / STEP[idx]);
+
+<span class="cm">// CE (Call)</span>
+diff === <span class="num">0</span>                  → <span class="str">"At ATM"</span>
+diff === +<span class="num">1</span> || diff === -<span class="num">1</span>  → <span class="str">"ATM±1 · Near ATM"</span>
+diff &gt; <span class="num">0</span>  (CE OTM)         → <span class="str">"ATM+N OTM"</span>   <span class="cm">// e.g. "ATM+3 OTM"</span>
+diff &lt; <span class="num">0</span>  (CE ITM)         → <span class="str">"ATM−N ITM"</span>
+
+<span class="cm">// PE (Put)</span>
+diff &lt; <span class="num">0</span>  (PE OTM)         → <span class="str">"ATM−N OTM"</span>
+diff &gt; <span class="num">0</span>  (PE ITM)         → <span class="str">"ATM+N ITM"</span></pre>
+
+  <div class="note info">
+    <span class="note-icon">📌</span>
+    <p><strong>Example:</strong> NIFTY ATM = 24850, Strike = 25000 → diff = +3 → label = <code>"ATM+3 OTM"</code></p>
+  </div>
+
+  <!-- ── TIME FRAMES ── -->
+  <h2 id="timeframes">Time Frame Windows</h2>
+  <p>OI Flow data is grouped by time window. Each window uses different freshness thresholds for the Status calculation. The same signal can appear in multiple windows — older windows show more signals but with lower freshness.</p>
+  <table>
+    <thead>
+      <tr><th>Label</th><th>Key</th><th>Window</th><th>Use Case</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>5 MIN</strong></td><td><code>'5m'</code></td><td>Last 5 minutes</td><td>Scalping, ultra-fresh intraday entries</td></tr>
+      <tr><td><strong>15 MIN</strong></td><td><code>'15m'</code></td><td>Last 15 minutes</td><td>Short-term momentum confirmation</td></tr>
+      <tr><td><strong>1 HOUR</strong></td><td><code>'1h'</code></td><td>Last 60 minutes</td><td>Trend-building signals</td></tr>
+      <tr><td><strong>TODAY</strong></td><td><code>'1d'</code></td><td>Full session (9:15–15:30)</td><td>All signals from the current trading day</td></tr>
+    </tbody>
+  </table>
+
+  <h3>OI Data Feed Structure</h3>
+  <pre><span class="cm">// OD[window] → array of index signals (latest first)</span>
+OD = {
+  <span class="str">'5m'</span>:  [ <span class="cm">/* signals detected in last 5 min */</span> ],
+  <span class="str">'15m'</span>: [ <span class="cm">/* signals detected in last 15 min */</span> ],
+  <span class="str">'1h'</span>:  [ <span class="cm">/* signals detected in last 60 min */</span> ],
+  <span class="str">'1d'</span>:  [ <span class="cm">/* signals detected today */</span> ]
+};
+
+<span class="cm">// SD → flat array of stock signals (latest first)</span>
+SD = [ <span class="cm">/* stock signals, no time-window segmentation */</span> ];</pre>
+
+  <!-- ── COUNTDOWN ── -->
+  <h2 id="countdown">Market Countdown</h2>
+  <p>Displays time remaining in the trading session in the widget title bar.</p>
+  <pre>remaining = SESSION (<span class="num">375</span>) − NOW_TS;
+
+<span class="cm">// Format: "Xh YYm"</span>
+h = Math.floor(remaining / <span class="num">60</span>);
+m = remaining % <span class="num">60</span>;
+display = h &gt; <span class="num">0</span> ? h+<span class="str">'h '</span>+pad(m)+<span class="str">'m'</span> : m+<span class="str">'m'</span>;
+
+<span class="cm">// Turns red when ≤ 30 minutes remaining</span>
+<span class="cm">// Shows "Closed" when NOW_TS ≥ SESSION</span></pre>
+
+  <!-- ── COLUMN REFERENCE ── -->
+  <h3>OI Flow Table — Column Reference</h3>
+  <table>
+    <thead>
+      <tr><th>Column</th><th>Source Field(s)</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Strike / Stock</td><td><code>stk</code> + <code>t</code> / <code>n</code> + <code>sub</code></td><td>Index shows strike + CE/PE tag + ATM context label</td></tr>
+      <tr><td>LTP</td><td><code>ltp</code></td><td>Option premium (Index) or stock price (Stocks)</td></tr>
+      <tr><td>Chg %</td><td><code>chg</code>, <code>cc</code></td><td>Premium change % (Index) / stock price change % (Stocks). <code>cc</code> controls text color.</td></tr>
+      <tr><td>OI Chg</td><td><code>oc</code>, <code>occ</code>, <code>bpct</code></td><td>Absolute OI change + directional arrow + mini fill bar</td></tr>
+      <tr><td>OI Chg %</td><td><code>ocp</code></td><td>OI change as a percentage</td></tr>
+      <tr><td>Vol / Avg</td><td><code>vol</code></td><td>Volume vs daily average multiplier</td></tr>
+      <tr><td>Signal Story</td><td>Derived: <code>sig</code> + <code>vol</code></td><td>Rule-based text (see Signal Story section)</td></tr>
+      <tr><td>Status</td><td>Derived: <code>sig</code> + <code>ts</code> + <code>vol</code></td><td>Action badge + age sub-line (see Status section)</td></tr>
+    </tbody>
+  </table>
+
+  <!-- ── FOOTER ── -->
+  <div class="doc-footer">
+    <span>FinX Discovery Widget · v5 · May 2026</span>
+    <span>Choice TechLab · StrikeX Platform</span>
+  </div>
+
+</div>
+</body>
+</html>

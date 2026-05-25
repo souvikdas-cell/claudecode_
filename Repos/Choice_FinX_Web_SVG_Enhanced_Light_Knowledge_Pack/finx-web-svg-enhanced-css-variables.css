@@ -1,0 +1,28 @@
+/* FinX Web SVG-enhanced design tokens. Generated from uploaded Web HTML + Figma SVG export evidence. */
+:root {
+  --finx-font-family: Onest, sans-serif;
+  --finx-text-primary: #0F0E16;
+  --finx-text-secondary: #6F6E73;
+  --finx-text-tertiary: #87868A;
+  --finx-text-muted: #797979;
+  --finx-brand-blue: #2777F3;
+  --finx-brand-blue-alt: #2D77F4;
+  --finx-brand-navy: #1B1464;
+  --finx-positive: #45B644;
+  --finx-positive-alt: #3CBA54;
+  --finx-negative: #DE493B;
+  --finx-negative-alt: #EE404A;
+  --finx-warning: #F6B925;
+  --finx-surface: #FFFFFF;
+  --finx-page: #F9F9F9;
+  --finx-soft-blue: #F4F8FE;
+  --finx-blue-tint: #EAF2FE;
+  --finx-border: #E3E1EB;
+  --finx-divider: #EBEBEB;
+  --finx-radius-xs: 4px;
+  --finx-radius-sm: 6px;
+  --finx-radius-md: 8px;
+  --finx-radius-lg: 12px;
+  --finx-radius-pill: 999px;
+  --finx-shadow-card-soft: 0 0 50px rgba(169,172,189,0.15);
+}

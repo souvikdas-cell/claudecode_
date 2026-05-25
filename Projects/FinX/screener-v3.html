@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FinX Discovery</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:        #09101E;
+  --panel:     #111926;
+  --panel2:    #162030;
+  --row-h:     #192638;
+  --border:    rgba(255,255,255,0.06);
+  --border2:   rgba(255,255,255,0.11);
+  --text:      #D8E4F2;
+  --t2:        #7B8FAA;
+  --t3:        #3D5070;
+  --green:     #20D472;
+  --green-bg:  rgba(32,212,114,0.10);
+  --red:       #F25050;
+  --red-bg:    rgba(242,80,80,0.10);
+  --amber:     #F5A825;
+  --amber-bg:  rgba(245,168,37,0.10);
+  --blue:      #3D7EFF;
+  --blue-bg:   rgba(61,126,255,0.10);
+  --gray-bg:   rgba(123,143,170,0.10);
+}
+
+body {
+  font-family: -apple-system, 'Inter', 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  font-size: 13px;
+}
+
+/* ─── HEADER ─── */
+.hdr {
+  background: #060D19;
+  border-bottom: 1px solid var(--border2);
+  height: 46px;
+  padding: 0 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  position: sticky;
+  top: 0;
+  z-index: 200;
+}
+
+.logo { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.logo-ico {
+  width: 26px; height: 26px;
+  background: var(--blue);
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 900; color: #fff;
+  letter-spacing: -0.5px;
+}
+.logo-txt { font-size: 14px; font-weight: 800; color: var(--text); white-space: nowrap; }
+.logo-txt span { color: var(--blue); }
+
+.hdr-sep { width: 1px; height: 22px; background: var(--border2); flex-shrink: 0; }
+
+/* Index bar */
+.idx-bar { display: flex; gap: 4px; flex: 1; min-width: 0; overflow: hidden; }
+.idx-chip {
+  display: flex; align-items: center; gap: 5px;
+  padding: 4px 10px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-size: 11.5px;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+.ic-n { color: var(--t2); font-weight: 600; }
+.ic-v { color: var(--text); font-weight: 700; }
+.ic-c { font-weight: 700; }
+.ic-c.up { color: var(--green); }
+.ic-c.dn { color: var(--red); }
+
+/* Mode toggle */
+.mode-wrap {
+  display: flex; gap: 1px;
+  background: var(--panel);
+  border: 1px solid var(--border2);
+  border-radius: 5px;
+  padding: 2px;
+  flex-shrink: 0;
+}
+.mode-b {
+  padding: 4px 12px; border-radius: 3px; border: none;
+  background: transparent;
+  font-size: 11px; font-weight: 700; color: var(--t2);
+  cursor: pointer; transition: all .15s;
+  white-space: nowrap;
+}
+.mode-b.active { background: var(--blue); color: #fff; }
+
+/* ─── TABS ─── */
+.tabs {
+  background: #07101E;
+  border-bottom: 1px solid var(--border2);
+  display: flex;
+  padding: 0 18px;
+  gap: 0;
+}
+.tab {
+  padding: 11px 20px;
+  font-size: 12.5px; font-weight: 600; color: var(--t2);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  display: flex; align-items: center; gap: 7px;
+  transition: all .15s; user-select: none;
+  white-space: nowrap;
+}
+.tab:hover { color: var(--text); }
+.tab.active { color: var(--blue); border-bottom-color: var(--blue); }
+
+.live-tag {
+  display: inline-flex; align-items: center; gap: 3px;
+  padding: 1px 6px;
+  background: rgba(242,80,80,0.13);
+  border-radius: 3px;
+  font-size: 9px; font-weight: 800; color: var(--red); letter-spacing: .5px;
+}
+.ld { width: 4px; height: 4px; background: var(--red); border-radius: 50%; animation: blink 1.5s infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.2} }
+
+/* ─── MAIN ─── */
+.main { padding: 14px 18px; }
+.tc { display: none; }
+.tc.active { display: block; }
+
+/* ─── FILTER ROW ─── */
+.frow {
+  display: flex; align-items: center; gap: 7px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.flbl { font-size: 10px; font-weight: 800; color: var(--t3); text-transform: uppercase; letter-spacing: .7px; flex-shrink: 0; }
+
+.tpill {
+  padding: 5px 12px; border-radius: 4px;
+  border: 1px solid var(--border2);
+  background: transparent;
+  font-size: 11px; font-weight: 700; color: var(--t2);
+  cursor: pointer; transition: all .15s;
+}
+.tpill:hover { border-color: var(--blue); color: var(--blue); }
+.tpill.active { background: var(--blue-bg); border-color: var(--blue); color: var(--blue); }
+
+.fright { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+.sig-live { font-size: 10px; font-weight: 700; color: var(--green); display: flex; align-items: center; gap: 4px; }
+.sig-live .gd { width: 5px; height: 5px; background: var(--green); border-radius: 50%; }
+
+.guide-btn {
+  padding: 4px 10px; border-radius: 4px;
+  border: 1px solid var(--border2);
+  background: transparent;
+  font-size: 10px; font-weight: 700; color: var(--t2);
+  cursor: pointer; transition: all .15s;
+}
+.guide-btn:hover { border-color: var(--blue); color: var(--blue); }
+
+/* ─── SIGNAL GUIDE ─── */
+.sig-guide {
+  display: none;
+  background: var(--panel);
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  padding: 12px 16px;
+  margin-bottom: 12px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+}
+.sig-guide.open { display: grid; }
+.sg-item { padding: 0 16px 0 0; border-right: 1px solid var(--border); }
+.sg-item:last-child { border-right: none; padding-right: 0; padding-left: 16px; }
+.sg-item:first-child { padding-left: 0; }
+.sg-name { font-size: 11px; font-weight: 800; margin-bottom: 4px; }
+.sg-rule { font-size: 10px; color: var(--t2); line-height: 1.5; }
+.sg-rule strong { color: var(--text); }
+
+/* ─── TABLE WRAPPER ─── */
+.tbl-wrap {
+  background: var(--panel);
+  border: 1px solid var(--border2);
+  border-radius: 7px;
+  overflow: hidden;
+}
+
+/* ─── TABLE ─── */
+.dt { width: 100%; border-collapse: collapse; }
+.dt thead tr {
+  background: #07101E;
+  border-bottom: 1px solid var(--border2);
+}
+.dt th {
+  padding: 8px 12px;
+  font-size: 10px; font-weight: 700; color: var(--t3);
+  text-transform: uppercase; letter-spacing: .6px;
+  text-align: right; white-space: nowrap;
+  user-select: none;
+}
+.dt th:first-child { text-align: left; }
+.dt th.tc-c { text-align: center; }
+.dt th.sortable { cursor: pointer; }
+.dt th.sortable:hover { color: var(--t2); }
+.dt th.sorted { color: var(--blue); }
+
+.dt tbody tr.data-row {
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background .1s;
+}
+.dt tbody tr.data-row:last-of-type { border-bottom: none; }
+.dt tbody tr.data-row:hover { background: var(--row-h); }
+.dt tbody tr.data-row.open { background: var(--row-h); }
+
+.dt td {
+  padding: 10px 12px;
+  font-size: 12.5px; font-weight: 600;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+  white-space: nowrap;
+}
+.dt td:first-child { text-align: left; }
+.dt td.tc-c { text-align: center; }
+
+/* Cell classes */
+.dt td.up  { color: var(--green); }
+.dt td.dn  { color: var(--red); }
+.dt td.amb { color: var(--amber); }
+.dt td.dim { color: var(--t2); }
+
+/* Index + strike cell */
+.idx-cell { display: flex; flex-direction: column; gap: 2px; }
+.iname { font-size: 13px; font-weight: 800; color: var(--text); line-height: 1; }
+.istrike { font-size: 10px; color: var(--t3); font-weight: 600; letter-spacing: .2px; }
+
+/* Stock name cell */
+.stk-cell { display: flex; flex-direction: column; gap: 2px; }
+.sname { font-size: 13px; font-weight: 800; color: var(--text); }
+.ssub  { font-size: 10px; color: var(--t3); font-weight: 500; }
+
+/* CE/PE tag */
+.ot {
+  display: inline-block;
+  padding: 2px 7px; border-radius: 3px;
+  font-size: 10px; font-weight: 800; letter-spacing: .4px;
+}
+.ot.ce { background: var(--blue-bg); color: #6BA8FF; }
+.ot.pe { background: var(--red-bg); color: #FF7A7A; }
+
+/* Signal badge */
+.sb {
+  display: inline-block;
+  padding: 3px 8px; border-radius: 3px;
+  font-size: 10px; font-weight: 800; letter-spacing: .2px;
+  white-space: nowrap;
+}
+.sb.lb { background: var(--green-bg); color: var(--green); }
+.sb.sbu { background: var(--red-bg); color: var(--red); }
+.sb.sc { background: var(--amber-bg); color: var(--amber); }
+.sb.lu { background: var(--gray-bg); color: var(--t2); }
+.sb.ive { background: var(--amber-bg); color: var(--amber); }
+
+/* OI change mini bar */
+.oibar-wrap { display: flex; align-items: center; gap: 6px; }
+.oibar-val { min-width: 42px; text-align: right; font-variant-numeric: tabular-nums; }
+.oibar { width: 32px; height: 4px; background: var(--panel2); border-radius: 2px; overflow: hidden; flex-shrink: 0; }
+.oibar-fill { height: 100%; border-radius: 2px; transition: width .4s; }
+
+/* ─── EXPANDED ROW ─── */
+.exp-row td { padding: 0 !important; }
+.exp-panel {
+  padding: 12px 18px;
+  background: #0B1623;
+  border-top: 1px solid var(--border2);
+  display: flex;
+  gap: 0;
+  align-items: center;
+}
+.em {
+  display: flex; flex-direction: column; gap: 3px;
+  padding: 0 20px;
+  border-right: 1px solid var(--border2);
+  flex-shrink: 0;
+}
+.em:first-child { padding-left: 0; }
+.em:last-of-type { border-right: none; }
+.emv { font-size: 14px; font-weight: 800; color: var(--text); font-variant-numeric: tabular-nums; }
+.emv.up { color: var(--green); }
+.emv.dn { color: var(--red); }
+.emv.amb { color: var(--amber); }
+.eml { font-size: 9px; font-weight: 700; color: var(--t3); text-transform: uppercase; letter-spacing: .5px; }
+
+.exp-cta {
+  margin-left: auto;
+  flex-shrink: 0;
+  padding: 8px 18px;
+  background: var(--blue);
+  color: #fff;
+  border: none; border-radius: 5px;
+  font-size: 11px; font-weight: 800;
+  cursor: pointer;
+  transition: background .15s;
+}
+.exp-cta:hover { background: #2b6ae8; }
+
+/* ─── SUBTABS (Stock Plays) ─── */
+.sub-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border2);
+  margin-bottom: 14px;
+}
+.sub-tab {
+  padding: 9px 18px;
+  font-size: 12px; font-weight: 700; color: var(--t2);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all .15s; user-select: none;
+}
+.sub-tab:hover { color: var(--text); }
+.sub-tab.active { color: var(--blue); border-bottom-color: var(--blue); }
+
+/* ─── DISCLAIMER ─── */
+.disc {
+  padding: 14px 0 20px;
+  font-size: 10px; color: var(--t3); line-height: 1.7;
+  text-align: center;
+  border-top: 1px solid var(--border);
+  margin-top: 20px;
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ HEADER ═══ -->
+<div class="hdr">
+  <div class="logo">
+    <div class="logo-ico">FX</div>
+    <div class="logo-txt">Fin<span>X</span> Discovery</div>
+  </div>
+  <div class="hdr-sep"></div>
+  <div class="idx-bar">
+    <div class="idx-chip"><span class="ic-n">NIFTY</span><span class="ic-v">24,850</span><span class="ic-c up">▲0.81%</span></div>
+    <div class="idx-chip"><span class="ic-n">BANKNIFTY</span><span class="ic-v">53,240</span><span class="ic-c up">▲1.14%</span></div>
+    <div class="idx-chip"><span class="ic-n">SENSEX</span><span class="ic-v">82,150</span><span class="ic-c up">▲0.72%</span></div>
+    <div class="idx-chip"><span class="ic-n">VIX</span><span class="ic-v">13.4</span><span class="ic-c dn">▼4.2%</span></div>
+  </div>
+  <div class="mode-wrap">
+    <button class="mode-b active" onclick="setMode('signal',this)">Signal</button>
+    <button class="mode-b" onclick="setMode('pro',this)">Pro</button>
+  </div>
+</div>
+
+<!-- ═══ TABS ═══ -->
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('fast',this)">
+    Fast Movers &nbsp;<span class="live-tag"><span class="ld"></span>LIVE</span>
+  </div>
+  <div class="tab" onclick="switchTab('stocks',this)">OI Screener</div>
+</div>
+
+<!-- ═══ MAIN ═══ -->
+<div class="main">
+
+  <!-- ── FAST MOVERS ── -->
+  <div id="tab-fast" class="tc active">
+
+    <div class="frow">
+      <span class="flbl">Window</span>
+      <div class="tpill active" onclick="setTime('15m',this)">15 MIN</div>
+      <div class="tpill" onclick="setTime('30m',this)">30 MIN</div>
+      <div class="tpill" onclick="setTime('1d',this)">TODAY</div>
+      <div class="fright">
+        <span class="sig-live"><span class="gd"></span>6 signals active</span>
+        <button class="guide-btn" onclick="toggleGuide()">Signal Guide ↓</button>
+      </div>
+    </div>
+
+    <!-- Signal Guide -->
+    <div class="sig-guide" id="sig-guide">
+      <div class="sg-item">
+        <div class="sg-name" style="color:var(--green)">● Long Buildup</div>
+        <div class="sg-rule"><strong>OI ↑ + Price ↑</strong><br>New longs being added.<br>Bullish signal.</div>
+      </div>
+      <div class="sg-item">
+        <div class="sg-name" style="color:var(--red)">● Short Buildup</div>
+        <div class="sg-rule"><strong>OI ↑ + Price ↓</strong><br>New shorts being added.<br>Bearish signal.</div>
+      </div>
+      <div class="sg-item">
+        <div class="sg-name" style="color:var(--amber)">● Short Covering</div>
+        <div class="sg-rule"><strong>OI ↓ + Price ↑</strong><br>Shorts exiting.<br>Upward pressure.</div>
+      </div>
+      <div class="sg-item" style="padding-left:16px">
+        <div class="sg-name" style="color:var(--t2)">● Unwinding</div>
+        <div class="sg-rule"><strong>OI ↓ + Price ↓</strong><br>Longs exiting.<br>Bearish pressure.</div>
+      </div>
+    </div>
+
+    <div class="tbl-wrap">
+      <table class="dt">
+        <thead>
+          <tr>
+            <th>Index / Strike</th>
+            <th class="tc-c">Type</th>
+            <th>LTP</th>
+            <th class="sorted sortable">Chg % <span style="font-size:9px;color:var(--blue)">↓</span></th>
+            <th>OI (L)</th>
+            <th>OI Chg (L)</th>
+            <th class="sortable">OI Chg %</th>
+            <th>Vol / Avg</th>
+            <th class="tc-c">Signal</th>
+          </tr>
+        </thead>
+        <tbody id="fast-body"></tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <!-- ── OI SCREENER ── -->
+  <div id="tab-stocks" class="tc">
+
+    <div class="sub-tabs">
+      <div class="sub-tab active" onclick="setSub('oi',this)">OI Activity</div>
+      <div class="sub-tab" onclick="setSub('iv',this)">IV Spike</div>
+    </div>
+
+    <!-- OI Activity -->
+    <div id="st-oi">
+      <div class="tbl-wrap">
+        <table class="dt">
+          <thead>
+            <tr>
+              <th>Stock</th>
+              <th>LTP</th>
+              <th>Chg %</th>
+              <th>OI (L)</th>
+              <th>Prev OI (L)</th>
+              <th class="sorted sortable">OI Chg (L) <span style="font-size:9px;color:var(--blue)">↓</span></th>
+              <th>OI Chg %</th>
+              <th>Vol / Avg</th>
+              <th class="tc-c">Signal</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- RELIANCE -->
+            <tr class="data-row" onclick="toggleRow(this)">
+              <td><div class="stk-cell"><span class="sname">RELIANCE</span><span class="ssub">Reliance Industries</span></div></td>
+              <td>₹1,452</td>
+              <td class="up">+1.4%</td>
+              <td class="dim">284</td>
+              <td class="dim">246</td>
+              <td><div class="oibar-wrap"><span class="oibar-val up">+38L</span><div class="oibar"><div class="oibar-fill" style="width:78%;background:var(--green)"></div></div></div></td>
+              <td class="up">+13.4%</td>
+              <td class="dim">5.2×</td>
+              <td class="tc-c"><span class="sb lb">Long Buildup</span></td>
+            </tr>
+            <tr class="exp-row" style="display:none"><td colspan="9">
+              <div class="exp-panel">
+                <div class="em"><div class="emv">284L</div><div class="eml">Total OI</div></div>
+                <div class="em"><div class="emv up">+38L</div><div class="eml">OI Added Today</div></div>
+                <div class="em"><div class="emv up">+13.4%</div><div class="eml">OI Change %</div></div>
+                <div class="em"><div class="emv">246L</div><div class="eml">Prev Day OI</div></div>
+                <div class="em"><div class="emv">5.2×</div><div class="eml">Vol vs Avg</div></div>
+                <button class="exp-cta" onclick="event.stopPropagation()">Explore Setup →</button>
+              </div>
+            </td></tr>
+
+            <!-- HCLTECH -->
+            <tr class="data-row" onclick="toggleRow(this)">
+              <td><div class="stk-cell"><span class="sname">HCLTECH</span><span class="ssub">HCL Technologies</span></div></td>
+              <td>₹1,641</td>
+              <td class="up">+1.8%</td>
+              <td class="dim">224</td>
+              <td class="dim">196</td>
+              <td><div class="oibar-wrap"><span class="oibar-val up">+28L</span><div class="oibar"><div class="oibar-fill" style="width:62%;background:var(--green)"></div></div></div></td>
+              <td class="up">+12.5%</td>
+              <td class="dim">3.9×</td>
+              <td class="tc-c"><span class="sb lb">Long Buildup</span></td>
+            </tr>
+            <tr class="exp-row" style="display:none"><td colspan="9">
+              <div class="exp-panel">
+                <div class="em"><div class="emv">224L</div><div class="eml">Total OI</div></div>
+                <div class="em"><div class="emv up">+28L</div><div class="eml">OI Added Today</div></div>
+                <div class="em"><div class="emv up">+12.5%</div><div class="eml">OI Change %</div></div>
+                <div class="em"><div class="emv">196L</div><div class="eml">Prev Day OI</div></div>
+                <div class="em"><div class="emv">3.9×</div><div class="eml">Vol vs Avg</div></div>
+                <button class="exp-cta" onclick="event.stopPropagation()">Explore Setup →</button>
+              </div>
+            </td></tr>
+
+            <!-- TATASTEEL -->
+            <tr class="data-row" onclick="toggleRow(this)">
+              <td><div class="stk-cell"><span class="sname">TATASTEEL</span><span class="ssub">Tata Steel Ltd</span></div></td>
+              <td>₹163</td>
+              <td class="dn">−0.8%</td>
+              <td class="dim">312</td>
+              <td class="dim">281</td>
+              <td><div class="oibar-wrap"><span class="oibar-val up">+31L</span><div class="oibar"><div class="oibar-fill" style="width:68%;background:var(--red)"></div></div></div></td>
+              <td class="up">+9.9%</td>
+              <td class="dim">4.8×</td>
+              <td class="tc-c"><span class="sb sbu">Short Buildup</span></td>
+            </tr>
+            <tr class="exp-row" style="display:none"><td colspan="9">
+              <div class="exp-panel">
+                <div class="em"><div class="emv">312L</div><div class="eml">Total OI</div></div>
+                <div class="em"><div class="emv up">+31L</div><div class="eml">OI Added Today</div></div>
+                <div class="em"><div class="emv up">+9.9%</div><div class="eml">OI Change %</div></div>
+                <div class="em"><div class="emv">281L</div><div class="eml">Prev Day OI</div></div>
+                <div class="em"><div class="emv">4.8×</div><div class="eml">Vol vs Avg</div></div>
+                <button class="exp-cta" onclick="event.stopPropagation()">Explore Setup →</button>
+              </div>
+            </td></tr>
+
+            <!-- INFY -->
+            <tr class="data-row" onclick="toggleRow(this)">
+              <td><div class="stk-cell"><span class="sname">INFY</span><span class="ssub">Infosys Ltd</span></div></td>
+              <td>₹1,822</td>
+              <td class="up">+2.1%</td>
+              <td class="dim">178</td>
+              <td class="dim">202</td>
+              <td><div class="oibar-wrap"><span class="oibar-val dn">−24L</span><div class="oibar"><div class="oibar-fill" style="width:54%;background:var(--amber)"></div></div></div></td>
+              <td class="dn">−11.9%</td>
+              <td class="dim">7.1×</td>
+              <td class="tc-c"><span class="sb sc">Short Covering</span></td>
+            </tr>
+            <tr class="exp-row" style="display:none"><td colspan="9">
+              <div class="exp-panel">
+                <div class="em"><div class="emv">178L</div><div class="eml">Total OI</div></div>
+                <div class="em"><div class="emv dn">−24L</div><div class="eml">OI Reduction</div></div>
+                <div class="em"><div class="emv dn">−11.9%</div><div class="eml">OI Change %</div></div>
+                <div class="em"><div class="emv">202L</div><div class="eml">Prev Day OI</div></div>
+                <div class="em"><div class="emv">7.1×</div><div class="eml">Vol vs Avg</div></div>
+                <button class="exp-cta" onclick="event.stopPropagation()">Explore Setup →</button>
+              </div>
+            </td></tr>
+
+            <!-- BAJFINANCE -->
+            <tr class="data-row" onclick="toggleRow(this)">
+              <td><div class="stk-cell"><span class="sname">BAJFINANCE</span><span class="ssub">Bajaj Finance Ltd</span></div></td>
+              <td>₹6,844</td>
+              <td class="dn">−5.2%</td>
+              <td class="dim">94</td>
+              <td class="dim">106</td>
+              <td><div class="oibar-wrap"><span class="oibar-val dn">−12L</span><div class="oibar"><div class="oibar-fill" style="width:30%;background:var(--t3)"></div></div></div></td>
+              <td class="dn">−11.3%</td>
+              <td class="dim">6.2×</td>
+              <td class="tc-c"><span class="sb lu">Unwinding</span></td>
+            </tr>
+            <tr class="exp-row" style="display:none"><td colspan="9">
+              <div class="exp-panel">
+                <div class="em"><div class="emv">94L</div><div class="eml">Total OI</div></div>
+                <div class="em"><div class="emv dn">−12L</div><div class="eml">OI Reduction</div></div>
+                <div class="em"><div class="emv dn">−11.3%</div><div class="eml">OI Change %</div></div>
+                <div class="em"><div class="emv">106L</div><div class="eml">Prev Day OI</div></div>
+                <div class="em"><div class="emv">6.2×</div><div class="eml">Vol vs Avg</div></div>
+                <button class="exp-cta" onclick="event.stopPropagation()">Explore Setup →</button>
+              </div>
+            </td></tr>
+
+            <!-- WIPRO -->
+            <tr class="data-row" onclick="toggleRow(this)">
+              <td><div class="stk-cell"><span class="sname">WIPRO</span><span class="ssub">Wipro Ltd</span></div></td>
+              <td>₹298</td>
+              <td class="dn">−6.3%</td>
+              <td class="dim">412</td>
+              <td class="dim">394</td>
+              <td><div class="oibar-wrap"><span class="oibar-val up">+18L</span><div class="oibar"><div class="oibar-fill" style="width:38%;background:var(--red)"></div></div></div></td>
+              <td class="up">+4.6%</td>
+              <td class="dim">8.4×</td>
+              <td class="tc-c"><span class="sb sbu">Short Buildup</span></td>
+            </tr>
+            <tr class="exp-row" style="display:none"><td colspan="9">
+              <div class="exp-panel">
+                <div class="em"><div class="emv">412L</div><div class="eml">Total OI</div></div>
+                <div class="em"><div class="emv up">+18L</div><div class="eml">OI Added Today</div></div>
+                <div class="em"><div class="emv up">+4.6%</div><div class="eml">OI Change %</div></div>
+                <div class="em"><div class="emv">394L</div><div class="eml">Prev Day OI</div></div>
+                <div class="em"><div class="emv">8.4×</div><div class="eml">Vol vs Avg</div></div>
+                <button class="exp-cta" onclick="event.stopPropagation()">Explore Setup →</button>
+              </div>
+            </td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- IV Spike -->
+    <div id="st-iv" style="display:none">
+      <div class="tbl-wrap">
+        <table class="dt">
+          <thead>
+            <tr>
+              <th>Stock</th>
+              <th>LTP</th>
+              <th>Chg %</th>
+              <th>IV (Curr)</th>
+              <th>IV (30d Avg)</th>
+              <th class="sorted sortable">IV Spike <span style="font-size:9px;color:var(--blue)">↓</span></th>
+              <th>IV Rank</th>
+              <th class="tc-c">Signal</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- BAJFINANCE IV -->
+            <tr class="data-row" onclick="toggleRow(this)">
+              <td><div class="stk-cell"><span class="sname">BAJFINANCE</span><span class="ssub">Bajaj Finance</span></div></td>
+              <td>₹6,844</td>
+              <td class="dn">−5.2%</td>
+              <td class="amb">58%</td>
+              <td class="dim">34%</td>
+              <td class="amb">+71%</td>
+              <td class="amb">94th</td>
+              <td class="tc-c"><span class="sb ive">IV Elevated</span></td>
+            </tr>
+            <tr class="exp-row" style="display:none"><td colspan="8">
+              <div class="exp-panel">
+                <div class="em"><div class="emv amb">58%</div><div class="eml">Current IV</div></div>
+                <div class="em"><div class="emv">34%</div><div class="eml">30d Avg IV</div></div>
+                <div class="em"><div class="emv amb">+71%</div><div class="eml">IV Spike</div></div>
+                <div class="em"><div class="emv amb">94th</div><div class="eml">IV Rank</div></div>
+                <div class="em"><div class="emv dn">−5.2%</div><div class="eml">Price Fall</div></div>
+                <button class="exp-cta" onclick="event.stopPropagation()">View IV Setup →</button>
+              </div>
+            </td></tr>
+
+            <!-- WIPRO IV -->
+            <tr class="data-row" onclick="toggleRow(this)">
+              <td><div class="stk-cell"><span class="sname">WIPRO</span><span class="ssub">Wipro Ltd</span></div></td>
+              <td>₹298</td>
+              <td class="dn">−6.3%</td>
+              <td class="amb">45%</td>
+              <td class="dim">31%</td>
+              <td class="amb">+45%</td>
+              <td class="amb">91st</td>
+              <td class="tc-c"><span class="sb ive">IV Elevated</span></td>
+            </tr>
+            <tr class="exp-row" style="display:none"><td colspan="8">
+              <div class="exp-panel">
+                <div class="em"><div class="emv amb">45%</div><div class="eml">Current IV</div></div>
+                <div class="em"><div class="emv">31%</div><div class="eml">30d Avg IV</div></div>
+                <div class="em"><div class="emv amb">+45%</div><div class="eml">IV Spike</div></div>
+                <div class="em"><div class="emv amb">91st</div><div class="eml">IV Rank</div></div>
+                <div class="em"><div class="emv dn">−6.3%</div><div class="eml">Price Fall</div></div>
+                <button class="exp-cta" onclick="event.stopPropagation()">View IV Setup →</button>
+              </div>
+            </td></tr>
+
+            <!-- HDFCBANK IV -->
+            <tr class="data-row" onclick="toggleRow(this)">
+              <td><div class="stk-cell"><span class="sname">HDFCBANK</span><span class="ssub">HDFC Bank</span></div></td>
+              <td>₹1,581</td>
+              <td class="dn">−4.8%</td>
+              <td class="amb">42%</td>
+              <td class="dim">28%</td>
+              <td class="amb">+50%</td>
+              <td class="amb">89th</td>
+              <td class="tc-c"><span class="sb ive">IV Elevated</span></td>
+            </tr>
+            <tr class="exp-row" style="display:none"><td colspan="8">
+              <div class="exp-panel">
+                <div class="em"><div class="emv amb">42%</div><div class="eml">Current IV</div></div>
+                <div class="em"><div class="emv">28%</div><div class="eml">30d Avg IV</div></div>
+                <div class="em"><div class="emv amb">+50%</div><div class="eml">IV Spike</div></div>
+                <div class="em"><div class="emv amb">89th</div><div class="eml">IV Rank</div></div>
+                <div class="em"><div class="emv dn">−4.8%</div><div class="eml">Price Fall</div></div>
+                <button class="exp-cta" onclick="event.stopPropagation()">View IV Setup →</button>
+              </div>
+            </td></tr>
+
+            <!-- AXISBANK IV -->
+            <tr class="data-row" onclick="toggleRow(this)">
+              <td><div class="stk-cell"><span class="sname">AXISBANK</span><span class="ssub">Axis Bank</span></div></td>
+              <td>₹1,212</td>
+              <td class="dn">−4.1%</td>
+              <td class="amb">38%</td>
+              <td class="dim">24%</td>
+              <td class="amb">+58%</td>
+              <td>82nd</td>
+              <td class="tc-c"><span class="sb ive">IV Elevated</span></td>
+            </tr>
+            <tr class="exp-row" style="display:none"><td colspan="8">
+              <div class="exp-panel">
+                <div class="em"><div class="emv amb">38%</div><div class="eml">Current IV</div></div>
+                <div class="em"><div class="emv">24%</div><div class="eml">30d Avg IV</div></div>
+                <div class="em"><div class="emv amb">+58%</div><div class="eml">IV Spike</div></div>
+                <div class="em"><div class="emv">82nd</div><div class="eml">IV Rank</div></div>
+                <div class="em"><div class="emv dn">−4.1%</div><div class="eml">Price Fall</div></div>
+                <button class="exp-cta" onclick="event.stopPropagation()">View IV Setup →</button>
+              </div>
+            </td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<div class="disc">
+  For informational purposes only · Not investment advice · Options trading involves substantial risk · Past OI patterns do not guarantee future results
+</div>
+
+<script>
+// ═══ FAST MOVERS DATA ═══
+var FD = {
+  '15m': [
+    { idx:'BANKNIFTY', stk:'53500', t:'ce', ltp:'₹118',  chg:'+38%', cc:'up', oi:'271', poi:'253', oc:'+18L', occ:'up', ocp:'+7.1%', vol:'4.8×', sig:'lb', st:'Long Buildup' },
+    { idx:'BANKNIFTY', stk:'53000', t:'pe', ltp:'₹88',   chg:'−41%', cc:'dn', oi:'312', poi:'334', oc:'−22L', occ:'dn', ocp:'−6.6%', vol:'6.2×', sig:'sc', st:'Short Covering' },
+    { idx:'NIFTY',     stk:'25000', t:'ce', ltp:'₹64',   chg:'+22%', cc:'up', oi:'199', poi:'190', oc:'+9L',  occ:'up', ocp:'+4.7%', vol:'3.8×', sig:'lb', st:'Long Buildup' },
+    { idx:'SENSEX',    stk:'82500', t:'ce', ltp:'₹142',  chg:'+29%', cc:'up', oi:'91',  poi:'84',  oc:'+7L',  occ:'up', ocp:'+8.3%', vol:'3.4×', sig:'lb', st:'Long Buildup' },
+    { idx:'BANKNIFTY', stk:'52500', t:'ce', ltp:'₹892',  chg:'+31%', cc:'up', oi:'58',  poi:'46',  oc:'+12L', occ:'up', ocp:'+26.1%',vol:'4.1×', sig:'lb', st:'Long Buildup' },
+    { idx:'NIFTY',     stk:'24800', t:'pe', ltp:'₹52',   chg:'+18%', cc:'up', oi:'156', poi:'152', oc:'+4L',  occ:'up', ocp:'+2.6%', vol:'2.9×', sig:'sbu',st:'Short Buildup' }
+  ],
+  '30m': [
+    { idx:'BANKNIFTY', stk:'53500', t:'ce', ltp:'₹142',  chg:'+62%', cc:'up', oi:'271', poi:'247', oc:'+24L', occ:'up', ocp:'+9.7%', vol:'8.2×', sig:'lb', st:'Long Buildup' },
+    { idx:'NIFTY',     stk:'25000', t:'ce', ltp:'₹84',   chg:'+45%', cc:'up', oi:'199', poi:'183', oc:'+16L', occ:'up', ocp:'+8.7%', vol:'6.4×', sig:'lb', st:'Long Buildup' },
+    { idx:'BANKNIFTY', stk:'53000', t:'pe', ltp:'₹68',   chg:'−55%', cc:'dn', oi:'312', poi:'343', oc:'−31L', occ:'dn', ocp:'−9.0%', vol:'9.1×', sig:'sc', st:'Short Covering' },
+    { idx:'SENSEX',    stk:'82500', t:'ce', ltp:'₹178',  chg:'+38%', cc:'up', oi:'91',  poi:'81',  oc:'+10L', occ:'up', ocp:'+12.3%',vol:'5.2×', sig:'lb', st:'Long Buildup' },
+    { idx:'BANKNIFTY', stk:'54000', t:'ce', ltp:'₹38',   chg:'+41%', cc:'up', oi:'44',  poi:'36',  oc:'+8L',  occ:'up', ocp:'+22.2%',vol:'4.4×', sig:'lb', st:'Long Buildup' },
+    { idx:'NIFTY',     stk:'24800', t:'pe', ltp:'₹61',   chg:'+28%', cc:'up', oi:'156', poi:'149', oc:'+7L',  occ:'up', ocp:'+4.7%', vol:'3.1×', sig:'sbu',st:'Short Buildup' }
+  ],
+  '1d': [
+    { idx:'BANKNIFTY', stk:'53500', t:'ce', ltp:'₹248',  chg:'+148%',cc:'up', oi:'271', poi:'229', oc:'+42L', occ:'up', ocp:'+18.3%',vol:'12.4×',sig:'lb', st:'Long Buildup' },
+    { idx:'NIFTY',     stk:'25000', t:'ce', ltp:'₹141',  chg:'+89%', cc:'up', oi:'199', poi:'171', oc:'+28L', occ:'up', ocp:'+16.4%',vol:'9.8×', sig:'lb', st:'Long Buildup' },
+    { idx:'SENSEX',    stk:'82500', t:'ce', ltp:'₹284',  chg:'+72%', cc:'up', oi:'91',  poi:'73',  oc:'+18L', occ:'up', ocp:'+24.7%',vol:'7.8×', sig:'lb', st:'Long Buildup' },
+    { idx:'NIFTY',     stk:'25500', t:'ce', ltp:'₹22',   chg:'+61%', cc:'up', oi:'48',  poi:'34',  oc:'+14L', occ:'up', ocp:'+41.2%',vol:'6.1×', sig:'lb', st:'Long Buildup' },
+    { idx:'BANKNIFTY', stk:'52000', t:'pe', ltp:'₹12',   chg:'−78%', cc:'dn', oi:'82',  poi:'120', oc:'−38L', occ:'dn', ocp:'−31.7%',vol:'11.2×',sig:'lu', st:'Unwinding' },
+    { idx:'NIFTY',     stk:'24500', t:'pe', ltp:'₹18',   chg:'−65%', cc:'dn', oi:'94',  poi:'116', oc:'−22L', occ:'dn', ocp:'−19.0%',vol:'8.8×', sig:'lu', st:'Unwinding' }
+  ]
+};
+
+function renderFast(key) {
+  var rows = FD[key];
+  var html = '';
+  rows.forEach(function(r) {
+    var barPct = Math.min(Math.abs(parseInt(r.oc)) / 42 * 100, 100).toFixed(0);
+    var barColor = r.sig === 'lb' ? 'var(--green)' : r.sig === 'sbu' ? 'var(--red)' : r.sig === 'sc' ? 'var(--amber)' : 'var(--t3)';
+    var ocCls = r.occ === 'up' ? (r.sig === 'sbu' ? 'up' : 'up') : 'dn';
+
+    html += '<tr class="data-row" onclick="toggleRow(this)">'
+      + '<td><div class="idx-cell"><span class="iname">' + r.idx + '</span><span class="istrike">' + r.stk + '</span></div></td>'
+      + '<td class="tc-c"><span class="ot ' + r.t + '">' + r.t.toUpperCase() + '</span></td>'
+      + '<td>' + r.ltp + '</td>'
+      + '<td class="' + r.cc + '">' + r.chg + '</td>'
+      + '<td class="dim">' + r.oi + '</td>'
+      + '<td><div class="oibar-wrap"><span class="oibar-val ' + r.occ + '">' + r.oc + '</span><div class="oibar"><div class="oibar-fill" style="width:' + barPct + '%;background:' + barColor + '"></div></div></div></td>'
+      + '<td class="' + r.occ + '">' + r.ocp + '</td>'
+      + '<td class="dim">' + r.vol + '</td>'
+      + '<td class="tc-c"><span class="sb ' + r.sig + '">' + r.st + '</span></td>'
+      + '</tr>'
+      + '<tr class="exp-row" style="display:none"><td colspan="9">'
+        + '<div class="exp-panel">'
+          + '<div class="em"><div class="emv">' + r.oi + 'L</div><div class="eml">Total OI</div></div>'
+          + '<div class="em"><div class="emv">' + r.poi + 'L</div><div class="eml">Prev Day OI</div></div>'
+          + '<div class="em"><div class="emv ' + r.occ + '">' + r.oc + '</div><div class="eml">OI Change</div></div>'
+          + '<div class="em"><div class="emv ' + r.occ + '">' + r.ocp + '</div><div class="eml">OI Chg %</div></div>'
+          + '<div class="em"><div class="emv">' + r.vol + '</div><div class="eml">Vol / Avg</div></div>'
+          + '<button class="exp-cta" onclick="event.stopPropagation()">Explore Setup →</button>'
+        + '</div>'
+      + '</td></tr>';
+  });
+  document.getElementById('fast-body').innerHTML = html;
+}
+
+// ═══ INTERACTIONS ═══
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
+  btn.classList.add('active');
+  document.querySelectorAll('.tc').forEach(function(c){ c.classList.remove('active'); });
+  document.getElementById('tab-' + name).classList.add('active');
+}
+
+function setTime(key, el) {
+  document.querySelectorAll('.tpill').forEach(function(p){ p.classList.remove('active'); });
+  el.classList.add('active');
+  renderFast(key);
+}
+
+function setSub(tab, btn) {
+  document.querySelectorAll('.sub-tab').forEach(function(t){ t.classList.remove('active'); });
+  btn.classList.add('active');
+  document.getElementById('st-oi').style.display = tab === 'oi' ? 'block' : 'none';
+  document.getElementById('st-iv').style.display = tab === 'iv' ? 'block' : 'none';
+}
+
+function toggleRow(tr) {
+  if (!tr.classList.contains('data-row')) return;
+  var next = tr.nextElementSibling;
+  if (!next || !next.classList.contains('exp-row')) return;
+  var isOpen = tr.classList.contains('open');
+  document.querySelectorAll('tr.open').forEach(function(r) {
+    r.classList.remove('open');
+    var n = r.nextElementSibling;
+    if (n && n.classList.contains('exp-row')) n.style.display = 'none';
+  });
+  if (!isOpen) {
+    tr.classList.add('open');
+    next.style.display = 'table-row';
+  }
+}
+
+function toggleGuide() {
+  document.getElementById('sig-guide').classList.toggle('open');
+}
+
+function setMode(m, btn) {
+  document.querySelectorAll('.mode-b').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+}
+
+// Init
+renderFast('15m');
+</script>
+</body>
+</html>

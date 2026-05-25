@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FinX — F&O Signal Screener</title>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #F3F5F9; font-family: 'Onest', sans-serif; color: #1A1A2E; min-height: 100vh; }
+
+/* ── TOP BAR ── */
+.topbar {
+  background: #0D1B2E; height: 46px;
+  display: flex; align-items: center; padding: 0 32px; gap: 16px;
+  position: sticky; top: 0; z-index: 200;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+}
+.logo { font-size: 16px; font-weight: 900; color: #2777F3; letter-spacing: -0.5px; }
+.tb-div { width: 1px; height: 20px; background: #1E2D42; }
+.idx-pill { display: flex; align-items: center; gap: 5px; }
+.idx-name { font-size: 10px; font-weight: 700; color: #4A6080; }
+.idx-val { font-size: 12px; font-weight: 800; }
+.idx-chg { font-size: 9.5px; font-weight: 600; }
+.up { color: #4ADE80; }
+.dn { color: #F87171; }
+.tb-stat { font-size: 10px; color: #4A6080; }
+.tb-stat b { color: #CBD5E1; }
+.tb-live { margin-left: auto; display: flex; align-items: center; gap: 6px; }
+.live-dot { width: 7px; height: 7px; border-radius: 50%; background: #22C55E; animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
+
+/* ── CONTAINER ── */
+.wrap { max-width: 1080px; margin: 0 auto; padding: 28px 24px 80px; }
+
+/* ── PAGE HEADING ── */
+.ph { margin-bottom: 24px; }
+.ph h1 { font-size: 26px; font-weight: 800; letter-spacing: -0.6px; color: #0F172A; }
+.ph h1 span { color: #2777F3; }
+.ph p { font-size: 13px; color: #64748B; margin-top: 5px; line-height: 1.5; }
+
+/* ── TABS ── */
+.tabs { display: flex; gap: 4px; margin-bottom: 22px; background: #E2E6EE; padding: 4px; border-radius: 12px; width: fit-content; }
+.tab-btn {
+  padding: 8px 20px; border-radius: 9px;
+  font-size: 13px; font-weight: 700; color: #64748B;
+  cursor: pointer; border: none; background: transparent;
+  transition: all 0.15s ease; white-space: nowrap;
+}
+.tab-btn.active { background: #fff; color: #1A1A2E; box-shadow: 0 1px 4px rgba(0,0,0,0.12); }
+
+/* ── SECTION ── */
+.section { display: none; }
+.section.active { display: block; animation: fadeUp 0.2s ease; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+
+/* ── SECTION HEADER ── */
+.sec-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.sec-hdr-left h2 { font-size: 17px; font-weight: 800; color: #0F172A; }
+.sec-hdr-left p { font-size: 12px; color: #64748B; margin-top: 2px; }
+.sort-row { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #64748B; }
+
+/* ── CHIPS ── */
+.chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 18px; }
+.chip {
+  padding: 5px 13px; border-radius: 20px; font-size: 12px; font-weight: 600;
+  border: 1.5px solid #DDE2EC; background: #fff; color: #64748B;
+  cursor: pointer; transition: all 0.12s; user-select: none;
+}
+.chip:hover { border-color: #2777F3; color: #1D6FD9; }
+.chip.active { background: #EBF3FF; border-color: #2777F3; color: #1D6FD9; }
+.chip.red.active { background: #FEF2F2; border-color: #FCA5A5; color: #B91C1C; }
+
+/* ── CARD GRID ── */
+.card-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+.card-grid.single { grid-template-columns: 1fr; }
+
+/* ── CARD ── */
+.card {
+  background: #fff; border-radius: 16px; border: 1.5px solid #E8EDF5;
+  overflow: hidden; cursor: pointer; transition: all 0.16s ease;
+  position: relative;
+}
+.card:hover { border-color: #93C5FD; box-shadow: 0 4px 20px rgba(39,119,243,0.10); transform: translateY(-2px); }
+.card.expanded { border-color: #2777F3; box-shadow: 0 4px 24px rgba(39,119,243,0.14); }
+.card.hidden { display: none; }
+
+/* Card top */
+.card-top { padding: 16px 18px 14px; }
+.card-row1 { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 6px; }
+.card-symbol { font-size: 16px; font-weight: 800; color: #0F172A; letter-spacing: -0.3px; }
+.card-sub { font-size: 11px; color: #94A3B8; font-weight: 500; margin-top: 2px; }
+.card-tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 4px; }
+.tag-ce { background: #DCFCE7; color: #166534; }
+.tag-pe { background: #FEE2E2; color: #991B1B; }
+.tag-spread { background: #EDE9FE; color: #5B21B6; }
+.tag-condor { background: #CFFAFE; color: #155E75; }
+.tag-iv { background: #FFF7ED; color: #9A3412; }
+.tag-straddle { background: #F0FDF4; color: #166534; }
+
+/* Conviction badge */
+.conv {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 5px 12px; border-radius: 20px;
+  font-size: 11px; font-weight: 800; letter-spacing: 0.2px;
+  flex-shrink: 0;
+}
+.conv.high { background: #2777F3; color: #fff; }
+.conv.strong { background: #16A34A; color: #fff; }
+.conv.watch { background: #F59E0B; color: #fff; }
+.conv-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: 0.7; }
+
+/* Card metrics strip */
+.metrics {
+  display: grid; gap: 1px; background: #EEF1F7;
+  border-top: 1px solid #EEF1F7;
+}
+.metrics.four { grid-template-columns: repeat(4, 1fr); }
+.metrics.three { grid-template-columns: repeat(3, 1fr); }
+.metric { background: #fff; padding: 11px 14px; text-align: center; }
+.metric-label { font-size: 9.5px; font-weight: 700; color: #9CA3AF; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+.metric-val { font-size: 18px; font-weight: 800; color: #0F172A; line-height: 1; }
+.metric-val.green { color: #16A34A; }
+.metric-val.blue { color: #2777F3; }
+.metric-val.red { color: #DC2626; }
+.metric-val.orange { color: #F59E0B; }
+.metric-val.purple { color: #7C3AED; }
+.metric-sub { font-size: 10px; color: #94A3B8; margin-top: 2px; font-weight: 500; }
+
+/* Card expand section */
+.card-expand {
+  display: none; padding: 16px 18px;
+  border-top: 1px solid #EEF1F7;
+  background: #FAFBFE;
+  animation: fadeUp 0.18s ease;
+}
+.card.expanded .card-expand { display: block; }
+.expand-label { font-size: 10px; font-weight: 700; color: #9CA3AF; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 10px; }
+.conv-bars { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+.conv-row { display: flex; align-items: center; gap: 10px; }
+.conv-name { font-size: 11px; color: #6B7280; width: 120px; flex-shrink: 0; font-weight: 500; }
+.conv-bar-wrap { flex: 1; height: 6px; background: #E5E7EB; border-radius: 3px; overflow: hidden; }
+.conv-bar { height: 100%; border-radius: 3px; background: #2777F3; transition: width 0.4s ease; }
+.conv-score { font-size: 11px; font-weight: 800; color: #2777F3; width: 24px; text-align: right; flex-shrink: 0; }
+.hist-strip {
+  padding: 10px 12px; border-radius: 8px;
+  background: #F0FDF4; border: 1px solid #BBF7D0;
+  display: flex; align-items: center; gap: 8px; margin-bottom: 12px;
+}
+.hist-num { font-size: 20px; font-weight: 900; color: #16A34A; }
+.hist-text { font-size: 11.5px; color: #166534; line-height: 1.4; font-weight: 500; }
+.why-text { font-size: 12px; color: #475569; line-height: 1.6; margin-bottom: 14px; }
+.analyse-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 9px 18px; border-radius: 8px;
+  background: #EBF3FF; border: 1.5px solid #93C5FD;
+  color: #1D6FD9; font-size: 12px; font-weight: 700;
+  cursor: pointer; transition: all 0.12s;
+}
+.analyse-btn:hover { background: #DBEAFE; border-color: #2777F3; }
+.disc-text { font-size: 10px; color: #CBD5E1; margin-top: 10px; line-height: 1.4; }
+
+/* ── BUILDER SECTION ── */
+.builder-wrap { background: #fff; border-radius: 16px; border: 1.5px solid #E8EDF5; padding: 22px 24px; margin-bottom: 20px; }
+.builder-title { font-size: 14px; font-weight: 800; color: #0F172A; margin-bottom: 6px; }
+.builder-sub { font-size: 12px; color: #64748B; margin-bottom: 20px; }
+.condition-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px; }
+.condition-row { display: flex; align-items: center; gap: 10px; }
+.cond-num { width: 22px; height: 22px; border-radius: 50%; background: #EBF3FF; color: #1D6FD9; font-size: 10px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.cond-select {
+  flex: 1; height: 38px; padding: 0 12px;
+  border-radius: 8px; border: 1.5px solid #DDE2EC;
+  background: #FAFBFC; font-family: 'Onest', sans-serif;
+  font-size: 12.5px; font-weight: 600; color: #1A1A2E;
+  cursor: pointer; outline: none; appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2394A3B8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 12px center;
+  padding-right: 32px;
+}
+.cond-select:focus { border-color: #2777F3; }
+.and-or {
+  padding: 4px 10px; border-radius: 6px;
+  background: #EEF1F7; border: 1.5px solid #DDE2EC;
+  font-size: 11px; font-weight: 800; color: #64748B;
+  cursor: pointer; transition: all 0.12s; user-select: none;
+}
+.and-or.or-mode { background: #EDE9FE; border-color: #C4B5FD; color: #5B21B6; }
+.cond-remove { width: 24px; height: 24px; border-radius: 50%; background: #FEE2E2; color: #DC2626; font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; line-height: 1; }
+.add-cond-btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 7px 14px; border-radius: 8px;
+  border: 1.5px dashed #CBD5E1; background: #FAFBFC;
+  color: #64748B; font-size: 12px; font-weight: 600;
+  cursor: pointer; transition: all 0.12s; margin-right: 10px;
+}
+.add-cond-btn:hover { border-color: #2777F3; color: #1D6FD9; background: #EBF3FF; }
+.run-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 9px 22px; border-radius: 9px;
+  background: #2777F3; color: #fff;
+  font-size: 13px; font-weight: 800; cursor: pointer;
+  border: none; transition: all 0.12s; font-family: 'Onest', sans-serif;
+}
+.run-btn:hover { background: #1D6FD9; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(39,119,243,0.3); }
+
+/* Builder results */
+.builder-results { display: none; }
+.builder-results.visible { display: block; animation: fadeUp 0.2s ease; }
+.results-hdr {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 14px;
+}
+.results-count { font-size: 22px; font-weight: 900; color: #2777F3; }
+.results-label { font-size: 13px; color: #64748B; font-weight: 500; }
+.match-badge { font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 4px; }
+.match-full { background: #DCFCE7; color: #166534; }
+.match-part { background: #FEF9C3; color: #854D0E; }
+
+/* ── ANNOTATION BADGES ── */
+.aa {
+  position: absolute; width: 20px; height: 20px;
+  background: #4F46E5; border: 2px solid #fff; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 8.5px; font-weight: 800; color: #fff; z-index: 50;
+  box-shadow: 0 2px 8px rgba(79,70,229,0.4);
+}
+
+/* ── SORT PILL ── */
+.sort-pill {
+  padding: 5px 12px; border-radius: 8px;
+  border: 1.5px solid #DDE2EC; background: #fff;
+  font-size: 11px; font-weight: 700; color: #64748B;
+  cursor: pointer; user-select: none;
+}
+.sort-pill.active { background: #EBF3FF; border-color: #93C5FD; color: #1D6FD9; }
+
+/* ── DISCLAIMER ── */
+.disclaimer { margin-top: 32px; padding: 14px 18px; background: #fff; border-radius: 10px; border: 1px solid #E8EDF5; }
+.disclaimer p { font-size: 11px; color: #94A3B8; line-height: 1.6; }
+
+/* ── EMPTY STATE ── */
+.empty { text-align: center; padding: 40px 20px; color: #94A3B8; font-size: 13px; }
+</style>
+</head>
+<body>
+
+<!-- ── STICKY TOP BAR ── -->
+<div class="topbar">
+  <div class="logo">F↗X</div>
+  <div class="tb-div"></div>
+  <div class="idx-pill">
+    <span class="idx-name">NIFTY</span>
+    <span class="idx-val dn">24,487</span>
+    <span class="idx-chg dn">▼ 0.4%</span>
+  </div>
+  <div class="tb-div"></div>
+  <div class="idx-pill">
+    <span class="idx-name">BNF</span>
+    <span class="idx-val up">52,340</span>
+    <span class="idx-chg up">▲ 0.6%</span>
+  </div>
+  <div class="tb-div"></div>
+  <span class="tb-stat">VIX &nbsp;<b>14.3</b></span>
+  <span class="tb-stat">PCR &nbsp;<b>0.82</b></span>
+  <span class="tb-stat">ATM &nbsp;<b>24,500</b></span>
+  <div class="tb-live">
+    <div class="live-dot"></div>
+    <span style="font-size:10px;font-weight:700;color:#22C55E;">LIVE</span>
+    <span style="font-size:10px;color:#4A6080;margin-left:5px;" id="clock">--:-- AM</span>
+  </div>
+</div>
+
+<!-- ── MAIN WRAP ── -->
+<div class="wrap">
+
+  <!-- Page heading -->
+  <div class="ph">
+    <h1>FinX <span>Discovery Widget</span></h1>
+    <p>F&O opportunities ranked by conviction — not just OI. Three ways to find your next setup.</p>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('strategy', this)">Strategy Screener</button>
+    <button class="tab-btn" onclick="switchTab('iv', this)">IV Opportunities</button>
+    <button class="tab-btn" onclick="switchTab('builder', this)">Signal Builder</button>
+  </div>
+
+
+  <!-- ═══════════════════════════════
+       TAB 1 — STRATEGY SCREENER
+  ═══════════════════════════════ -->
+  <div class="section active" id="tab-strategy">
+
+    <div class="sec-hdr">
+      <div class="sec-hdr-left">
+        <h2>Premium Income Setups</h2>
+        <p>Spreads within ±10% of ATM · Max Profit / Margin &gt; 5% · Updated 11:52 AM</p>
+      </div>
+      <div class="sort-row">
+        Sort:
+        <span class="sort-pill active" onclick="sortCards('strategy','return')">Return %</span>
+        <span class="sort-pill" onclick="sortCards('strategy','conv')">Conviction</span>
+        <span class="sort-pill" onclick="sortCards('strategy','fresh')">Freshest</span>
+      </div>
+    </div>
+
+    <div class="chips" id="chips-strategy">
+      <span class="chip active" data-filter="all">All Setups</span>
+      <span class="chip active" data-filter="nifty">NIFTY</span>
+      <span class="chip active" data-filter="bnf">BANKNIFTY</span>
+      <span class="chip" data-filter="stocks">Stocks</span>
+      <span class="chip" data-filter="r10">Return &gt;10%</span>
+      <span class="chip" data-filter="r20">Return &gt;20%</span>
+      <span class="chip" data-filter="ce">CE Side</span>
+      <span class="chip" data-filter="pe">PE Side</span>
+    </div>
+
+    <div class="card-grid" id="grid-strategy">
+
+      <!-- Card 1: BNF Bear Call Spread (highest return, high conv) -->
+      <div class="card" data-groups="bnf ce" data-conv="92" data-return="22.5" data-age="8" onclick="toggleCard(this)">
+        <div style="position:relative;">
+          <div class="card-top">
+            <div class="card-row1">
+              <div>
+                <span class="card-tag tag-spread">Bear Call Spread</span>
+                <div class="card-symbol">BNF 53000–53500 CE</div>
+                <div class="card-sub">Sell 53000 CE · Buy 53500 CE · 29 May · 1.3% above ATM</div>
+              </div>
+              <div class="conv high"><div class="conv-dot"></div>92 HIGH</div>
+            </div>
+          </div>
+          <div class="metrics four">
+            <div class="metric">
+              <div class="metric-label">Max Return</div>
+              <div class="metric-val green">22.5%</div>
+              <div class="metric-sub">on margin</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">Premium In</div>
+              <div class="metric-val blue">₹92</div>
+              <div class="metric-sub">collected</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">Max Risk</div>
+              <div class="metric-val">₹408</div>
+              <div class="metric-sub">per lot</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">Win Rate</div>
+              <div class="metric-val orange">74%</div>
+              <div class="metric-sub">last 90 days</div>
+            </div>
+          </div>
+          <div class="card-expand">
+            <div class="expand-label">Signal Conviction Breakdown</div>
+            <div class="conv-bars">
+              <div class="conv-row"><span class="conv-name">IV Context</span><div class="conv-bar-wrap"><div class="conv-bar" style="width:96%"></div></div><span class="conv-score">96</span></div>
+              <div class="conv-row"><span class="conv-name">OI Confirmation</span><div class="conv-bar-wrap"><div class="conv-bar" style="width:91%"></div></div><span class="conv-score">91</span></div>
+              <div class="conv-row"><span class="conv-name">Strike Distance</span><div class="conv-bar-wrap"><div class="conv-bar" style="width:88%"></div></div><span class="conv-score">88</span></div>
+              <div class="conv-row"><span class="conv-name">Historical Match</span><div class="conv-bar-wrap"><div class="conv-bar" style="width:74%"></div></div><span class="conv-score">74</span></div>
+            </div>
+            <div class="hist-strip">
+              <div class="hist-num">74%</div>
+              <div class="hist-text">64 of 87 similar setups reached max profit at expiry in the last 90 days. Average holding: 4.2 days.</div>
+            </div>
+            <div class="why-text">BNF IV elevated at 31% (30d avg 24%). CE OI heavy — 53000 strike seeing consistent resistance. Premium collected is 22.5% of max loss, making this structurally attractive.</div>
+            <div class="analyse-btn">Explore this setup →</div>
+            <div class="disc-text">Historical win rates are informational only and do not constitute investment advice or a guarantee of future results.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2: NIFTY Bear Call Spread -->
+      <div class="card" data-groups="nifty ce" data-conv="87" data-return="15.5" data-age="18" onclick="toggleCard(this)">
+        <div class="card-top">
+          <div class="card-row1">
+            <div>
+              <span class="card-tag tag-spread">Bear Call Spread</span>
+              <div class="card-symbol">NIFTY 25000–25500 CE</div>
+              <div class="card-sub">Sell 25000 CE · Buy 25500 CE · 29 May · 2.1% above ATM</div>
+            </div>
+            <div class="conv high"><div class="conv-dot"></div>87 HIGH</div>
+          </div>
+        </div>
+        <div class="metrics four">
+          <div class="metric"><div class="metric-label">Max Return</div><div class="metric-val green">15.5%</div><div class="metric-sub">on margin</div></div>
+          <div class="metric"><div class="metric-label">Premium In</div><div class="metric-val blue">₹67</div><div class="metric-sub">collected</div></div>
+          <div class="metric"><div class="metric-label">Max Risk</div><div class="metric-val">₹433</div><div class="metric-sub">per lot</div></div>
+          <div class="metric"><div class="metric-label">Win Rate</div><div class="metric-val orange">71%</div><div class="metric-sub">last 90 days</div></div>
+        </div>
+        <div class="card-expand">
+          <div class="expand-label">Signal Conviction Breakdown</div>
+          <div class="conv-bars">
+            <div class="conv-row"><span class="conv-name">IV Context</span><div class="conv-bar-wrap"><div class="conv-bar" style="width:89%"></div></div><span class="conv-score">89</span></div>
+            <div class="conv-row"><span class="conv-name">OI Confirmation</span><div class="conv-bar-wrap"><div class="conv-bar" style="width:86%"></div></div><span class="conv-score">86</span></div>
+            <div class="conv-row"><span class="conv-name">Strike Distance</span><div class="conv-bar-wrap"><div class="conv-bar" style="width:84%"></div></div><span class="conv-score">84</span></div>
+            <div class="conv-row"><span class="conv-name">Historical Match</span><div class="conv-bar-wrap"><div class="conv-bar" style="width:71%"></div></div><span class="conv-score">71</span></div>
+          </div>
+          <div class="hist-strip">
+            <div class="hist-num">71%</div>
+            <div class="hist-text">61 of 86 similar setups expired worthless in the last 90 days. Premium decayed to zero within 3.8 days on average.</div>
+          </div>
+          <div class="why-text">NIFTY 25000 CE showing steady OI addition. IV at 22% (30d avg 17%). 2.1% OTM with PCR 0.82 — balanced positioning. Resistance zone confirmed by heavy PE OI at 24500.</div>
+          <div class="analyse-btn">Explore this setup →</div>
+          <div class="disc-text">Historical win rates are informational only and do not constitute investment advice or a guarantee of future results.</div>
+        </div>
+      </div>
+
+      <!-- Card 3: BNF Bull Put Spread -->
+      <div class="card" data-groups="bnf pe" data-conv="83" data-return="14.8" data-age="22" onclick="toggleCard(this)">
+        <div class="card-top">
+          <div class="card-row1">
+            <div>
+              <span class="card-tag tag-spread" style="background:#FEF3C7;color:#92400E;">Bull Put Spread</span>
+              <div class="card-symbol">BNF 51500–51000 PE</div>
+              <div class="card-sub">Sell 51500 PE · Buy 51000 PE · 29 May · 1.7% below ATM</div>
+            </div>
+            <div class="conv strong"><div class="conv-dot"></div>83 STRONG</div>
+          </div>
+        </div>
+        <div class="metrics four">
+          <div class="metric"><div class="metric-label">Max Return</div><div class="metric-val green">14.8%</div><div class="metric-sub">on margin</div></div>
+          <div class="metric"><div class="metric-label">Premium In</div><div class="metric-val blue">₹72</div><div class="metric-sub">collected</div></div>
+          <div class="metric"><div class="metric-label">Max Risk</div><div class="metric-val">₹428</div><div class="metric-sub">per lot</div></div>
+          <div class="metric"><div class="metric-label">Win Rate</div><div class="metric-val orange">68%</div><div class="metric-sub">last 90 days</div></div>
+        </div>
+        <div class="card-expand">
+          <div class="expand-label">Signal Conviction Breakdown</div>
+          <div class="conv-bars">
+            <div class="conv-row"><span class="conv-name">IV Context</span><div class="conv-bar-wrap"><div class="conv-bar" style="width:84%"></div></div><span class="conv-score">84</span></div>
+            <div class="conv-row"><span class="conv-name">OI Confirmation</span><div class="conv-bar-wrap"><div class="conv-bar" style="width:81%"></div></div><span class="conv-score">81</span></div>
+            <div class="conv-row"><span class="conv-name">Strike Distance</span><div class="conv-bar-wrap"><div class="conv-bar" style="width:86%"></div></div><span class="conv-score">86</span></div>
+            <div class="conv-row"><span class="conv-name">Historical Match</span><div class="conv-bar-wrap"><div class="conv-bar" style="width:68%"></div></div><span class="conv-score">68</span></div>
+          </div>
+          <div class="hist-strip"><div class="hist-num">68%</div><div class="hist-text">58 of 85 similar setups held support. BNF 51500 zone is a key support level this expiry series.</div></div>
+          <div class="why-text">51500 PE showing OI build at support zone. PCR for BNF holding above 0.8. Structural support from cash market demand at 51500. Strike 1.7% below ATM with meaningful support behind it.</div>
+          <div class="analyse-btn">Explore this setup →</div>
+          <div class="disc-text">Historical win rates are informational only and do not constitute investment advice.</div>
+        </div>
+      </div>
+
+      <!-- Card 4: RELIANCE Iron Condor -->
+      <div class="card" data-groups="stocks ce pe" data-conv="74" data-return="11.2" data-age="31" onclick="toggleCard(this)">
+        <div class="card-top">
+          <div class="card-row1">
+            <div>
+              <span class="card-tag tag-condor">Iron Condor</span>
+              <div class="card-symbol">RELIANCE 1300–1420 Range</div>
+              <div class="card-sub">Sell 1340 PE + 1420 CE · Buy 1300 PE + 1460 CE · 29 May</div>
+            </div>
+            <div class="conv strong"><div class="conv-dot"></div>74 STRONG</div>
+          </div>
+        </div>
+        <div class="metrics four">
+          <div class="metric"><div class="metric-label">Max Return</div><div class="metric-val green">11.2%</div><div class="metric-sub">on margin</div></div>
+          <div class="metric"><div class="metric-label">Premium In</div><div class="metric-val blue">₹23</div><div class="metric-sub">collected</div></div>
+          <div class="metric"><div class="metric-label">Range Width</div><div class="metric-val">₹80</div><div class="metric-sub">profit zone</div></div>
+          <div class="metric"><div class="metric-label">Win Rate</div><div class="metric-val orange">66%</div><div class="metric-sub">last 90 days</div></div>
+        </div>
+        <div class="card-expand">
+          <div class="expand-label">Signal Conviction Breakdown</div>
+          <div class="conv-bars">
+            <div class="conv-row"><span class="conv-name">IV Context</span><div class="conv-bar-wrap"><div class="conv-bar" style="width:78%"></div></div><span class="conv-score">78</span></div>
+            <div class="conv-row"><span class="conv-name">OI Confirmation</span><div class="conv-bar-wrap"><div class="conv-bar" style="width:72%"></div></div><span class="conv-score">72</span></div>
+            <div class="conv-row"><span class="conv-name">Strike Distance</span><div class="conv-bar-wrap"><div class="conv-bar" style="width:74%"></div></div><span class="conv-score">74</span></div>
+            <div class="conv-row"><span class="conv-name">Historical Match</span><div class="conv-bar-wrap"><div class="conv-bar" style="width:66%"></div></div><span class="conv-score">66</span></div>
+          </div>
+          <div class="hist-strip"><div class="hist-num">66%</div><div class="hist-text">56 of 85 condors on RELIANCE expired within profit range. Stock has traded in ₹1300–₹1440 range for 18 of last 22 sessions.</div></div>
+          <div class="why-text">RELIANCE IV at 18% — near 30d average. Stock showing range-bound behaviour. Condor benefits from time decay if stock stays between 1340–1420. Heavy OI at both 1300 PE and 1460 CE acts as natural boundary.</div>
+          <div class="analyse-btn">Explore this setup →</div>
+          <div class="disc-text">Historical win rates are informational only and do not constitute investment advice.</div>
+        </div>
+      </div>
+
+      <!-- Card 5: NIFTY Bull Put Spread -->
+      <div class="card" data-groups="nifty pe" data-conv="79" data-return="9.2" data-age="14" onclick="toggleCard(this)">
+        <div class="card-top">
+          <div class="card-row1">
+            <div>
+              <span class="card-tag tag-spread" style="background:#FEF3C7;color:#92400E;">Bull Put Spread</span>
+              <div class="card-symbol">NIFTY 24000–23500 PE</div>
+              <div class="card-sub">Sell 24000 PE · Buy 23500 PE · 29 May · 2.1% below ATM</div>
+            </div>
+            <div class="conv strong"><div class="conv-dot"></div>79 STRONG</div>
+          </div>
+        </div>
+        <div class="metrics four">
+          <div class="metric"><div class="metric-label">Max Return</div><div class="metric-val green">9.2%</div><div class="metric-sub">on margin</div></div>
+          <div class="metric"><div class="metric-label">Premium In</div><div class="metric-val blue">₹42</div><div class="metric-sub">collected</div></div>
+          <div class="metric"><div class="metric-label">Max Risk</div><div class="metric-val">₹458</div><div class="metric-sub">per lot</div></div>
+          <div class="metric"><div class="metric-label">Win Rate</div><div class="metric-val orange">69%</div><div class="metric-sub">last 90 days</div></div>
+        </div>
+        <div class="card-expand">
+          <div class="expand-label">Signal Conviction Breakdown</div>
+          <div class="conv-bars">
+            <div class="conv-row"><span class="conv-name">IV Context</span><div class="conv-bar-wrap"><div class="conv-bar" style="width:81%"></div></div><span class="conv-score">81</span></div>
+            <div class="conv-row"><span class="conv-name">OI Confirmation</span><div class="conv-bar-wrap"><div class="conv-bar" style="width:78%"></div></div><span class="conv-score">78</span></div>
+            <div class="conv-row"><span class="conv-name">Strike Distance</span><div class="conv-bar-wrap"><div class="conv-bar" style="width:76%"></div></div><span class="conv-score">76</span></div>
+            <div class="conv-row"><span class="conv-name">Historical Match</span><div class="conv-bar-wrap"><div class="conv-bar" style="width:69%"></div></div><span class="conv-score">69</span></div>
+          </div>
+          <div class="hist-strip"><div class="hist-num">69%</div><div class="hist-text">59 of 86 similar setups profitable at expiry. 24000 is a key support level this series with heavy PE OI.</div></div>
+          <div class="why-text">24000 PE — large OI addition at the start of this expiry series. Indicates market participants betting 24000 holds. VIX low at 14.3, premium attractive. 2.1% OTM gives reasonable buffer.</div>
+          <div class="analyse-btn">Explore this setup →</div>
+          <div class="disc-text">Historical win rates are informational only and do not constitute investment advice.</div>
+        </div>
+      </div>
+
+      <!-- Card 6: HDFCBANK Bull Put (watch) -->
+      <div class="card" data-groups="stocks pe" data-conv="61" data-return="7.3" data-age="26" onclick="toggleCard(this)">
+        <div class="card-top">
+          <div class="card-row1">
+            <div>
+              <span class="card-tag tag-spread" style="background:#FEF3C7;color:#92400E;">Bull Put Spread</span>
+              <div class="card-symbol">HDFCBANK 1720–1680 PE</div>
+              <div class="card-sub">Sell 1720 PE · Buy 1680 PE · 29 May · 3.5% below ATM</div>
+            </div>
+            <div class="conv watch"><div class="conv-dot"></div>61 WATCH</div>
+          </div>
+        </div>
+        <div class="metrics four">
+          <div class="metric"><div class="metric-label">Max Return</div><div class="metric-val green">7.3%</div><div class="metric-sub">on margin</div></div>
+          <div class="metric"><div class="metric-label">Premium In</div><div class="metric-val blue">₹26</div><div class="metric-sub">collected</div></div>
+          <div class="metric"><div class="metric-label">Max Risk</div><div class="metric-val">₹374</div><div class="metric-sub">per lot</div></div>
+          <div class="metric"><div class="metric-label">Win Rate</div><div class="metric-val orange">58%</div><div class="metric-sub">last 90 days</div></div>
+        </div>
+        <div class="card-expand">
+          <div class="expand-label">Signal Conviction Breakdown</div>
+          <div class="conv-bars">
+            <div class="conv-row"><span class="conv-name">IV Context</span><div class="conv-bar-wrap"><div class="conv-bar" style="width:65%;background:#F59E0B"></div></div><span class="conv-score" style="color:#F59E0B">65</span></div>
+            <div class="conv-row"><span class="conv-name">OI Confirmation</span><div class="conv-bar-wrap"><div class="conv-bar" style="width:59%;background:#F59E0B"></div></div><span class="conv-score" style="color:#F59E0B">59</span></div>
+            <div class="conv-row"><span class="conv-name">Strike Distance</span><div class="conv-bar-wrap"><div class="conv-bar" style="width:62%;background:#F59E0B"></div></div><span class="conv-score" style="color:#F59E0B">62</span></div>
+            <div class="conv-row"><span class="conv-name">Historical Match</span><div class="conv-bar-wrap"><div class="conv-bar" style="width:58%;background:#F59E0B"></div></div><span class="conv-score" style="color:#F59E0B">58</span></div>
+          </div>
+          <div class="hist-strip" style="background:#FFFBEB;border-color:#FDE68A;"><div class="hist-num" style="color:#F59E0B">58%</div><div class="hist-text" style="color:#92400E;">49 of 84 similar setups profitable. Stock showing some directional weakness — monitor before entering.</div></div>
+          <div class="why-text">HDFCBANK down 4.8% today with elevated IV. 1720 PE has some support from historical OI but conviction is moderate. Watch for stabilisation before committing to this spread.</div>
+          <div class="analyse-btn">Explore this setup →</div>
+          <div class="disc-text">Historical win rates are informational only and do not constitute investment advice.</div>
+        </div>
+      </div>
+
+    </div><!-- /grid-strategy -->
+  </div>
+
+
+  <!-- ═══════════════════════════════
+       TAB 2 — IV OPPORTUNITIES
+  ═══════════════════════════════ -->
+  <div class="section" id="tab-iv">
+
+    <div class="sec-hdr">
+      <div class="sec-hdr-left">
+        <h2>IV Opportunities — Stocks in Distress</h2>
+        <p>NSE F&O stocks fallen &gt;4% today with swollen IVs · Sell-the-fear setups · Updated 11:52 AM</p>
+      </div>
+      <div class="sort-row">
+        Sort:
+        <span class="sort-pill active" onclick="sortCards('iv','conv')">Conviction</span>
+        <span class="sort-pill" onclick="sortCards('iv','return')">IV Premium</span>
+      </div>
+    </div>
+
+    <div class="chips" id="chips-iv">
+      <span class="chip active" data-filter="all">All</span>
+      <span class="chip red active" data-filter="drop4">Down &gt;4%</span>
+      <span class="chip red" data-filter="drop7">Down &gt;7%</span>
+      <span class="chip active" data-filter="ivrank80">IV Rank &gt;80</span>
+      <span class="chip" data-filter="ivrank90">IV Rank &gt;90</span>
+    </div>
+
+    <div class="card-grid" id="grid-iv">
+
+      <!-- IV Card 1: BAJFINANCE -->
+      <div class="card" data-groups="drop4 drop7 ivrank80 ivrank90" data-conv="94" data-return="24" data-age="morning" onclick="toggleCard(this)">
+        <div class="card-top">
+          <div class="card-row1">
+            <div>
+              <span class="card-tag tag-iv">IV Spike · Sell Opportunity</span>
+              <div class="card-symbol">BAJFINANCE</div>
+              <div class="card-sub">NSE F&O · 29 May expiry · ATM ~₹6,220</div>
+            </div>
+            <div class="conv high"><div class="conv-dot"></div>94 HIGH</div>
+          </div>
+        </div>
+        <div class="metrics four">
+          <div class="metric"><div class="metric-label">Today's Move</div><div class="metric-val red">−5.2%</div><div class="metric-sub">sharp fall</div></div>
+          <div class="metric"><div class="metric-label">Current IV</div><div class="metric-val orange">58%</div><div class="metric-sub">swollen</div></div>
+          <div class="metric"><div class="metric-label">30d Avg IV</div><div class="metric-val">34%</div><div class="metric-sub">normal range</div></div>
+          <div class="metric"><div class="metric-label">IV Rank</div><div class="metric-val purple">94th</div><div class="metric-sub">percentile</div></div>
+        </div>
+        <div class="card-expand">
+          <div class="expand-label">Why This Is Interesting</div>
+          <div class="conv-bars">
+            <div class="conv-row"><span class="conv-name">IV Premium</span><div class="conv-bar-wrap"><div class="conv-bar" style="width:97%"></div></div><span class="conv-score">97</span></div>
+            <div class="conv-row"><span class="conv-name">IV Rank</span><div class="conv-bar-wrap"><div class="conv-bar" style="width:94%"></div></div><span class="conv-score">94</span></div>
+            <div class="conv-row"><span class="conv-name">Mean Reversion</span><div class="conv-bar-wrap"><div class="conv-bar" style="width:88%"></div></div><span class="conv-score">88</span></div>
+            <div class="conv-row"><span class="conv-name">Structural Support</span><div class="conv-bar-wrap"><div class="conv-bar" style="width:79%"></div></div><span class="conv-score">79</span></div>
+          </div>
+          <div class="hist-strip">
+            <div class="hist-num">83%</div>
+            <div class="hist-text">When BAJFINANCE IV exceeded 50% after a 5%+ fall, IV reverted within 3–5 days in 83% of cases (29 of 35 occurrences in last 2 years).</div>
+          </div>
+          <div class="why-text">IV at 1.7× its 30-day average (58% vs 34%). The fall today has caused panic option buying — both CE and PE premiums swollen. Possible setups: ATM short straddle, strangle, or ratio spreads where you benefit if IV compresses back to normal.</div>
+          <div class="analyse-btn">Explore IV setup →</div>
+          <div class="disc-text">Historical IV reversion data is informational only. Not investment advice. Past patterns do not guarantee future outcomes.</div>
+        </div>
+      </div>
+
+      <!-- IV Card 2: WIPRO -->
+      <div class="card" data-groups="drop4 drop7 ivrank80 ivrank90" data-conv="91" data-return="45" data-age="morning" onclick="toggleCard(this)">
+        <div class="card-top">
+          <div class="card-row1">
+            <div>
+              <span class="card-tag tag-iv">IV Spike · Sell Opportunity</span>
+              <div class="card-symbol">WIPRO</div>
+              <div class="card-sub">NSE F&O · 29 May expiry · ATM ~₹455</div>
+            </div>
+            <div class="conv high"><div class="conv-dot"></div>91 HIGH</div>
+          </div>
+        </div>
+        <div class="metrics four">
+          <div class="metric"><div class="metric-label">Today's Move</div><div class="metric-val red">−6.3%</div><div class="metric-sub">earnings gap</div></div>
+          <div class="metric"><div class="metric-label">Current IV</div><div class="metric-val orange">45%</div><div class="metric-sub">swollen</div></div>
+          <div class="metric"><div class="metric-label">30d Avg IV</div><div class="metric-val">31%</div><div class="metric-sub">normal range</div></div>
+          <div class="metric"><div class="metric-label">IV Rank</div><div class="metric-val purple">91st</div><div class="metric-sub">percentile</div></div>
+        </div>
+        <div class="card-expand">
+          <div class="expand-label">Why This Is Interesting</div>
+          <div class="conv-bars">
+            <div class="conv-row"><span class="conv-name">IV Premium</span><div class="conv-bar-wrap"><div class="conv-bar" style="width:93%"></div></div><span class="conv-score">93</span></div>
+            <div class="conv-row"><span class="conv-name">IV Rank</span><div class="conv-bar-wrap"><div class="conv-bar" style="width:91%"></div></div><span class="conv-score">91</span></div>
+            <div class="conv-row"><span class="conv-name">Mean Reversion</span><div class="conv-bar-wrap"><div class="conv-bar" style="width:86%"></div></div><span class="conv-score">86</span></div>
+            <div class="conv-row"><span class="conv-name">Structural Support</span><div class="conv-bar-wrap"><div class="conv-bar" style="width:72%"></div></div><span class="conv-score">72</span></div>
+          </div>
+          <div class="hist-strip">
+            <div class="hist-num">79%</div>
+            <div class="hist-text">Post-earnings gaps on WIPRO saw IV mean-revert within 2–4 sessions in 79% of cases (22 of 28 occurrences in last 3 years).</div>
+          </div>
+          <div class="why-text">Earnings-driven gap down. IV at 45% vs normal 31% — the event has happened, but fear premium lingers. This creates an opportunity to sell elevated IV after the move has occurred. Strangle or short straddle with defined risk on the upside CE.</div>
+          <div class="analyse-btn">Explore IV setup →</div>
+          <div class="disc-text">Historical IV reversion data is informational only. Not investment advice.</div>
+        </div>
+      </div>
+
+      <!-- IV Card 3: HDFCBANK -->
+      <div class="card" data-groups="drop4 ivrank80 ivrank90" data-conv="89" data-return="50" data-age="morning" onclick="toggleCard(this)">
+        <div class="card-top">
+          <div class="card-row1">
+            <div>
+              <span class="card-tag tag-iv">IV Spike · Sell Opportunity</span>
+              <div class="card-symbol">HDFCBANK</div>
+              <div class="card-sub">NSE F&O · 29 May expiry · ATM ~₹1,782</div>
+            </div>
+            <div class="conv high"><div class="conv-dot"></div>89 HIGH</div>
+          </div>
+        </div>
+        <div class="metrics four">
+          <div class="metric"><div class="metric-label">Today's Move</div><div class="metric-val red">−4.8%</div><div class="metric-sub">sharp fall</div></div>
+          <div class="metric"><div class="metric-label">Current IV</div><div class="metric-val orange">42%</div><div class="metric-sub">swollen</div></div>
+          <div class="metric"><div class="metric-label">30d Avg IV</div><div class="metric-val">28%</div><div class="metric-sub">normal range</div></div>
+          <div class="metric"><div class="metric-label">IV Rank</div><div class="metric-val purple">89th</div><div class="metric-sub">percentile</div></div>
+        </div>
+        <div class="card-expand">
+          <div class="expand-label">Why This Is Interesting</div>
+          <div class="conv-bars">
+            <div class="conv-row"><span class="conv-name">IV Premium</span><div class="conv-bar-wrap"><div class="conv-bar" style="width:91%"></div></div><span class="conv-score">91</span></div>
+            <div class="conv-row"><span class="conv-name">IV Rank</span><div class="conv-bar-wrap"><div class="conv-bar" style="width:89%"></div></div><span class="conv-score">89</span></div>
+            <div class="conv-row"><span class="conv-name">Mean Reversion</span><div class="conv-bar-wrap"><div class="conv-bar" style="width:82%"></div></div><span class="conv-score">82</span></div>
+            <div class="conv-row"><span class="conv-name">Structural Support</span><div class="conv-bar-wrap"><div class="conv-bar" style="width:77%"></div></div><span class="conv-score">77</span></div>
+          </div>
+          <div class="hist-strip">
+            <div class="hist-num">77%</div>
+            <div class="hist-text">HDFCBANK IV reverted to mean within 5 sessions in 77% of cases (33 of 43) when IV rank exceeded 85 after a 4%+ single-day fall.</div>
+          </div>
+          <div class="why-text">IV at 1.5× its 30-day average. HDFCBANK is a high-liquidity stock — options are actively traded and IV reversion tends to be faster. 42% IV on a stock that normally sits at 28% represents significant premium inflation.</div>
+          <div class="analyse-btn">Explore IV setup →</div>
+          <div class="disc-text">Historical IV reversion data is informational only. Not investment advice.</div>
+        </div>
+      </div>
+
+      <!-- IV Card 4: AXISBANK -->
+      <div class="card" data-groups="drop4 ivrank80" data-conv="72" data-return="58" data-age="morning" onclick="toggleCard(this)">
+        <div class="card-top">
+          <div class="card-row1">
+            <div>
+              <span class="card-tag tag-iv">IV Spike · Watch</span>
+              <div class="card-symbol">AXISBANK</div>
+              <div class="card-sub">NSE F&O · 29 May expiry · ATM ~₹1,124</div>
+            </div>
+            <div class="conv strong"><div class="conv-dot"></div>72 STRONG</div>
+          </div>
+        </div>
+        <div class="metrics four">
+          <div class="metric"><div class="metric-label">Today's Move</div><div class="metric-val red">−4.1%</div><div class="metric-sub">in line with sector</div></div>
+          <div class="metric"><div class="metric-label">Current IV</div><div class="metric-val orange">38%</div><div class="metric-sub">elevated</div></div>
+          <div class="metric"><div class="metric-label">30d Avg IV</div><div class="metric-val">24%</div><div class="metric-sub">normal range</div></div>
+          <div class="metric"><div class="metric-label">IV Rank</div><div class="metric-val purple">82nd</div><div class="metric-sub">percentile</div></div>
+        </div>
+        <div class="card-expand">
+          <div class="expand-label">Why This Is Interesting</div>
+          <div class="conv-bars">
+            <div class="conv-row"><span class="conv-name">IV Premium</span><div class="conv-bar-wrap"><div class="conv-bar" style="width:76%"></div></div><span class="conv-score">76</span></div>
+            <div class="conv-row"><span class="conv-name">IV Rank</span><div class="conv-bar-wrap"><div class="conv-bar" style="width:82%"></div></div><span class="conv-score">82</span></div>
+            <div class="conv-row"><span class="conv-name">Mean Reversion</span><div class="conv-bar-wrap"><div class="conv-bar" style="width:71%"></div></div><span class="conv-score">71</span></div>
+            <div class="conv-row"><span class="conv-name">Structural Support</span><div class="conv-bar-wrap"><div class="conv-bar" style="width:64%"></div></div><span class="conv-score">64</span></div>
+          </div>
+          <div class="hist-strip" style="background:#FFFBEB;border-color:#FDE68A;"><div class="hist-num" style="color:#F59E0B">64%</div><div class="hist-text" style="color:#92400E;">Moderate historical IV reversion. Fall is sector-driven (banks down broadly) — monitor if the broader weakness continues before entering.</div></div>
+          <div class="why-text">IV at 1.6× normal but conviction is moderate as this is a sector move, not stock-specific. If HDFCBANK stabilises, AXISBANK likely follows. Wait for more setup clarity before IV sell.</div>
+          <div class="analyse-btn">Explore IV setup →</div>
+          <div class="disc-text">Historical IV reversion data is informational only. Not investment advice.</div>
+        </div>
+      </div>
+
+    </div><!-- /grid-iv -->
+  </div>
+
+
+  <!-- ═══════════════════════════════
+       TAB 3 — SIGNAL BUILDER
+  ═══════════════════════════════ -->
+  <div class="section" id="tab-builder">
+
+    <div class="sec-hdr">
+      <div class="sec-hdr-left">
+        <h2>Build Your Own Screener</h2>
+        <p>Combine any signals with Boolean logic. The screener runs across all NSE F&O stocks and index options in real time.</p>
+      </div>
+    </div>
+
+    <div class="builder-wrap" style="position:relative;">
+      <div class="aa" style="top:-10px;right:16px;">✦</div>
+      <div class="builder-title">Signal Conditions</div>
+      <div class="builder-sub">Add up to 5 conditions. Use AND to narrow results, OR to expand them.</div>
+
+      <div class="condition-list" id="condition-list">
+        <!-- Condition 1 -->
+        <div class="condition-row" id="cond-1">
+          <div class="cond-num">1</div>
+          <select class="cond-select">
+            <option value="oibuildup" selected>OI Buildup — Open Interest increasing</option>
+            <option value="shortcovering">Short Covering — OI falling, price rising</option>
+            <option value="longunwinding">Long Unwinding — OI falling, price falling</option>
+            <option value="shortbuildup">Short Buildup — OI increasing, price falling</option>
+            <option value="ivabove">IV above 30-day average</option>
+            <option value="ivbelow">IV below 30-day average</option>
+            <option value="ivrank80">IV Rank above 80th percentile</option>
+            <option value="ivrank90">IV Rank above 90th percentile</option>
+            <option value="stockdown4">Stock down more than 4% today</option>
+            <option value="stockdown7">Stock down more than 7% today</option>
+            <option value="stockup4">Stock up more than 4% today</option>
+            <option value="aboveema20">Price above 20 EMA</option>
+            <option value="belowema20">Price below 20 EMA</option>
+            <option value="surgebig">Option Surge — 3× above 30d average volume</option>
+            <option value="spreadwidening">IV Skew widening — spread opportunity</option>
+            <option value="return5">Max Return / Margin above 5%</option>
+            <option value="return10">Max Return / Margin above 10%</option>
+          </select>
+          <div class="and-or" id="ao-1" onclick="toggleAndOr(this)">AND</div>
+        </div>
+        <!-- Condition 2 -->
+        <div class="condition-row" id="cond-2">
+          <div class="cond-num">2</div>
+          <select class="cond-select">
+            <option value="ivbelow" selected>IV below 30-day average</option>
+            <option value="oibuildup">OI Buildup — Open Interest increasing</option>
+            <option value="shortcovering">Short Covering — OI falling, price rising</option>
+            <option value="longunwinding">Long Unwinding — OI falling, price falling</option>
+            <option value="shortbuildup">Short Buildup — OI increasing, price falling</option>
+            <option value="ivabove">IV above 30-day average</option>
+            <option value="ivrank80">IV Rank above 80th percentile</option>
+            <option value="ivrank90">IV Rank above 90th percentile</option>
+            <option value="stockdown4">Stock down more than 4% today</option>
+            <option value="stockdown7">Stock down more than 7% today</option>
+            <option value="stockup4">Stock up more than 4% today</option>
+            <option value="aboveema20">Price above 20 EMA</option>
+            <option value="belowema20">Price below 20 EMA</option>
+            <option value="surgebig">Option Surge — 3× above 30d average volume</option>
+            <option value="spreadwidening">IV Skew widening — spread opportunity</option>
+            <option value="return5">Max Return / Margin above 5%</option>
+            <option value="return10">Max Return / Margin above 10%</option>
+          </select>
+          <div class="and-or" id="ao-2" onclick="toggleAndOr(this)">AND</div>
+        </div>
+        <!-- Condition 3 -->
+        <div class="condition-row" id="cond-3">
+          <div class="cond-num">3</div>
+          <select class="cond-select">
+            <option value="aboveema20" selected>Price above 20 EMA</option>
+            <option value="oibuildup">OI Buildup — Open Interest increasing</option>
+            <option value="shortcovering">Short Covering — OI falling, price rising</option>
+            <option value="longunwinding">Long Unwinding — OI falling, price falling</option>
+            <option value="shortbuildup">Short Buildup — OI increasing, price falling</option>
+            <option value="ivabove">IV above 30-day average</option>
+            <option value="ivbelow">IV below 30-day average</option>
+            <option value="ivrank80">IV Rank above 80th percentile</option>
+            <option value="ivrank90">IV Rank above 90th percentile</option>
+            <option value="stockdown4">Stock down more than 4% today</option>
+            <option value="stockdown7">Stock down more than 7% today</option>
+            <option value="stockup4">Stock up more than 4% today</option>
+            <option value="belowema20">Price below 20 EMA</option>
+            <option value="surgebig">Option Surge — 3× above 30d average volume</option>
+            <option value="spreadwidening">IV Skew widening — spread opportunity</option>
+            <option value="return5">Max Return / Margin above 5%</option>
+            <option value="return10">Max Return / Margin above 10%</option>
+          </select>
+          <div class="cond-remove" onclick="removeCondition('cond-3','ao-2')">×</div>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:0;">
+        <div class="add-cond-btn" onclick="addCondition()">+ Add condition</div>
+        <button class="run-btn" onclick="runScreener()">⚡ Run Screener</button>
+        <span style="font-size:11px;color:#94A3B8;margin-left:14px;" id="run-hint">Combine conditions and run to find matching setups</span>
+      </div>
+    </div>
+
+    <!-- Builder results -->
+    <div class="builder-results" id="builder-results">
+      <div class="results-hdr">
+        <div class="results-count" id="results-count">0</div>
+        <div class="results-label">setups match your conditions right now</div>
+      </div>
+      <div class="card-grid" id="grid-builder">
+
+        <div class="card" onclick="toggleCard(this)">
+          <div class="card-top">
+            <div class="card-row1">
+              <div>
+                <span class="card-tag tag-ce">CE · OI Buildup</span>
+                <div class="card-symbol">NIFTY 24500 CE</div>
+                <div class="card-sub">Matches all 3 conditions · 29 May · 18m ago</div>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
+                <div class="conv high"><div class="conv-dot"></div>88 HIGH</div>
+                <span class="match-badge match-full">3 of 3 match</span>
+              </div>
+            </div>
+          </div>
+          <div class="metrics four">
+            <div class="metric"><div class="metric-label">OI Change</div><div class="metric-val green">+8.2L</div><div class="metric-sub">30 min</div></div>
+            <div class="metric"><div class="metric-label">Current IV</div><div class="metric-val">22%</div><div class="metric-sub">below 30d avg</div></div>
+            <div class="metric"><div class="metric-label">vs 20 EMA</div><div class="metric-val green">+0.6%</div><div class="metric-sub">above</div></div>
+            <div class="metric"><div class="metric-label">Conviction</div><div class="metric-val blue">88</div><div class="metric-sub">HIGH</div></div>
+          </div>
+          <div class="card-expand">
+            <div class="expand-label">Condition Match Detail</div>
+            <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px;">
+              <div style="display:flex;align-items:center;gap:8px;"><span style="font-size:11px;color:#16A34A;font-weight:700;">✓</span><span style="font-size:12px;color:#374151;">OI Buildup — +8.2 Lakh contracts added in 30 min</span></div>
+              <div style="display:flex;align-items:center;gap:8px;"><span style="font-size:11px;color:#16A34A;font-weight:700;">✓</span><span style="font-size:12px;color:#374151;">IV below 30d average — 22% vs 28% average. Premium cheaper than usual.</span></div>
+              <div style="display:flex;align-items:center;gap:8px;"><span style="font-size:11px;color:#16A34A;font-weight:700;">✓</span><span style="font-size:12px;color:#374151;">Price above 20 EMA — NIFTY holding above short-term average</span></div>
+            </div>
+            <div class="hist-strip"><div class="hist-num">81%</div><div class="hist-text">When all 3 conditions were met simultaneously on NIFTY CE strikes, the OI buildup continued in the same direction 81% of the time within the same session.</div></div>
+            <div class="why-text">Fresh OI at ATM CE with IV below average — rare combination. Buyers are entering despite cheap premium, suggesting high directional conviction. Price holding above 20 EMA confirms trend support.</div>
+            <div class="analyse-btn">Explore this setup →</div>
+            <div class="disc-text">Historical pattern data is informational only. Not investment advice.</div>
+          </div>
+        </div>
+
+        <div class="card" onclick="toggleCard(this)">
+          <div class="card-top">
+            <div class="card-row1">
+              <div>
+                <span class="card-tag tag-ce">CE · OI Buildup</span>
+                <div class="card-symbol">RELIANCE 1400 CE</div>
+                <div class="card-sub">Matches all 3 conditions · 29 May · 24m ago</div>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
+                <div class="conv strong"><div class="conv-dot"></div>81 STRONG</div>
+                <span class="match-badge match-full">3 of 3 match</span>
+              </div>
+            </div>
+          </div>
+          <div class="metrics four">
+            <div class="metric"><div class="metric-label">OI Change</div><div class="metric-val green">+4.6L</div><div class="metric-sub">30 min</div></div>
+            <div class="metric"><div class="metric-label">Current IV</div><div class="metric-val">17%</div><div class="metric-sub">below 30d avg</div></div>
+            <div class="metric"><div class="metric-label">vs 20 EMA</div><div class="metric-val green">+1.1%</div><div class="metric-sub">above</div></div>
+            <div class="metric"><div class="metric-label">Conviction</div><div class="metric-val blue">81</div><div class="metric-sub">STRONG</div></div>
+          </div>
+          <div class="card-expand">
+            <div class="expand-label">Condition Match Detail</div>
+            <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px;">
+              <div style="display:flex;align-items:center;gap:8px;"><span style="font-size:11px;color:#16A34A;font-weight:700;">✓</span><span style="font-size:12px;color:#374151;">OI Buildup — +4.6 Lakh contracts in 30 min, concentrated in 1400 strike</span></div>
+              <div style="display:flex;align-items:center;gap:8px;"><span style="font-size:11px;color:#16A34A;font-weight:700;">✓</span><span style="font-size:12px;color:#374151;">IV below 30d average — 17% vs 21% average. Premium structurally cheap.</span></div>
+              <div style="display:flex;align-items:center;gap:8px;"><span style="font-size:11px;color:#16A34A;font-weight:700;">✓</span><span style="font-size:12px;color:#374151;">Price above 20 EMA — RELIANCE trending above short-term average</span></div>
+            </div>
+            <div class="hist-strip"><div class="hist-num">77%</div><div class="hist-text">3-condition match on RELIANCE CE showed continuation in 77% of cases in the same session (last 6 months data).</div></div>
+            <div class="why-text">RELIANCE 1400 CE sees concentrated OI addition at a strike with cheap IV. Stock in uptrend (above 20 EMA). The combination of smart money entry (OI) + cheap premium + trend confirmation is the strongest setup type.</div>
+            <div class="analyse-btn">Explore this setup →</div>
+            <div class="disc-text">Historical pattern data is informational only. Not investment advice.</div>
+          </div>
+        </div>
+
+        <div class="card" onclick="toggleCard(this)">
+          <div class="card-top">
+            <div class="card-row1">
+              <div>
+                <span class="card-tag tag-ce" style="background:#CFFAFE;color:#155E75;">CE · Partial Match</span>
+                <div class="card-symbol">TCS 3900 CE</div>
+                <div class="card-sub">Matches 2 of 3 conditions · 29 May · 11m ago</div>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
+                <div class="conv watch"><div class="conv-dot"></div>67 WATCH</div>
+                <span class="match-badge match-part">2 of 3 match</span>
+              </div>
+            </div>
+          </div>
+          <div class="metrics four">
+            <div class="metric"><div class="metric-label">OI Change</div><div class="metric-val green">+3.1L</div><div class="metric-sub">30 min</div></div>
+            <div class="metric"><div class="metric-label">Current IV</div><div class="metric-val orange">29%</div><div class="metric-sub">above 30d avg</div></div>
+            <div class="metric"><div class="metric-label">vs 20 EMA</div><div class="metric-val green">+0.3%</div><div class="metric-sub">just above</div></div>
+            <div class="metric"><div class="metric-label">Conviction</div><div class="metric-val orange">67</div><div class="metric-sub">WATCH</div></div>
+          </div>
+          <div class="card-expand">
+            <div class="expand-label">Condition Match Detail</div>
+            <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px;">
+              <div style="display:flex;align-items:center;gap:8px;"><span style="font-size:11px;color:#16A34A;font-weight:700;">✓</span><span style="font-size:12px;color:#374151;">OI Buildup — +3.1 Lakh contracts in 30 min</span></div>
+              <div style="display:flex;align-items:center;gap:8px;"><span style="font-size:11px;color:#DC2626;font-weight:700;">✗</span><span style="font-size:12px;color:#6B7280;">IV NOT below 30d average — currently 29% vs avg 26%. Premium slightly elevated.</span></div>
+              <div style="display:flex;align-items:center;gap:8px;"><span style="font-size:11px;color:#16A34A;font-weight:700;">✓</span><span style="font-size:12px;color:#374151;">Price above 20 EMA — marginally (+0.3%). Watch if it holds.</span></div>
+            </div>
+            <div class="hist-strip" style="background:#FFFBEB;border-color:#FDE68A;"><div class="hist-num" style="color:#F59E0B;">61%</div><div class="hist-text" style="color:#92400E;">Partial condition match (2/3). 61% continuation rate — lower conviction than full match. Monitor before acting.</div></div>
+            <div class="why-text">OI buildup is present and price holds the EMA, but IV is slightly above average — premium is a touch expensive compared to your filter. Consider waiting for IV to normalize or adjusting your IV condition.</div>
+            <div class="analyse-btn">Explore this setup →</div>
+            <div class="disc-text">Historical pattern data is informational only. Not investment advice.</div>
+          </div>
+        </div>
+
+      </div>
+    </div><!-- /builder-results -->
+
+  </div>
+
+
+  <!-- Disclaimer -->
+  <div class="disclaimer">
+    <p><b>Important:</b> All screener results, conviction scores, win rates, and historical data shown on this platform are for informational and educational purposes only. They do not constitute investment advice, trading recommendations, or an offer to buy or sell securities. Past patterns are not indicative of future results. Option trading involves significant risk and is not suitable for all investors. Please consult a SEBI-registered investment adviser before making any trading decisions.</p>
+  </div>
+
+</div><!-- /wrap -->
+
+<script>
+// ── CLOCK ──
+function updateClock() {
+  var now = new Date();
+  var h = now.getHours(), m = now.getMinutes(), ampm = h >= 12 ? 'PM' : 'AM';
+  h = h % 12 || 12;
+  document.getElementById('clock').textContent = h + ':' + (m < 10 ? '0' + m : m) + ' ' + ampm;
+}
+updateClock(); setInterval(updateClock, 30000);
+
+// ── TAB SWITCHING ──
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  document.querySelectorAll('.section').forEach(function(s){ s.classList.remove('active'); });
+  document.getElementById('tab-' + name).classList.add('active');
+}
+
+// ── CARD TOGGLE ──
+function toggleCard(card) {
+  var wasExpanded = card.classList.contains('expanded');
+  document.querySelectorAll('.card.expanded').forEach(function(c){ c.classList.remove('expanded'); });
+  if (!wasExpanded) card.classList.add('expanded');
+}
+
+// ── CHIP FILTER ──
+document.querySelectorAll('.chips').forEach(function(chipGroup) {
+  chipGroup.querySelectorAll('.chip').forEach(function(chip) {
+    chip.addEventListener('click', function() {
+      chip.classList.toggle('active');
+    });
+  });
+});
+
+// ── SORT PILLS ──
+function sortCards(section, key) {
+  var gridId = 'grid-' + section;
+  var grid = document.getElementById(gridId);
+  if (!grid) return;
+  var cards = Array.from(grid.querySelectorAll('.card'));
+  cards.sort(function(a, b) {
+    if (key === 'conv') return parseInt(b.dataset.conv || 0) - parseInt(a.dataset.conv || 0);
+    if (key === 'return') return parseFloat(b.dataset.return || 0) - parseFloat(a.dataset.return || 0);
+    if (key === 'fresh') return parseInt(a.dataset.age || 99) - parseInt(b.dataset.age || 99);
+    return 0;
+  });
+  cards.forEach(function(c){ grid.appendChild(c); });
+  // update pill UI
+  var sortRow = grid.closest('.section').querySelector('.sort-row');
+  if (sortRow) {
+    sortRow.querySelectorAll('.sort-pill').forEach(function(p){ p.classList.remove('active'); });
+    event.target.classList.add('active');
+  }
+}
+
+// ── AND/OR TOGGLE ──
+function toggleAndOr(el) {
+  if (el.textContent === 'AND') { el.textContent = 'OR'; el.classList.add('or-mode'); }
+  else { el.textContent = 'AND'; el.classList.remove('or-mode'); }
+}
+
+// ── ADD CONDITION ──
+var condCount = 3;
+var condOptions = '<option value="oibuildup">OI Buildup — Open Interest increasing</option><option value="shortcovering">Short Covering — OI falling, price rising</option><option value="longunwinding">Long Unwinding — OI falling, price falling</option><option value="shortbuildup">Short Buildup — OI increasing, price falling</option><option value="ivabove">IV above 30-day average</option><option value="ivbelow">IV below 30-day average</option><option value="ivrank80">IV Rank above 80th percentile</option><option value="ivrank90">IV Rank above 90th percentile</option><option value="stockdown4">Stock down more than 4% today</option><option value="stockdown7">Stock down more than 7% today</option><option value="stockup4">Stock up more than 4% today</option><option value="aboveema20">Price above 20 EMA</option><option value="belowema20">Price below 20 EMA</option><option value="surgebig">Option Surge — 3× above 30d average volume</option><option value="spreadwidening">IV Skew widening — spread opportunity</option><option value="return5">Max Return / Margin above 5%</option><option value="return10">Max Return / Margin above 10%</option>';
+
+function addCondition() {
+  if (condCount >= 5) return;
+  condCount++;
+  var list = document.getElementById('condition-list');
+  // Convert last condition's remove to and-or
+  var prevRow = document.getElementById('cond-' + (condCount - 1));
+  if (prevRow) {
+    var removeBtn = prevRow.querySelector('.cond-remove');
+    if (removeBtn) {
+      var aoId = 'ao-' + (condCount - 1);
+      removeBtn.outerHTML = '<div class="and-or" id="' + aoId + '" onclick="toggleAndOr(this)">AND</div>';
+    }
+  }
+  var row = document.createElement('div');
+  row.className = 'condition-row';
+  row.id = 'cond-' + condCount;
+  row.innerHTML = '<div class="cond-num">' + condCount + '</div><select class="cond-select">' + condOptions + '</select><div class="cond-remove" onclick="removeCondition(\'cond-' + condCount + '\',\'ao-' + (condCount-1) + '\')">×</div>';
+  list.appendChild(row);
+}
+
+function removeCondition(rowId, aoId) {
+  var row = document.getElementById(rowId);
+  if (row) row.remove();
+  var ao = document.getElementById(aoId);
+  if (ao) {
+    var num = parseInt(rowId.split('-')[1]);
+    ao.outerHTML = '<div class="cond-remove" onclick="removeCondition(\'' + rowId.replace(num, num) + '\',\'ao-' + (num-2) + '\')">×</div>';
+    // Re-insert as remove on the now-last condition
+    var list = document.getElementById('condition-list');
+    var rows = list.querySelectorAll('.condition-row');
+    var lastRow = rows[rows.length - 1];
+    var lastAo = lastRow.querySelector('.and-or');
+    if (lastAo) {
+      var lastId = lastRow.id;
+      lastAo.outerHTML = '<div class="cond-remove" onclick="removeCondition(\'' + lastId + '\',\'ao-' + (parseInt(lastId.split('-')[1]) - 1) + '\')">×</div>';
+    }
+    condCount--;
+  }
+}
+
+// ── RUN SCREENER ──
+function runScreener() {
+  var hint = document.getElementById('run-hint');
+  hint.textContent = 'Scanning 207 F&O instruments...';
+  hint.style.color = '#2777F3';
+  setTimeout(function() {
+    var results = document.getElementById('builder-results');
+    var count = document.getElementById('results-count');
+    results.classList.add('visible');
+    // Animate count
+    var target = 7; var current = 0;
+    var interval = setInterval(function() {
+      current++;
+      count.textContent = current;
+      if (current >= target) clearInterval(interval);
+    }, 80);
+    hint.textContent = '7 setups match your conditions';
+    hint.style.color = '#16A34A';
+    results.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }, 900);
+}
+</script>
+
+</body>
+</html>

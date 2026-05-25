@@ -1,0 +1,1139 @@
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta charset="UTF-8">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800;900&display=swap');
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-font-smoothing: antialiased;
+}
+
+:root {
+  --navy:   #1B1464;
+  --blue:   #2777F3;
+  --green:  #45B644;
+  --red:    #DE493B;
+  --amber:  #F59E0B;
+  --purple: #8B5CF6;
+  --cyan:   #06B6D4;
+  --orange: #EA580C;
+  --bg:     #F0F3FA;
+  --white:  #FFFFFF;
+  --border: #E4E9F2;
+  --muted:  #7C8497;
+  --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --snappy: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+body {
+  font-family: 'Onest', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+/* ─── WIDGET SHELL ─────────────────────────────────────────────── */
+.widget {
+  width: 100%;
+  max-width: 430px;
+  height: 94vh;
+  max-height: 680px;
+  background: var(--white);
+  border-radius: 24px 24px 0 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 -8px 40px rgba(27, 20, 100, 0.14);
+  animation: sheetUp 0.52s var(--spring) both;
+  position: relative;
+}
+
+@keyframes sheetUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+/* ─── DRAG HANDLE ───────────────────────────────────────────────── */
+.handle-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 10px 0 6px;
+  flex-shrink: 0;
+}
+.handle {
+  width: 38px;
+  height: 4px;
+  background: var(--border);
+  border-radius: 99px;
+}
+
+/* ─── HEADER ────────────────────────────────────────────────────── */
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 4px 18px 10px;
+  flex-shrink: 0;
+}
+.header-left {}
+.header-title {
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--navy);
+  letter-spacing: -0.5px;
+  line-height: 1;
+}
+.header-sub {
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 500;
+  margin-top: 3px;
+  letter-spacing: 0.1px;
+}
+.live-badge {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: #ECFDF5;
+  border: 1px solid #BBF7D0;
+  border-radius: 99px;
+  padding: 4px 10px 4px 7px;
+  margin-top: 2px;
+}
+.live-dot-wrap {
+  position: relative;
+  width: 7px;
+  height: 7px;
+}
+.live-dot {
+  width: 7px;
+  height: 7px;
+  background: var(--green);
+  border-radius: 50%;
+  position: absolute;
+  top: 0; left: 0;
+}
+.live-ring {
+  width: 7px;
+  height: 7px;
+  background: var(--green);
+  border-radius: 50%;
+  position: absolute;
+  top: 0; left: 0;
+  animation: ringPulse 1.8s ease-out infinite;
+}
+@keyframes ringPulse {
+  0%   { transform: scale(1);   opacity: 0.8; }
+  100% { transform: scale(2.8); opacity: 0;   }
+}
+.live-text {
+  font-size: 10px;
+  font-weight: 700;
+  color: #16A34A;
+  letter-spacing: 0.2px;
+}
+
+/* ─── DIRECTION PILLS ───────────────────────────────────────────── */
+.dir-row {
+  display: flex;
+  gap: 6px;
+  padding: 0 18px 10px;
+  flex-shrink: 0;
+}
+.dir-pill {
+  padding: 5px 13px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 700;
+  border: 1.5px solid var(--border);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.22s var(--smooth);
+  white-space: nowrap;
+  user-select: none;
+  font-family: 'Onest', sans-serif;
+  letter-spacing: 0.1px;
+}
+.dir-pill.active-all {
+  background: var(--navy);
+  border-color: var(--navy);
+  color: #fff;
+}
+.dir-pill.active-bull {
+  background: var(--green);
+  border-color: var(--green);
+  color: #fff;
+}
+.dir-pill.active-bear {
+  background: var(--red);
+  border-color: var(--red);
+  color: #fff;
+}
+.dir-pill.active-neut {
+  background: var(--blue);
+  border-color: var(--blue);
+  color: #fff;
+}
+
+/* ─── TAB BAR ───────────────────────────────────────────────────── */
+.tab-section {
+  flex-shrink: 0;
+  position: relative;
+  border-bottom: 1.5px solid var(--border);
+}
+.tabs {
+  display: flex;
+  overflow-x: auto;
+  padding: 0 18px;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  gap: 2px;
+}
+.tabs::-webkit-scrollbar { display: none; }
+
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 9px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  user-select: none;
+  font-family: 'Onest', sans-serif;
+  transition: color 0.2s var(--smooth);
+  position: relative;
+}
+.tab.active { color: var(--navy); }
+
+.tab-count {
+  font-size: 9px;
+  font-weight: 800;
+  padding: 1px 5px;
+  border-radius: 99px;
+  background: #EEF2FF;
+  color: var(--blue);
+  letter-spacing: 0.2px;
+}
+
+/* Animated sliding indicator */
+.tab-bar-indicator {
+  position: absolute;
+  bottom: -1.5px;
+  height: 2.5px;
+  background: var(--blue);
+  border-radius: 99px 99px 0 0;
+  transition: left 0.28s var(--spring), width 0.28s var(--spring);
+  pointer-events: none;
+}
+
+/* Right fade on tab bar */
+.tab-section::after {
+  content: '';
+  position: absolute;
+  right: 0; top: 0; bottom: 0;
+  width: 40px;
+  background: linear-gradient(to left, var(--white) 20%, transparent);
+  pointer-events: none;
+}
+
+/* ─── SIGNAL FEED ───────────────────────────────────────────────── */
+.feed {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 14px 14px 8px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  position: relative;
+}
+.feed::-webkit-scrollbar { display: none; }
+
+/* Bottom fade on feed */
+.feed-wrap {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.feed-fade {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 48px;
+  background: linear-gradient(to top, rgba(240,243,250,0.9), transparent);
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* ─── SIGNAL CARD ───────────────────────────────────────────────── */
+.card {
+  background: var(--white);
+  border-radius: 16px;
+  border: 1.5px solid var(--border);
+  padding: 0;
+  margin-bottom: 10px;
+  cursor: pointer;
+  overflow: hidden;
+  position: relative;
+  transition:
+    transform    0.18s var(--spring),
+    box-shadow   0.22s var(--smooth),
+    border-color 0.22s var(--smooth);
+}
+.card.animating-in {
+  animation: cardSlideIn 0.38s var(--spring) both;
+}
+@keyframes cardSlideIn {
+  from { opacity: 0; transform: translateY(18px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0)    scale(1);    }
+}
+.card:active {
+  transform: scale(0.97);
+}
+
+/* Card top stripe */
+.card-stripe {
+  height: 3px;
+  width: 100%;
+  border-radius: 0;
+  opacity: 0.7;
+}
+
+/* Card inner padding */
+.card-body {
+  padding: 12px 14px 14px;
+}
+
+/* Row 1: badge + freshness */
+.card-r1 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.sig-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+  padding: 3px 9px 3px 7px;
+  border-radius: 99px;
+}
+.sig-badge-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
+.freshness {
+  font-size: 10px;
+  color: var(--muted);
+  font-weight: 600;
+}
+.hot-tag {
+  font-size: 9px;
+  font-weight: 800;
+  color: var(--amber);
+  margin-left: 4px;
+  letter-spacing: 0.2px;
+}
+
+/* Row 2: Instrument */
+.instrument-name {
+  font-size: 17px;
+  font-weight: 900;
+  color: var(--navy);
+  letter-spacing: -0.4px;
+  line-height: 1.15;
+  margin-bottom: 2px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.instrument-sub {
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 500;
+  margin-bottom: 11px;
+}
+
+/* Row 3: Metrics */
+.metrics-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  background: var(--bg);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 11px;
+  border: 1px solid var(--border);
+}
+.metric-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 9px 6px;
+  gap: 2px;
+  position: relative;
+}
+.metric-cell + .metric-cell::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 20%; bottom: 20%;
+  width: 1px;
+  background: var(--border);
+}
+.metric-label {
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+  line-height: 1;
+}
+.metric-value {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--navy);
+  letter-spacing: -0.3px;
+  line-height: 1;
+}
+.metric-value.pos { color: var(--green); }
+.metric-value.neg { color: var(--red); }
+
+/* Row 4: Conviction + Direction */
+.card-r4 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 11px;
+}
+.conviction-group {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.c-dots {
+  display: flex;
+  gap: 3px;
+}
+.cdot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--border);
+  transition: background 0.2s var(--smooth), transform 0.2s var(--spring);
+}
+.cdot.on { background: var(--blue); }
+.cdot.hot { background: var(--green); }
+.c-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--muted);
+}
+.dir-tag {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 4px 11px;
+  border-radius: 99px;
+  letter-spacing: 0.1px;
+}
+
+/* CTA Button */
+.cta-btn {
+  width: 100%;
+  padding: 11px 16px;
+  border-radius: 11px;
+  font-family: 'Onest', sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  position: relative;
+  overflow: hidden;
+  letter-spacing: 0.1px;
+  transition:
+    transform      0.16s var(--spring),
+    background     0.2s  var(--smooth),
+    border-color   0.2s  var(--smooth);
+  /* color and border set inline per card */
+}
+.cta-btn:active {
+  transform: scale(0.96);
+  filter: brightness(0.95);
+}
+.cta-arrow {
+  display: inline-block;
+  transition: transform 0.2s var(--spring);
+  font-size: 15px;
+}
+.cta-btn:hover .cta-arrow,
+.cta-btn:active .cta-arrow {
+  transform: translateX(4px);
+}
+
+/* Ripple */
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.35);
+  transform: scale(0);
+  animation: rippleOut 0.55s linear forwards;
+  pointer-events: none;
+}
+@keyframes rippleOut {
+  to { transform: scale(5); opacity: 0; }
+}
+
+/* ─── EMPTY STATE ────────────────────────────────────────────────── */
+.empty-state {
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--muted);
+  animation: cardSlideIn 0.3s var(--smooth) both;
+}
+.empty-icon {
+  font-size: 32px;
+  margin-bottom: 10px;
+}
+.empty-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 4px;
+}
+.empty-sub {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* ─── REFRESH BAR ────────────────────────────────────────────────── */
+.refresh-bar {
+  height: 38px;
+  background: var(--white);
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 18px;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+}
+.refresh-progress {
+  position: absolute;
+  bottom: 0; left: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--blue), var(--purple));
+  opacity: 0.35;
+  animation: progFill 180s linear infinite;
+  border-radius: 0 99px 99px 0;
+}
+@keyframes progFill {
+  from { width: 0%; }
+  to   { width: 100%; }
+}
+.refresh-text {
+  font-size: 10px;
+  color: var(--muted);
+  font-weight: 500;
+}
+.refresh-btn {
+  font-size: 10px;
+  color: var(--blue);
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'Onest', sans-serif;
+  background: none;
+  border: none;
+  padding: 4px 0;
+  letter-spacing: 0.1px;
+}
+
+/* ─── TOAST ──────────────────────────────────────────────────────── */
+.toast {
+  position: fixed;
+  bottom: 52px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--navy);
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 11px;
+  font-size: 12px;
+  font-weight: 700;
+  font-family: 'Onest', sans-serif;
+  z-index: 9999;
+  opacity: 0;
+  pointer-events: none;
+  white-space: nowrap;
+  box-shadow: 0 8px 28px rgba(27, 20, 100, 0.28);
+  transition:
+    opacity   0.25s var(--smooth),
+    transform 0.28s var(--spring);
+  letter-spacing: 0.1px;
+}
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+</style>
+</head>
+<body>
+
+<div class="widget" id="widget">
+
+  <!-- Handle -->
+  <div class="handle-wrap">
+    <div class="handle"></div>
+  </div>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-left">
+      <div class="header-title">Discover</div>
+      <div class="header-sub">F&amp;O signals · ranked by conviction</div>
+    </div>
+    <div class="live-badge">
+      <div class="live-dot-wrap">
+        <div class="live-ring"></div>
+        <div class="live-dot"></div>
+      </div>
+      <span class="live-text">LIVE</span>
+    </div>
+  </div>
+
+  <!-- Direction Filter -->
+  <div class="dir-row" id="dirRow">
+    <button class="dir-pill active-all" data-dir="all">All</button>
+    <button class="dir-pill" data-dir="bullish">↑ Bullish</button>
+    <button class="dir-pill" data-dir="bearish">↓ Bearish</button>
+    <button class="dir-pill" data-dir="neutral">↔ Neutral</button>
+  </div>
+
+  <!-- Tab Bar -->
+  <div class="tab-section">
+    <div class="tabs" id="tabs"></div>
+    <div class="tab-bar-indicator" id="tabIndicator"></div>
+  </div>
+
+  <!-- Feed -->
+  <div class="feed-wrap">
+    <div class="feed" id="feed"></div>
+    <div class="feed-fade"></div>
+  </div>
+
+  <!-- Refresh Bar -->
+  <div class="refresh-bar">
+    <div class="refresh-progress" id="refreshProgress"></div>
+    <span class="refresh-text">Auto-refreshing every 3 min</span>
+    <button class="refresh-btn" id="refreshBtn">↺ Refresh</button>
+  </div>
+
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+(function () {
+
+  /* ─── DATA ─────────────────────────────────────────────────────── */
+  var signals = [
+    {
+      id: 1,
+      type: 'Long Buildup',
+      category: 'OI Signals',
+      instrument: 'NIFTY 24500 CE',
+      subtitle: '29 May Expiry · Weekly',
+      direction: 'bullish',
+      conviction: 4,
+      freshness: 'Just now',
+      hot: false,
+      insight: 'Fresh longs being added. Bulls defending 24500.',
+      metrics: [
+        { label: 'OI CHG%',    value: '+38.4%', pos: true  },
+        { label: 'VOL / OI',   value: '0.61×',  pos: null  },
+        { label: 'PRICE CHG%', value: '+1.8%',  pos: true  }
+      ],
+      ctaText: 'Analyse OI',
+      actionKey: 'nifty_24500ce_lb'
+    },
+    {
+      id: 2,
+      type: 'High OI Strike',
+      category: 'Strike Radar',
+      instrument: 'NIFTY 24000 PE',
+      subtitle: '29 May · Max Pain Zone · Gamma Wall',
+      direction: 'neutral',
+      conviction: 5,
+      freshness: '3m ago',
+      hot: true,
+      insight: 'Highest OI concentration. Key support for bulls.',
+      metrics: [
+        { label: 'OI (LACS)',   value: '84.2',  pos: null  },
+        { label: 'OI CHG%',    value: '+22.1%', pos: true  },
+        { label: 'PCR STRIKE', value: '1.82',   pos: null  }
+      ],
+      ctaText: 'View Strike',
+      actionKey: 'nifty_24000pe_strike'
+    },
+    {
+      id: 3,
+      type: 'Short Buildup',
+      category: 'OI Signals',
+      instrument: 'BANKNIFTY 52000 CE',
+      subtitle: '22 May Expiry · Near ATM',
+      direction: 'bearish',
+      conviction: 3,
+      freshness: '6m ago',
+      hot: false,
+      insight: 'Shorts added at 52000. Resistance becoming stronger.',
+      metrics: [
+        { label: 'OI CHG%',    value: '+29.7%', pos: false },
+        { label: 'VOL / OI',   value: '0.38×',  pos: null  },
+        { label: 'PRICE CHG%', value: '-0.9%',  pos: false }
+      ],
+      ctaText: 'Analyse OI',
+      actionKey: 'bnf_52000ce_sb'
+    },
+    {
+      id: 4,
+      type: 'Spread Oppty',
+      category: 'Spreads',
+      instrument: 'NIFTY Bull Call Spread',
+      subtitle: '24300 CE Buy · 24600 CE Sell · 29 May',
+      direction: 'bullish',
+      conviction: 4,
+      freshness: '8m ago',
+      hot: false,
+      insight: 'Low cost defined-risk trade. 1:2.5 reward ratio.',
+      metrics: [
+        { label: 'MAX PROFIT', value: '₹4,500', pos: true  },
+        { label: 'MAX LOSS',   value: '₹1,800', pos: false },
+        { label: 'RISK:REWARD',value: '1 : 2.5',pos: true  }
+      ],
+      ctaText: 'Open Spread',
+      actionKey: 'nifty_bull_call_spread'
+    },
+    {
+      id: 5,
+      type: 'Volume Surge',
+      category: 'Momentum',
+      instrument: 'RELIANCE',
+      subtitle: 'Cash + F&O · NSE · 4.2× avg volume',
+      direction: 'bullish',
+      conviction: 3,
+      freshness: '11m ago',
+      hot: false,
+      insight: 'Unusual volume with price uptick. Institutional activity.',
+      metrics: [
+        { label: 'PRICE CHG%', value: '+2.3%', pos: true  },
+        { label: 'OI CHG%',    value: '+18.2%',pos: true  },
+        { label: 'VOL / OI',   value: '0.73×', pos: null  }
+      ],
+      ctaText: 'View Strategy',
+      actionKey: 'reliance_momentum'
+    },
+    {
+      id: 6,
+      type: 'Short Covering',
+      category: 'OI Signals',
+      instrument: 'HDFCBANK 1780 PE',
+      subtitle: '29 May Expiry',
+      direction: 'bullish',
+      conviction: 3,
+      freshness: '14m ago',
+      hot: false,
+      insight: 'Bears unwinding at 1780. Downside pressure reducing.',
+      metrics: [
+        { label: 'OI CHG%',    value: '-21.4%', pos: true  },
+        { label: 'VOL / OI',   value: '0.44×',  pos: null  },
+        { label: 'PRICE CHG%', value: '+1.1%',  pos: true  }
+      ],
+      ctaText: 'Analyse OI',
+      actionKey: 'hdfcbank_1780pe_sc'
+    },
+    {
+      id: 7,
+      type: 'Sector Signal',
+      category: 'Sectors',
+      instrument: 'IT Sector',
+      subtitle: '8 of 11 F&O stocks showing Long Buildup',
+      direction: 'bullish',
+      conviction: 4,
+      freshness: '18m ago',
+      hot: false,
+      insight: 'Broad-based longs in IT. INFY and TCS leading.',
+      metrics: [
+        { label: 'SECTOR OI',  value: '+24.3%', pos: true  },
+        { label: 'TOP MOVER',  value: 'INFY',   pos: null  },
+        { label: 'INFY CHG%',  value: '+2.8%',  pos: true  }
+      ],
+      ctaText: 'Sector View',
+      actionKey: 'it_sector_signal'
+    },
+    {
+      id: 8,
+      type: 'News Catalyst',
+      category: 'News',
+      instrument: 'TATASTEEL',
+      subtitle: 'Q4 Results · Beat Estimates · Strong guidance',
+      direction: 'bullish',
+      conviction: 3,
+      freshness: '22m ago',
+      hot: false,
+      insight: 'Results catalyst. Options activity spiked post open.',
+      metrics: [
+        { label: 'PRICE CHG%', value: '+3.6%',  pos: true  },
+        { label: 'VOL / OI',   value: '0.91×',  pos: null  },
+        { label: 'OI CHG%',    value: '+31.5%', pos: true  }
+      ],
+      ctaText: 'View Stock',
+      actionKey: 'tatasteel_news'
+    },
+    {
+      id: 9,
+      type: 'High OI Strike',
+      category: 'Screeners',
+      instrument: 'High IV Screener',
+      subtitle: '12 stocks with IV Rank above 80',
+      direction: 'neutral',
+      conviction: 2,
+      freshness: '30m ago',
+      hot: false,
+      insight: 'Elevated premium. Good for option writing strategies.',
+      metrics: [
+        { label: 'IV RANK',    value: '> 80',   pos: null  },
+        { label: 'PCR',        value: '< 0.7',  pos: null  },
+        { label: 'OI CHG%',    value: '> 15%',  pos: null  }
+      ],
+      ctaText: 'Run Screener',
+      actionKey: 'high_iv_screener'
+    }
+  ];
+
+  /* ─── SIGNAL CONFIG ─────────────────────────────────────────────── */
+  // ctaBg = soft tint background, ctaColor = text+border color
+  var sigCfg = {
+    'Long Buildup':   { badgeBg:'#DCFCE7', badgeColor:'#16A34A', stripe:'#45B644', ctaBg:'rgba(69,182,68,0.10)',   ctaColor:'#16A34A', ctaBorder:'rgba(69,182,68,0.28)'   },
+    'Short Buildup':  { badgeBg:'#FEE2E2', badgeColor:'#DC2626', stripe:'#DE493B', ctaBg:'rgba(222,73,59,0.10)',   ctaColor:'#C73832', ctaBorder:'rgba(222,73,59,0.28)'   },
+    'Short Covering': { badgeBg:'#D1FAE5', badgeColor:'#059669', stripe:'#22C55E', ctaBg:'rgba(34,197,94,0.10)',   ctaColor:'#059669', ctaBorder:'rgba(34,197,94,0.28)'   },
+    'Long Unwinding': { badgeBg:'#FFE4E6', badgeColor:'#BE123C', stripe:'#F43F5E', ctaBg:'rgba(244,63,94,0.10)',   ctaColor:'#BE123C', ctaBorder:'rgba(244,63,94,0.28)'   },
+    'High OI Strike': { badgeBg:'#DBEAFE', badgeColor:'#2777F3', stripe:'#2777F3', ctaBg:'rgba(39,119,243,0.10)',  ctaColor:'#2777F3', ctaBorder:'rgba(39,119,243,0.28)'  },
+    'Volume Surge':   { badgeBg:'#FEF3C7', badgeColor:'#D97706', stripe:'#F59E0B', ctaBg:'rgba(39,119,243,0.10)',  ctaColor:'#2777F3', ctaBorder:'rgba(39,119,243,0.28)'  },
+    'Spread Oppty':   { badgeBg:'#EDE9FE', badgeColor:'#7C3AED', stripe:'#8B5CF6', ctaBg:'rgba(139,92,246,0.10)',  ctaColor:'#7C3AED', ctaBorder:'rgba(139,92,246,0.28)'  },
+    'News Catalyst':  { badgeBg:'#CFFAFE', badgeColor:'#0891B2', stripe:'#06B6D4', ctaBg:'rgba(6,182,212,0.10)',   ctaColor:'#0891B2', ctaBorder:'rgba(6,182,212,0.28)'   },
+    'Sector Signal':  { badgeBg:'#FFEDD5', badgeColor:'#C2410C', stripe:'#EA580C', ctaBg:'rgba(39,119,243,0.10)',  ctaColor:'#2777F3', ctaBorder:'rgba(39,119,243,0.28)'  }
+  };
+
+  var dirCfg = {
+    bullish: { label:'↑ Bullish', bg:'#DCFCE7', color:'#16A34A' },
+    bearish: { label:'↓ Bearish', bg:'#FEE2E2', color:'#DC2626' },
+    neutral: { label:'↔ Neutral', bg:'#DBEAFE', color:'#2777F3' }
+  };
+
+  var convLabels = ['', 'Weak', 'Moderate', 'Developing', 'Strong', 'Very Strong'];
+
+  /* ─── TABS CONFIG ────────────────────────────────────────────────── */
+  var tabConfig = [
+    { id: 'all',          label: 'All'          },
+    { id: 'Strike Radar', label: 'Strikes'      },
+    { id: 'OI Signals',   label: 'OI'           },
+    { id: 'Momentum',     label: 'Momentum'     },
+    { id: 'Sectors',      label: 'Sectors'      },
+    { id: 'Spreads',      label: 'Spreads'      },
+    { id: 'News',         label: 'News'         },
+    { id: 'Screeners',    label: 'Screeners'    }
+  ];
+
+  /* ─── STATE ──────────────────────────────────────────────────────── */
+  var activeTab = 'all';
+  var activeDir = 'all';
+  var activeTabEl = null;
+
+  /* ─── FILTER ─────────────────────────────────────────────────────── */
+  function getFiltered() {
+    return signals.filter(function (s) {
+      var tabOk = activeTab === 'all' || s.category === activeTab;
+      var dirOk = activeDir === 'all' || s.direction === activeDir;
+      return tabOk && dirOk;
+    });
+  }
+
+  function countForTab(tabId) {
+    return signals.filter(function (s) {
+      return tabId === 'all' || s.category === tabId;
+    }).length;
+  }
+
+  /* ─── RENDER TABS ────────────────────────────────────────────────── */
+  function renderTabs() {
+    var tabsEl = document.getElementById('tabs');
+    tabsEl.innerHTML = '';
+    tabConfig.forEach(function (t) {
+      var cnt = countForTab(t.id);
+      var div = document.createElement('div');
+      div.className = 'tab' + (t.id === activeTab ? ' active' : '');
+      div.setAttribute('data-tab', t.id);
+      div.innerHTML = t.label + ' <span class="tab-count">' + cnt + '</span>';
+      tabsEl.appendChild(div);
+      div.addEventListener('click', function () {
+        setTab(t.id, div);
+      });
+      if (t.id === activeTab) activeTabEl = div;
+    });
+    positionIndicator(activeTabEl);
+  }
+
+  function positionIndicator(el) {
+    if (!el) return;
+    var ind = document.getElementById('tabIndicator');
+    ind.style.left  = el.offsetLeft + 'px';
+    ind.style.width = el.offsetWidth + 'px';
+  }
+
+  function setTab(tabId, el) {
+    activeTab = tabId;
+    var tabs = document.querySelectorAll('.tab');
+    tabs.forEach(function (t) { t.classList.remove('active'); });
+    el.classList.add('active');
+    activeTabEl = el;
+    positionIndicator(el);
+    renderFeed(true);
+  }
+
+  /* ─── RENDER FEED ────────────────────────────────────────────────── */
+  function renderFeed(animate) {
+    var feed = document.getElementById('feed');
+    var list = getFiltered();
+
+    if (list.length === 0) {
+      feed.innerHTML = [
+        '<div class="empty-state">',
+        '  <div class="empty-icon">🔍</div>',
+        '  <div class="empty-title">No signals here</div>',
+        '  <div class="empty-sub">Try a different tab or direction filter</div>',
+        '</div>'
+      ].join('');
+      return;
+    }
+
+    if (animate) {
+      feed.style.opacity = '0';
+      feed.style.transform = 'translateY(8px)';
+      feed.style.transition = 'opacity 0.15s ease, transform 0.15s ease';
+      setTimeout(function () {
+        feed.innerHTML = buildCards(list);
+        feed.style.opacity = '1';
+        feed.style.transform = 'translateY(0)';
+        attachCardEvents();
+      }, 130);
+    } else {
+      feed.innerHTML = buildCards(list);
+      attachCardEvents();
+    }
+  }
+
+  function buildCards(list) {
+    return list.map(function (s, i) {
+      return buildCard(s, i);
+    }).join('');
+  }
+
+  function buildCard(s, idx) {
+    var cfg   = sigCfg[s.type] || sigCfg['High OI Strike'];
+    var dCfg  = dirCfg[s.direction] || dirCfg['neutral'];
+
+    var dots = '';
+    for (var d = 0; d < 5; d++) {
+      var cls = 'cdot';
+      if (d < s.conviction) cls += (s.conviction >= 4 ? ' hot' : ' on');
+      dots += '<div class="' + cls + '"></div>';
+    }
+
+    var metricsHTML = s.metrics.map(function (m) {
+      var valClass = 'metric-value' + (m.pos === true ? ' pos' : m.pos === false ? ' neg' : '');
+      return [
+        '<div class="metric-cell">',
+        '  <div class="metric-label">' + m.label + '</div>',
+        '  <div class="' + valClass + '">' + m.value + '</div>',
+        '</div>'
+      ].join('');
+    }).join('');
+
+    var hotHTML = s.hot ? '<span class="hot-tag">🔥 Hot</span>' : '';
+    var delay   = idx * 65;
+
+    return [
+      '<div class="card animating-in" data-id="' + s.id + '" style="animation-delay:' + delay + 'ms">',
+      '  <div class="card-stripe" style="background:' + cfg.stripe + '"></div>',
+      '  <div class="card-body">',
+      '    <div class="card-r1">',
+      '      <div class="sig-badge" style="background:' + cfg.badgeBg + ';color:' + cfg.badgeColor + '">',
+      '        <div class="sig-badge-dot"></div>' + s.type,
+      '      </div>',
+      '      <div class="freshness">' + s.freshness + '</div>',
+      '    </div>',
+      '    <div class="instrument-name">' + s.instrument + hotHTML + '</div>',
+      '    <div class="instrument-sub">' + s.subtitle + '</div>',
+      '    <div class="metrics-row">' + metricsHTML + '</div>',
+      '    <div class="card-r4">',
+      '      <div class="conviction-group">',
+      '        <div class="c-dots">' + dots + '</div>',
+      '        <div class="c-label">' + (convLabels[s.conviction] || '') + '</div>',
+      '      </div>',
+      '      <div class="dir-tag" style="background:' + dCfg.bg + ';color:' + dCfg.color + '">' + dCfg.label + '</div>',
+      '    </div>',
+      '    <button class="cta-btn" data-id="' + s.id + '" style="background:' + cfg.ctaBg + ';color:' + cfg.ctaColor + ';border:1.5px solid ' + cfg.ctaBorder + '">',
+      '      ' + s.ctaText + ' <span class="cta-arrow">→</span>',
+      '    </button>',
+      '  </div>',
+      '</div>'
+    ].join('');
+  }
+
+  /* ─── ATTACH CARD EVENTS ─────────────────────────────────────────── */
+  function attachCardEvents() {
+    var btns = document.querySelectorAll('.cta-btn');
+    btns.forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        var id = parseInt(btn.getAttribute('data-id'), 10);
+        handleCTA(id, btn, e);
+      });
+    });
+
+    var cards = document.querySelectorAll('.card');
+    cards.forEach(function (card) {
+      card.addEventListener('click', function () {
+        // subtle bounce feedback
+        card.style.transform = 'scale(0.98)';
+        setTimeout(function () {
+          card.style.transform = '';
+        }, 160);
+      });
+    });
+  }
+
+  /* ─── CTA HANDLER ────────────────────────────────────────────────── */
+  function handleCTA(signalId, btnEl, evt) {
+    var sig = signals.find(function (s) { return s.id === signalId; });
+    if (!sig) return;
+
+    // Ripple
+    var rect   = btnEl.getBoundingClientRect();
+    var ripple = document.createElement('span');
+    ripple.className = 'ripple';
+    var size = Math.max(rect.width, rect.height);
+    ripple.style.width  = size + 'px';
+    ripple.style.height = size + 'px';
+    ripple.style.left   = (evt.clientX - rect.left - size / 2) + 'px';
+    ripple.style.top    = (evt.clientY - rect.top  - size / 2) + 'px';
+    btnEl.appendChild(ripple);
+    setTimeout(function () { if (ripple.parentNode) ripple.parentNode.removeChild(ripple); }, 600);
+
+    // Plotline bridge (with fallback)
+    var actionId = 'finx_discovery_' + sig.actionKey + '_open';
+    var url = 'https://strikex.choiceindia.com/v2/dashboard?widget=strategy-builder&signal=' + sig.actionKey;
+
+    if (window.PlotlineWeb && typeof window.PlotlineWeb.onClick === 'function') {
+      window.PlotlineWeb.onClick(actionId, 'REDIRECT', url, 'WEB', true, false, true);
+    } else {
+      showToast('Opening ' + sig.instrument + ' in Strategy Builder...');
+    }
+  }
+
+  /* ─── DIRECTION FILTER ───────────────────────────────────────────── */
+  function initDirFilter() {
+    var pills = document.querySelectorAll('.dir-pill');
+    pills.forEach(function (pill) {
+      pill.addEventListener('click', function () {
+        var dir = pill.getAttribute('data-dir');
+        activeDir = dir;
+        pills.forEach(function (p) {
+          p.className = 'dir-pill';
+        });
+        var activeClass = dir === 'all' ? 'active-all'
+          : dir === 'bullish' ? 'active-bull'
+          : dir === 'bearish' ? 'active-bear'
+          : 'active-neut';
+        pill.className = 'dir-pill ' + activeClass;
+        renderFeed(true);
+      });
+    });
+  }
+
+  /* ─── TOAST ──────────────────────────────────────────────────────── */
+  function showToast(msg) {
+    var t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(function () { t.classList.remove('show'); }, 2200);
+  }
+
+  /* ─── REFRESH ────────────────────────────────────────────────────── */
+  function initRefresh() {
+    var btn = document.getElementById('refreshBtn');
+    btn.addEventListener('click', function () {
+      var bar = document.getElementById('refreshProgress');
+      bar.style.animation = 'none';
+      setTimeout(function () {
+        bar.style.animation = 'progFill 180s linear infinite';
+      }, 50);
+      renderFeed(true);
+      showToast('Signals refreshed');
+    });
+  }
+
+  /* ─── INIT ───────────────────────────────────────────────────────── */
+  function init() {
+    renderTabs();
+    renderFeed(false);
+    initDirFilter();
+    initRefresh();
+
+    // Reposition tab indicator on window resize
+    window.addEventListener('resize', function () {
+      if (activeTabEl) positionIndicator(activeTabEl);
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+
+})();
+</script>
+
+</body>
+</html>

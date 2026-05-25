@@ -1,0 +1,36 @@
+{
+  "pack": "Choice FinX Lovable Design System V2 SVG Pack",
+  "created_from": [
+    "Choice FinX Design (5).zip",
+    "Choice FinX Design (4).zip",
+    "Choice FinX Design (6).zip",
+    "Choice_FinX_App_Design_System_Knowledge_Pack.zip"
+  ],
+  "svg_files": 175,
+  "categories": {
+    "design-system": 44,
+    "platform-screens": 9,
+    "screen-company-detail": 7,
+    "screen-funds-bank": 13,
+    "screen-ipo": 4,
+    "screen-market": 2,
+    "screen-more-profile": 8,
+    "screen-onboarding-login": 1,
+    "screen-order-flow": 7,
+    "screen-portfolio": 2,
+    "screen-recommendations": 1,
+    "screen-reports": 8,
+    "screen-watchlist": 1,
+    "screens-misc": 68
+  },
+  "key_files": [
+    "README.md",
+    "00-master-lovable-prompt.md",
+    "00-design-system-index.md",
+    "design-tokens.json",
+    "css-variables.css",
+    "tailwind-token-map.md",
+    "19-lovable-build-rules.md",
+    "20-visual-regression-qa-checklist.md"
+  ]
+}

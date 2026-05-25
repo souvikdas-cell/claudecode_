@@ -1,0 +1,27 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "FinX Discovery Widget",
+      "runtimeExecutable": "powershell",
+      "runtimeArgs": [
+        "-ExecutionPolicy", "Bypass",
+        "-File", ".claude/serve.ps1",
+        "-Port", "3000",
+        "-Root", "Projects/FinX"
+      ],
+      "port": 3000
+    },
+    {
+      "name": "StrikeX Walkthrough",
+      "runtimeExecutable": "powershell",
+      "runtimeArgs": [
+        "-ExecutionPolicy", "Bypass",
+        "-File", ".claude/serve.ps1",
+        "-Port", "3010",
+        "-Root", "strikex-walkthrough"
+      ],
+      "port": 3010
+    }
+  ]
+}

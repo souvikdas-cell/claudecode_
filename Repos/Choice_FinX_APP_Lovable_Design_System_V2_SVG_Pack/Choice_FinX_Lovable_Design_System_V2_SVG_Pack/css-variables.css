@@ -1,0 +1,102 @@
+/* Choice FinX App Design Tokens - SVG enhanced V2 */
+:root {
+  --finx-font-family: "Onest", Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  --finx-brand-navy: #1B1464;
+  --finx-primary-blue: #2777F3;
+  --finx-success: #45B644;
+  --finx-error: #DE493B;
+  --finx-warning: #F9EB21;
+  --finx-info: #5D99F6;
+
+  --finx-neutral-900: #0F0E16;
+  --finx-neutral-800: #27262D;
+  --finx-neutral-700: #4B4A50;
+  --finx-neutral-600: #6F6E73;
+  --finx-neutral-500: #87868A;
+  --finx-neutral-400: #B7B7B9;
+  --finx-neutral-300: #CFCFD0;
+  --finx-neutral-200: #E7E7E8;
+  --finx-neutral-100: #E8E8F0;
+  --finx-neutral-50: #FCFCFE;
+
+  --finx-surface-app: #FCFCFE;
+  --finx-surface-soft: #F4F8FE;
+  --finx-surface-blue-subtle: #E9F1FE;
+  --finx-surface-green-subtle: #ECF8EC;
+  --finx-surface-red-subtle: #F6CDCA;
+  --finx-border-blue-soft: #C9DDFC;
+  --finx-dark-bg: #070519;
+  --finx-dark-surface: #27262D;
+
+  --finx-radius-xs: 4px;
+  --finx-radius-sm: 8px;
+  --finx-radius-md: 10px;
+  --finx-radius-lg: 12px;
+  --finx-radius-xl: 16px;
+  --finx-radius-sheet: 18px;
+  --finx-radius-pill: 999px;
+
+  --finx-space-1: 2px;
+  --finx-space-2: 4px;
+  --finx-space-3: 6px;
+  --finx-space-4: 8px;
+  --finx-space-5: 10px;
+  --finx-space-6: 12px;
+  --finx-space-7: 14px;
+  --finx-space-8: 16px;
+  --finx-space-9: 18px;
+  --finx-space-10: 20px;
+  --finx-space-12: 24px;
+  --finx-space-14: 28px;
+  --finx-space-16: 32px;
+
+  --finx-type-display-lg-size: 32px;
+  --finx-type-display-lg-line: 36px;
+  --finx-type-heading-lg-size: 18px;
+  --finx-type-heading-lg-line: 21px;
+  --finx-type-heading-md-size: 16px;
+  --finx-type-heading-md-line: 20px;
+  --finx-type-body-md-size: 14px;
+  --finx-type-body-md-line: 18px;
+  --finx-type-body-sm-size: 12px;
+  --finx-type-body-sm-line: 16px;
+}
+
+.finx-screen {
+  font-family: var(--finx-font-family);
+  background: var(--finx-surface-app);
+  color: var(--finx-neutral-900);
+}
+
+.finx-card {
+  background: #fff;
+  border: 1px solid var(--finx-neutral-200);
+  border-radius: var(--finx-radius-lg);
+  padding: var(--finx-space-8);
+}
+
+.finx-primary-cta {
+  background: var(--finx-primary-blue);
+  color: #fff;
+  border-radius: var(--finx-radius-md);
+  min-height: 44px;
+  font-weight: 600;
+}
+
+.finx-buy {
+  color: var(--finx-success);
+}
+
+.finx-sell,
+.finx-loss {
+  color: var(--finx-error);
+}
+
+.finx-gain {
+  color: var(--finx-success);
+}
+
+.finx-muted {
+  color: var(--finx-neutral-600);
+}

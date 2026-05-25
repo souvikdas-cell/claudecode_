@@ -1,0 +1,1650 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800;900&display=swap');
+:root{
+  --blue:#7C3AED; --blue-2:#6D28D9; --navy:#1B1464; --ink:#0F172A;
+  --bg:#F4F6FB; --muted:#667085; --line:rgba(124,58,237,0.20);
+  --card:rgba(255,255,255,0.96);
+  --shadow-lg:0 30px 80px rgba(15,23,42,.22), 0 8px 24px rgba(15,23,42,.10);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;width:100%;background:#0a1020;overflow:hidden;
+  font-family:Onest,Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink)}
+body{display:grid;place-items:center}
+
+.stage{
+  position:relative; width:100vw; aspect-ratio:1500/739;
+  max-height:100vh; max-width:100vw;
+  background:#fff; border-radius:0; overflow:hidden;
+  box-shadow:var(--shadow-lg);
+}
+
+.slide{ position:absolute; inset:0; opacity:0; pointer-events:none;
+  transition:opacity 420ms ease; background:#fff }
+.slide.active{ opacity:1; pointer-events:auto; z-index:2 }
+
+/* ---- Fit layer: sized to the image's natural aspect inside the stage,
+        so image-% maps 1:1 to layer-%. Width 100%, height derived from
+        aspect-ratio. Centred vertically. ---- */
+.fit{
+  position:absolute; left:0; top:50%; transform:translateY(-50%);
+  width:100%; aspect-ratio: var(--img-ratio, 1500/739);
+  overflow:hidden;
+}
+
+/* ---- Image layer. Stays at natural scale on loupe slides; transforms on
+        zoom-mode slides so the whole screen scales toward the focus point. ---- */
+.zoom{
+  position:absolute; inset:0;
+  transform-origin: var(--ox,50%) var(--oy,50%);
+  transform: translate(var(--tx,0%), var(--ty,0%)) scale(var(--z,1));
+  transition: transform 1500ms cubic-bezier(.22,.61,.36,1);
+  will-change: transform;
+}
+.screen{
+  position:absolute; inset:0; width:100%; height:100%;
+  object-fit:contain; object-position:center center; background:#fff;
+  display:block;
+}
+
+/* Image-anchored highlight box. cx/cy/cw/ch are in IMAGE % */
+.callout{
+  position:absolute;
+  left:var(--cx,50%); top:var(--cy,50%);
+  width:var(--cw,10%); height:var(--ch,6%);
+  transform:translate(-50%,-50%) scale(.96);
+  border-radius:8px;
+  border:2px solid rgba(124,58,237,.95);
+  background:rgba(124,58,237,.06);
+  box-shadow:
+    0 0 0 4px rgba(124,58,237,.16),
+    0 0 24px rgba(124,58,237,.42),
+    inset 0 0 12px rgba(124,58,237,.10);
+  opacity:0; pointer-events:none; z-index:6;
+  transition:opacity 480ms ease 360ms, transform 540ms cubic-bezier(.2,.85,.2,1) 360ms;
+}
+.callout::before,.callout::after{ content:none }
+.slide.active .callout{ opacity:1; transform:translate(-50%,-50%) scale(1) }
+/* Zoom slides: hold the callout until after the zoom-in lands */
+.slide[data-mode="zoom"].active .callout{
+  transition:opacity 480ms ease 2300ms, transform 540ms cubic-bezier(.2,.85,.2,1) 2300ms;
+}
+@keyframes ring{ 0%{opacity:.65;transform:scale(.94)} 80%{opacity:0;transform:scale(1.14)} 100%{opacity:0} }
+
+/* Soft vignette by default. Strong spotlight when the slide uses full-screen
+   zoom (`.dim.strong`). */
+.dim{
+  position:absolute; inset:0; pointer-events:none;
+  background: radial-gradient(circle at var(--sx,50%) var(--sy,50%),
+    rgba(15,23,42,0) 0,
+    rgba(15,23,42,0) var(--sr,16%),
+    rgba(15,23,42,.10) 55%,
+    rgba(15,23,42,.22) 100%);
+  opacity:0; transition:opacity 700ms ease;
+  z-index:4;
+}
+.dim.strong{
+  background: radial-gradient(circle at var(--sx,50%) var(--sy,50%),
+    rgba(15,23,42,0) 0,
+    rgba(15,23,42,0) var(--sr,16%),
+    rgba(15,23,42,.50) 38%,
+    rgba(15,23,42,.78) 100%);
+}
+.slide.active .dim{ opacity:1; transition-delay:300ms }
+.slide[data-mode="zoom"].active .dim{ transition-delay:2200ms }
+
+/* Cursor (container coords). z-index sits above the loupe panel (9) so the
+   pointer is visible when motion plays out inside the magnifier. */
+.cursor{
+  position:absolute; left:var(--mx,50%); top:var(--my,50%);
+  width:26px; height:26px; z-index:12; opacity:0;
+  filter:drop-shadow(0 8px 14px rgba(27,20,100,.42));
+  transition: left 1100ms cubic-bezier(.22,.61,.36,1),
+              top  1100ms cubic-bezier(.22,.61,.36,1),
+              opacity 350ms ease, transform 220ms ease;
+}
+.slide.active .cursor{ opacity:1 }
+.cursor.click{ transform:scale(.82) }
+.cursor svg{display:block;width:100%;height:100%}
+
+.ripple{
+  position:absolute; left:var(--mx,50%); top:var(--my,50%);
+  width:14px; height:14px; margin:-7px 0 0 -7px; border-radius:999px;
+  border:2.5px solid var(--blue); opacity:0; z-index:11;
+}
+.ripple.on{ animation: tap 700ms ease forwards }
+@keyframes tap{ 0%{opacity:.95;transform:scale(.4)} 100%{opacity:0;transform:scale(4)} }
+
+/* ===== Overlay copy (container coords) ===== */
+.overlay{
+  position:absolute; left:50%; top:72%; max-width:min(440px,calc(100% - 48px));
+  transform:translate(-50%, 12px);
+  padding:12px 18px 14px;
+  background:linear-gradient(135deg, #6D28D9 0%, #7C3AED 60%, #8B5CF6 100%);
+  border:1.5px solid rgba(255,255,255,.18);
+  border-left:5px solid #C4B5FD;
+  border-radius:14px; z-index:9;
+  box-shadow:
+    0 22px 50px rgba(76,29,149,.45),
+    0 6px 16px rgba(124,58,237,.35),
+    inset 0 1px 0 rgba(255,255,255,.18);
+  -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px);
+  color:#fff;
+  opacity:0;
+  transition:opacity 380ms ease, transform 460ms cubic-bezier(.2,.85,.2,1);
+}
+.slide.active .overlay{ opacity:1; transform:translate(-50%, 0); transition-delay:240ms }
+/* Legacy positions kept as fallbacks for any slide that opts in */
+.overlay.right{ left:auto; right:24px; top:auto; bottom:24px; transform:translateY(12px) }
+.slide.active .overlay.right{ transform:translateY(0) }
+.overlay.top  { top:72px; bottom:auto }
+
+/* Loupe slides: pin overlay directly below (or to the side of) the loupe */
+.overlay.under-loupe{
+  left:var(--ulx, 50%); top:var(--uly, 72%);
+  bottom:auto; right:auto;
+  transform:translate(-50%, 12px);
+  width:var(--ulw, 340px); max-width:calc(100% - 24px);
+}
+.slide.active .overlay.under-loupe{ transform:translate(-50%, 0) }
+
+/* Zoom slides: after zoom, focus sits at stage centre - drop overlay below it */
+.slide[data-mode="zoom"] .overlay{ left:50%; top:72% }
+.slide[data-mode="zoom"] .overlay h2{ font-size:18px }
+.slide[data-mode="zoom"].active .overlay{ transition-delay:2400ms }
+.slide.s1[data-mode="zoom"].active .overlay{ transition-delay:5400ms }
+
+.overlay .kicker{
+  display:inline-flex; align-items:center; gap:6px;
+  height:22px; padding:0 10px; border-radius:999px;
+  background:rgba(124,58,237,.22); color:#9EC4FF;
+  font-size:11px; font-weight:900; letter-spacing:.4px; text-transform:uppercase;
+}
+.overlay .kicker .dot{width:6px;height:6px;border-radius:999px;background:#6EA8FF;box-shadow:0 0 0 4px rgba(124,58,237,.30)}
+.overlay h2{
+  margin:8px 0 4px; color:#fff; font-size:20px; line-height:1.25;
+  font-weight:700; letter-spacing:-.2px;
+}
+.overlay h2 b{ font-weight:900 }
+.overlay h2 em{ font-style:italic; font-weight:800; color:#F5D0FE }
+.overlay p{margin:0; color:rgba(255,255,255,.82); font-size:13px; line-height:1.45; font-weight:500}
+.overlay .chip-row{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.overlay .chip{
+  font-size:11px;font-weight:800;color:#BCD3FF;
+  background:rgba(124,58,237,.18);
+  border:1px solid rgba(255,255,255,.12);
+  padding:4px 9px;border-radius:999px;
+}
+
+/* Side notes &#8212; container coords (computed by JS so they stay readable, not scaled) */
+.note{
+  position:absolute; left:var(--nx,72%); top:var(--ny,32%);
+  transform:translate(-50%,-50%);
+  background:linear-gradient(135deg, #1B1464 0%, #2D2596 100%);
+  color:#fff;
+  border:1px solid rgba(255,255,255,.18);
+  border-left:4px solid #6EA8FF;
+  border-radius:10px; padding:7px 11px;
+  font-size:11.5px; font-weight:800; line-height:1.25;
+  box-shadow:0 14px 28px rgba(27,20,100,.45), 0 4px 10px rgba(15,23,42,.25);
+  z-index:7; opacity:0; transition:opacity 420ms ease;
+  white-space:nowrap;
+}
+.slide.active .note{ opacity:1; transition-delay:400ms }
+.note .lbl{display:block;font-size:9.5px;font-weight:900;color:#9EC4FF;
+  letter-spacing:.45px;text-transform:uppercase;margin-bottom:1px}
+
+/* Note connectors (Screen 4) &#8212; solid line + arrowhead aimed at the target */
+.connectors{ position:absolute; inset:0; pointer-events:none; z-index:6; overflow:visible }
+.connectors path.line{
+  fill:none; stroke:#1B1464; stroke-width:2; stroke-linecap:round; stroke-linejoin:round;
+  opacity:0; transition:opacity 420ms ease;
+  filter:drop-shadow(0 2px 4px rgba(27,20,100,.35));
+}
+.connectors polygon.arrow{
+  fill:#1B1464; opacity:0; transition:opacity 420ms ease;
+  filter:drop-shadow(0 2px 4px rgba(27,20,100,.40));
+}
+.slide.active .connectors path.line,
+.slide.active .connectors polygon.arrow{ opacity:1; transition-delay:450ms }
+
+/* ===== Loupe (magnified cutaway panel) =====
+   Sits over the main screen, near the callout, showing the same screen
+   region enlarged. The visual link is the connector line + matching border. */
+.loupe{
+  position:absolute;
+  left:var(--lx,75%); top:var(--ly,70%);
+  width:var(--lw,320px); height:var(--lh,210px);
+  transform:translate(-50%,-50%) scale(.94);
+  background:#fff;
+  border-radius:14px;
+  border:3px solid var(--blue);
+  box-shadow:
+    0 30px 60px rgba(15,23,42,.30),
+    0 8px 18px rgba(124,58,237,.20),
+    0 0 0 6px rgba(124,58,237,.10);
+  overflow:hidden;
+  z-index:9;
+  opacity:0;
+  transition:opacity 380ms ease 280ms, transform 460ms cubic-bezier(.2,.85,.2,1) 280ms;
+}
+.slide.active .loupe{ opacity:1; transform:translate(-50%,-50%) scale(1) }
+
+.loupe-inner{ position:absolute; inset:0; overflow:hidden; }
+.loupe-inner img{
+  position:absolute;
+  width:var(--mag-w,200%); height:var(--mag-h,200%);
+  left:var(--mag-x,0px); top:var(--mag-y,0px);
+  max-width:none; max-height:none;
+  image-rendering:auto;
+}
+
+/* Label badge at the top-left of the loupe */
+.loupe-label{
+  position:absolute; top:8px; left:10px;
+  display:inline-flex; align-items:center; gap:6px;
+  height:22px; padding:0 10px 0 8px; border-radius:999px;
+  background:rgba(255,255,255,.96);
+  color:var(--blue);
+  font-size:10.5px; font-weight:900; letter-spacing:.5px; text-transform:uppercase;
+  box-shadow:0 4px 12px rgba(15,23,42,.20);
+  z-index:2;
+}
+.loupe-label svg{ width:12px; height:12px; display:block }
+
+/* Solid arrow from loupe to highlight box &#8212; clean directional pointer */
+.loupe-link{ position:absolute; inset:0; pointer-events:none; z-index:7; overflow:visible }
+.loupe-link path.line{
+  fill:none; stroke:var(--blue); stroke-width:2.2;
+  stroke-linecap:round; stroke-linejoin:round;
+  opacity:0; transition:opacity 340ms ease 420ms;
+  filter:drop-shadow(0 2px 4px rgba(124,58,237,.35));
+}
+.loupe-link polygon.arrow{
+  fill:var(--blue); opacity:0;
+  transition:opacity 340ms ease 420ms;
+  filter:drop-shadow(0 2px 4px rgba(124,58,237,.40));
+}
+.slide.active .loupe-link path.line,
+.slide.active .loupe-link polygon.arrow{ opacity:1 }
+
+/* Chrome */
+.brandbar{
+  position:absolute;
+  top:calc(14px + env(safe-area-inset-top, 0px)); left:18px; z-index:30;
+  display:flex; align-items:center; gap:10px; color:#fff;
+  text-shadow:0 1px 0 rgba(0,0,0,.18);
+}
+.brandbar .logo{
+  width:34px;height:34px;border-radius:9px;
+  background:#fff;
+  display:grid;place-items:center;
+  box-shadow:0 6px 16px rgba(15,23,42,.25);
+  padding:5px;
+}
+.brandbar .logo img{ width:100%; height:100%; object-fit:contain; display:block }
+.brandbar .meta{font-size:11px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;opacity:.85}
+.brandbar .meta b{display:block;font-size:13px;letter-spacing:.2px;text-transform:none;opacity:1}
+
+.progress{
+  position:absolute;
+  top:calc(18px + env(safe-area-inset-top, 0px)); right:18px; z-index:30;
+  display:flex; gap:6px; padding:6px 10px; border-radius:999px;
+  background:rgba(15,23,42,.55);
+  -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px);
+}
+.progress span{
+  width:22px;height:4px;border-radius:999px;background:rgba(255,255,255,.30);
+  transition:background 300ms ease, width 300ms ease;
+}
+.progress span.done{ background:rgba(255,255,255,.65) }
+.progress span.now{ background:#fff; width:34px }
+
+.controls{
+  position:absolute; left:50%;
+  bottom:calc(14px + env(safe-area-inset-bottom, 0px));
+  transform:translateX(-50%);
+  display:flex; align-items:center; gap:10px; z-index:30;
+  padding:7px 10px; border-radius:999px;
+  background:rgba(15,23,42,.55);
+  -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px);
+  color:#fff;
+}
+.controls button{
+  appearance:none; background:transparent; border:0; color:#fff; cursor:pointer;
+  font-size:14px; font-weight:800; border-radius:999px;
+  min-width:44px; min-height:44px;
+  display:inline-flex; align-items:center; justify-content:center;
+  padding:0 10px;
+  -webkit-tap-highlight-color:transparent;
+}
+.controls button:hover{ background:rgba(255,255,255,.12) }
+.controls button:focus-visible{ outline:2px solid rgba(255,255,255,.7); outline-offset:2px }
+.controls .step-label{ font-size:12px; font-weight:800; letter-spacing:.6px; opacity:.85; padding:0 6px; min-height:44px; display:inline-flex; align-items:center }
+
+/* Final card */
+.final{
+  position:absolute; inset:0; display:grid; place-items:center; z-index:9;
+  background:linear-gradient(180deg, rgba(27,20,100,.55), rgba(15,23,42,.65));
+  opacity:0; transition:opacity 600ms ease;
+}
+.slide.s9.active .final{ opacity:1 }
+.final .card{
+  width:min(720px,92%); padding:28px 32px; border-radius:24px;
+  background:rgba(255,255,255,.96); border:1.5px solid rgba(124,58,237,.22);
+  box-shadow:0 40px 100px rgba(0,0,0,.36);
+  transform:translateY(12px) scale(.985); opacity:0;
+  transition:transform 700ms cubic-bezier(.2,.85,.2,1) 200ms, opacity 600ms ease 200ms;
+}
+.slide.s9.active .card{ opacity:1; transform:translateY(0) scale(1) }
+.final .badge{
+  display:inline-flex; align-items:center; gap:6px; height:26px; padding:0 12px;
+  border-radius:999px; background:rgba(124,58,237,.12); color:var(--blue);
+  font-size:11px; font-weight:900; letter-spacing:.4px; text-transform:uppercase;
+}
+.final h1{margin:10px 0 8px; font-size:clamp(26px,3.6vw,40px); line-height:1.05;
+  font-weight:1000; letter-spacing:-1px}
+.final h1 span{color:var(--blue)}
+.final p{margin:0 0 16px; color:var(--muted); font-size:15px; font-weight:700}
+.stat-row{display:flex;gap:14px;margin:0 0 16px;flex-wrap:wrap}
+.stat-row .stat{
+  flex:1; min-width:130px; padding:10px 12px; border-radius:12px;
+  background:linear-gradient(135deg,#EEF3FF,#F8FAFF); border:1px solid #DCE6FF;
+  text-align:left;
+}
+.stat b{display:block;color:var(--blue);font-size:20px;font-weight:1000;letter-spacing:-.5px}
+.stat span{display:block;color:#5A6680;font-size:11px;font-weight:800;margin-top:2px}
+.usp{display:grid; grid-template-columns:repeat(3,1fr); gap:8px}
+.usp .u{padding:8px 10px; border-radius:10px; background:#F5F8FF; border:1px solid #DCE6FF; text-align:left}
+.usp .u b{display:block;color:var(--ink);font-size:12.5px;font-weight:900;margin-bottom:1px}
+.usp .u span{color:#5A6680;font-size:10.5px;font-weight:700}
+
+/* Opening teaser (Screen 1) - shown for ~2s before the zoom-in begins
+   so the user knows what they're about to watch. */
+.intro{
+  position:absolute; inset:0;
+  display:grid; place-items:center;
+  z-index:11; pointer-events:none;
+  padding:24px;
+  opacity:0;
+}
+.intro::before{
+  content:""; position:absolute; inset:0;
+  background:radial-gradient(circle at 50% 50%,
+    rgba(15,23,42,.30) 0,
+    rgba(15,23,42,.55) 60%,
+    rgba(15,23,42,.78) 100%);
+  z-index:-1;
+}
+.intro-card{
+  max-width:min(560px, calc(100% - 32px));
+  padding:22px 28px 24px;
+  text-align:center;
+  background:linear-gradient(135deg, #4C1D95 0%, #6D28D9 50%, #7C3AED 100%);
+  border:1.5px solid rgba(255,255,255,.20);
+  border-radius:20px;
+  box-shadow:
+    0 36px 80px rgba(76,29,149,.55),
+    0 8px 24px rgba(124,58,237,.40),
+    inset 0 1px 0 rgba(255,255,255,.18);
+  color:#fff;
+  transform:translateY(10px) scale(.98);
+}
+.intro-card .eyebrow{
+  display:inline-flex; align-items:center; gap:6px;
+  font-size:11px; font-weight:900; letter-spacing:.6px; text-transform:uppercase;
+  color:#DDD6FE;
+  margin-bottom:10px;
+}
+.intro-card h1{
+  margin:0 0 8px;
+  font-size:clamp(22px, 3vw, 30px);
+  line-height:1.15;
+  font-weight:1000;
+  letter-spacing:-.5px;
+  color:#fff;
+}
+.intro-card h1 span{
+  color:#F5D0FE;
+  background:linear-gradient(120deg, #F5D0FE 0%, #FBCFE8 50%, #F0ABFC 100%);
+  -webkit-background-clip:text; background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+.intro-card p{
+  margin:0;
+  font-size:13.5px; line-height:1.45; font-weight:700;
+  color:rgba(255,255,255,.85);
+}
+/* Animate the intro in, hold ~2.7s, then fade out before the zoom-in.
+   Only fires on Screen 1 to set the tone for the rest of the deck. */
+.slide.s1.active .intro{ animation:introShow 3500ms ease forwards }
+.slide.s1.active .intro-card{ animation:introCard 3500ms cubic-bezier(.2,.85,.2,1) forwards }
+@keyframes introShow{
+  0%   { opacity:0 }
+  9%, 86% { opacity:1 }
+  100% { opacity:0 }
+}
+@keyframes introCard{
+  0%   { transform:translateY(10px) scale(.98) }
+  12%, 88% { transform:translateY(0) scale(1) }
+  100% { transform:translateY(-4px) scale(.985) }
+}
+
+/* Screen 1 only: push the rest of the motion behind the ~3.5s intro */
+.slide.s1[data-mode="zoom"].active .dim{ transition-delay:5200ms }
+.slide.s1[data-mode="zoom"].active .callout{
+  transition:opacity 480ms ease 5300ms, transform 540ms cubic-bezier(.2,.85,.2,1) 5300ms;
+}
+
+/* Quantity popup (Screen 7) - mimics the in-ladder qty picker that
+   appears when a price cell is clicked. */
+.qty-popup{
+  position:absolute;
+  left:var(--qx, 50%); top:var(--qy, 50%);
+  transform:translate(-50%, -50%) scale(.4);
+  display:inline-flex; align-items:stretch; gap:0;
+  background:#fff;
+  border:1.5px solid var(--blue);
+  border-radius:10px;
+  box-shadow:
+    0 16px 30px rgba(15,23,42,.30),
+    0 0 0 4px rgba(124,58,237,.18);
+  overflow:hidden;
+  z-index:13; opacity:0; pointer-events:none;
+  transition:opacity 220ms ease, transform 320ms cubic-bezier(.22,1.6,.36,1);
+  white-space:nowrap;
+  font-size:12px; font-weight:900;
+}
+.qty-popup.show{ opacity:1; transform:translate(-50%, -50%) scale(1) }
+.qty-popup .qty-val{
+  display:inline-flex; align-items:center; justify-content:center;
+  min-width:42px; padding:6px 10px;
+  background:#0F8A4E; color:#fff;
+  font-weight:900; letter-spacing:.2px;
+}
+.qty-popup.sell .qty-val{ background:#B91C1C }
+.qty-popup .qty-price{
+  display:inline-flex; align-items:center; justify-content:center;
+  padding:6px 8px; color:#3F4A60; background:#F5F8FF;
+  font-weight:800;
+}
+.qty-popup .qty-btn{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:22px; padding:0; background:#fff; color:var(--blue);
+  font-size:14px; font-weight:900;
+  border-left:1px solid #DCE6FF;
+}
+.qty-popup .qty-btn + .qty-btn{ border-left:1px solid #DCE6FF }
+
+/* Tiny pop ring that flashes at the click point */
+.qty-pop-ring{
+  position:absolute;
+  left:var(--qx, 50%); top:var(--qy, 50%);
+  width:8px; height:8px; margin:-4px 0 0 -4px; border-radius:999px;
+  border:2px solid var(--blue);
+  opacity:0; z-index:14; pointer-events:none;
+}
+.qty-pop-ring.pop{ animation:qtyPop 600ms ease forwards }
+@keyframes qtyPop{
+  0%   { opacity:.9; transform:scale(.4) }
+  100% { opacity:0;  transform:scale(5) }
+}
+
+/* Super Fast Execution speed badge (Screen 7) - fires alongside the
+   order toast. Lightning chip with motion lines for "instant" feel. */
+.speed-badge{
+  position:absolute;
+  left:var(--sbx, 50%); top:var(--sby, 50%);
+  transform:translate(-50%, -50%) translateX(-26px) scale(.7);
+  display:inline-flex; align-items:center; gap:8px;
+  padding:9px 14px 9px 12px;
+  background:linear-gradient(95deg, #4C1D95 0%, #7C3AED 55%, #A78BFA 100%);
+  border:1.5px solid rgba(255,255,255,.22);
+  border-radius:999px;
+  color:#fff;
+  font-family:Onest, Inter, sans-serif;
+  font-size:11px; font-weight:1000; letter-spacing:.7px; text-transform:uppercase;
+  white-space:nowrap;
+  box-shadow:
+    0 18px 36px rgba(76,29,149,.45),
+    0 4px 12px rgba(124,58,237,.40),
+    inset 0 1px 0 rgba(255,255,255,.22);
+  opacity:0; pointer-events:none; z-index:16;
+  transition:opacity 240ms ease, transform 360ms cubic-bezier(.22,1.4,.36,1);
+}
+.speed-badge .bolt{
+  display:inline-flex; width:18px; height:18px;
+  align-items:center; justify-content:center;
+  background:rgba(255,255,255,.20); border-radius:999px;
+  animation:boltFlash 900ms ease-in-out infinite;
+}
+.speed-badge .bolt svg{ width:11px; height:11px; display:block }
+.speed-badge.show{ opacity:1; transform:translate(-50%, -50%) translateX(0) scale(1) }
+
+/* Speed lines that streak in behind the badge - reinforces "instant" */
+.speed-streaks{
+  position:absolute;
+  left:var(--sbx, 50%); top:var(--sby, 50%);
+  width:140px; height:42px; margin:-21px 0 0 -70px;
+  z-index:15; opacity:0; pointer-events:none;
+  transition:opacity 240ms ease;
+}
+.speed-streaks.show{ opacity:1 }
+.speed-streaks i{
+  position:absolute; left:-30%; height:2px; border-radius:2px;
+  background:linear-gradient(90deg, transparent 0%, #C4B5FD 60%, transparent 100%);
+  opacity:0;
+}
+.speed-streaks i:nth-child(1){ top:30%; width:60px; animation:streak 760ms ease 40ms infinite }
+.speed-streaks i:nth-child(2){ top:55%; width:80px; animation:streak 760ms ease 160ms infinite }
+.speed-streaks i:nth-child(3){ top:78%; width:50px; animation:streak 760ms ease 280ms infinite }
+@keyframes streak{
+  0%   { left:-30%; opacity:0 }
+  20%  { opacity:.9 }
+  100% { left:130%; opacity:0 }
+}
+@keyframes boltFlash{
+  0%,100% { background:rgba(255,255,255,.20); transform:scale(1) }
+  50%     { background:rgba(255,255,255,.50); transform:scale(1.10) }
+}
+
+/* Order-placed confirmation toast (Screen 7) */
+.order-toast{
+  position:absolute;
+  left:var(--tx, 60%); top:var(--ty, 30%);
+  transform:translate(-50%, -50%) scale(.86);
+  display:flex; align-items:center; gap:12px;
+  padding:12px 16px 12px 14px;
+  background:linear-gradient(135deg, #0F8A4E 0%, #16A34A 100%);
+  color:#fff;
+  border:1.5px solid rgba(255,255,255,.18);
+  border-radius:14px;
+  box-shadow:
+    0 24px 48px rgba(22,163,74,.40),
+    0 6px 14px rgba(15,23,42,.25),
+    inset 0 1px 0 rgba(255,255,255,.20);
+  font-size:13px; font-weight:800; letter-spacing:.1px;
+  z-index:15; opacity:0; pointer-events:none;
+  transition:opacity 420ms ease, transform 460ms cubic-bezier(.2,.85,.2,1);
+  white-space:nowrap;
+}
+.order-toast.show{ opacity:1; transform:translate(-50%, -50%) scale(1) }
+.order-toast .tick{
+  width:22px; height:22px; flex:0 0 22px; border-radius:999px;
+  background:rgba(255,255,255,.20);
+  display:grid; place-items:center;
+}
+.order-toast .tick svg{ width:14px; height:14px; display:block }
+.order-toast .body{ display:flex; flex-direction:column; line-height:1.2 }
+.order-toast .body small{
+  font-size:10.5px; font-weight:800; letter-spacing:.5px;
+  color:rgba(255,255,255,.80); text-transform:uppercase;
+}
+.order-toast .body strong{ font-weight:950; font-size:13.5px }
+
+/* Final-card CTA button */
+.cta-button{
+  display:inline-flex; align-items:center; gap:10px;
+  margin-top:18px; padding:13px 22px;
+  appearance:none; border:0; cursor:pointer;
+  background:linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%);
+  color:#fff; font-family:inherit;
+  font-size:14.5px; font-weight:900; letter-spacing:.2px;
+  border-radius:999px;
+  box-shadow:
+    0 14px 28px rgba(124,58,237,.45),
+    0 4px 10px rgba(124,58,237,.30),
+    inset 0 1px 0 rgba(255,255,255,.25);
+  transition:transform 180ms ease, box-shadow 180ms ease, filter 180ms ease;
+}
+.cta-button:hover{ transform:translateY(-1px); filter:brightness(1.06) }
+.cta-button:active{ transform:translateY(0) scale(.98) }
+.cta-button:focus-visible{ outline:3px solid rgba(255,255,255,.55); outline-offset:3px }
+
+/* Hide brandbar + progress on in-product slides (set on .stage by JS) */
+.stage .brandbar, .stage .progress{ transition:opacity 300ms ease }
+.stage.hide-chrome .brandbar,
+.stage.hide-chrome .progress{ opacity:0; pointer-events:none }
+@media (max-width:760px){
+  .usp{grid-template-columns:repeat(2,1fr)}
+  .note{display:none}
+  .overlay{max-width:calc(100% - 28px); left:14px; bottom:14px; padding:12px 14px}
+  .overlay h2{font-size:18px}
+}
+</style>
+</head>
+<body>
+<div class="stage" id="stage" aria-label="StrikeX Real Screen Analysis">
+
+  <div class="brandbar">
+    <div class="logo"><img src="finx-logo.svg" alt="FinX"/></div>
+    <div class="meta"><b>StrikeX</b></div>
+  </div>
+  <div class="progress" id="progress" aria-hidden="true"></div>
+
+  <!-- ============ SLIDES ============
+   Each slide has:
+   - data-img       : screen image
+   - data-ox/oy     : focus point in IMAGE %  (transform-origin)
+   - data-z         : zoom level
+   - data-cx/cy/cw/ch (optional) : callout box in IMAGE % (centred on cx,cy)
+   - data-notes (optional, JSON) : array of {nx,ny,label,text} where nx,ny are IMAGE %; we compute container position from transform
+   - data-cursor-from/to (optional, JSON) : pairs of {x,y} in IMAGE % for cursor motion (we convert to container coords)
+   - data-overlay-pos : 'bl' (default), 'br', 'tl', 'tr'
+   - data-dur       : duration in ms before auto-advancing
+  ============================================== -->
+
+  <!-- 1. Entry Point &#8212; FinX dashboard &#8594; Trader Mode -->
+  <section class="slide s1 active"
+    data-mode="zoom"
+    data-img="screens/s1.webp"
+    data-ox="88.3" data-oy="10.6" data-z="1.7"
+    data-cx="88.3" data-cy="10.6" data-cw="9.6" data-ch="5.6"
+    data-cursor-from="50,55" data-cursor-to="88.3,10.6"
+    data-dur="7200">
+    <div class="intro" aria-hidden="true">
+      <div class="intro-card">
+        <div class="eyebrow">&#9679; Trader Mode by Choice FinX</div>
+        <h1>Meet the most powerful <span>trading desk</span> at your fingertips.</h1>
+        <p>The next 30 seconds show you how active traders place orders in one click.</p>
+      </div>
+    </div>
+    <div class="overlay">
+      <h2>Tap <b>Trader Mode</b> to open StrikeX.</h2>
+    </div>
+  </section>
+
+  <!-- 2. Workspace dropdown &#8594; "+ New workspace" menu item (loupe) -->
+  <section class="slide s2 no-chrome"
+    data-mode="loupe"
+    data-img="screens/s2.webp"
+    data-cx="12" data-cy="38.7" data-cw="13" data-ch="4.2"
+    data-loupe-cx="12" data-loupe-cy="38"
+    data-loupe-cw="15" data-loupe-ch="9"
+    data-loupe-lbl="New Workspace"
+    data-lw="340" data-lh="220"
+    data-cursor-from="55,50" data-cursor-to="12,38.7"
+    data-overlay-pos="br"
+    data-dur="5500">
+    <div class="overlay right">
+      <h2>Create your Workspace from here.</h2>
+    </div>
+  </section>
+
+  <!-- 3. Workspace templates -->
+  <section class="slide s3"
+    data-mode="zoom"
+    data-img="screens/s3.webp"
+    data-ox="34.3" data-oy="47" data-z="1.55"
+    data-cx="34.3" data-cy="47" data-cw="9.5" data-ch="25"
+    data-cursor-from="65,75" data-cursor-to="34.3,47"
+    data-dur="5500">
+    <div class="overlay">
+      <h2>Pick <em>Scalper &#183; Option Buying</em>.</h2>
+    </div>
+  </section>
+
+  <!-- 4. Workspace orientation &#8212; full screen with anchored labels -->
+  <section class="slide s4 no-chrome"
+    data-mode="overview"
+    data-img="screens/s4.webp"
+    data-notes='[
+      {"nx":5.7,"ny":44.3,"lbl":"Order Panel","txt":"NIFTY &#183; 24350 &#183; Limit"},
+      {"nx":24,"ny":19.2,"lbl":"Price Ladder","txt":"Bid &#183; Price &#183; Offer"},
+      {"nx":51,"ny":18,"lbl":"NIFTY 50","txt":"Index chart, live"},
+      {"nx":83,"ny":18,"lbl":"CE Chart","txt":"Call leg"},
+      {"nx":83,"ny":64,"lbl":"PE Chart","txt":"Put leg"}
+    ]'
+    data-dur="3500">
+    <div class="overlay">
+      <h2>One screen. Every decision.</h2>
+    </div>
+  </section>
+
+  <!-- 5. Choose Instrument &#8212; loupe on NIFTY/expiry/strike stack -->
+  <section class="slide s5 no-chrome"
+    data-mode="loupe"
+    data-img="screens/s4.webp"
+    data-cx="5.7" data-cy="44.3" data-cw="11" data-ch="11.5"
+    data-loupe-cx="5.7" data-loupe-cy="44.3"
+    data-loupe-cw="12" data-loupe-ch="13"
+    data-loupe-lbl="Instrument"
+    data-lw="340" data-lh="280"
+    data-cursor-from="70,55" data-cursor-to="5.7,44.3"
+    data-overlay-pos="br"
+    data-dur="3500">
+    <div class="overlay right">
+      <h2>Pick your contract.</h2>
+    </div>
+  </section>
+
+  <!-- 6. Understand the Price Ladder &#8212; tall portrait loupe on the LTP zone -->
+  <section class="slide s6 no-chrome"
+    data-mode="loupe"
+    data-img="screens/s4.webp"
+    data-cx="24" data-cy="57.4" data-cw="24" data-ch="80"
+    data-loupe-cx="24" data-loupe-cy="60"
+    data-loupe-cw="13" data-loupe-ch="18"
+    data-loupe-lbl="Price Ladder"
+    data-lw="300" data-lh="380"
+    data-overlay-pos="br"
+    data-dur="3500">
+    <div class="overlay right">
+      <h2>All prices at a glance.</h2>
+    </div>
+  </section>
+
+  <!-- 7. Place order from ladder &#8212; loupe with ladder context around B-LMT pill -->
+  <section class="slide s7 no-chrome"
+    data-mode="loupe"
+    data-img="screens/s4.webp"
+    data-cx="22" data-cy="59.1" data-cw="7" data-ch="5"
+    data-loupe-cx="25" data-loupe-cy="60"
+    data-loupe-cw="18" data-loupe-ch="12"
+    data-loupe-lbl="Order at 187"
+    data-lw="360" data-lh="260"
+    data-cursor-from="80,20" data-cursor-to="22,59.1"
+    data-overlay-pos="tr"
+    data-dur="9200">
+    <div class="overlay right">
+      <h2>Click Offers and Bids to execute orders.</h2>
+    </div>
+  </section>
+
+  <!-- 8. Risk Controls &#8212; tight loupe on Limit/SL + Single/Bracket/Cover row -->
+  <section class="slide s8 no-chrome"
+    data-mode="loupe"
+    data-img="screens/s4.webp"
+    data-cx="5.7" data-cy="55.6" data-cw="11" data-ch="11"
+    data-loupe-cx="5.7" data-loupe-cy="55.6"
+    data-loupe-cw="10.5" data-loupe-ch="10.5"
+    data-loupe-lbl="Order Type"
+    data-lw="360" data-lh="280"
+    data-cursor-from="50,80" data-cursor-to="5.7,55.6"
+    data-overlay-pos="br"
+    data-dur="3500">
+    <div class="overlay right">
+      <h2>Bracket, Cover or SL &#8212; built-in stops.</h2>
+    </div>
+  </section>
+
+  <!-- 9. Closing card with CTA -->
+  <section class="slide s9 no-chrome"
+    data-mode="card"
+    data-img="screens/s4.webp"
+    data-bg-dim="1"
+    data-dur="5500">
+    <div class="final">
+      <div class="card">
+        <h1>Explore the most powerful <span>trading software</span> on the market.</h1>
+        <p>6&#215; faster order placement &nbsp;&#183;&nbsp; &lt;1ms rule execution &nbsp;&#183;&nbsp; 99.99% uptime.</p>
+        <div class="stat-row">
+          <div class="stat"><b>6&#215;</b><span>Faster order placement</span></div>
+          <div class="stat"><b>&lt; 1ms</b><span>Rule execution time</span></div>
+          <div class="stat"><b>99.99%</b><span>Platform uptime</span></div>
+        </div>
+        <button id="cta_explore_trader_mode" class="cta-button" type="button">
+          Explore Trader Mode
+          <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h8M9 4l4 4-4 4"/></svg>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <div class="controls" aria-label="Walkthrough controls">
+    <button id="prev" aria-label="Previous">&#9664;</button>
+    <span class="step-label" id="stepLabel">1 / 9</span>
+    <button id="playPause" aria-label="Play / pause">&#10074;&#10074;</button>
+    <button id="next" aria-label="Next">&#9654;</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  const SVG_NS = 'http://www.w3.org/2000/svg';
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const total = slides.length;
+
+  // Cache of natural image dimensions, populated as images load.
+  const imgDims = {}; // src &#8594; {w,h,ratio}
+  const slideReady = []; // promise per slide
+
+  // Build the fit layer + screen + callout + notes for each slide from data attributes.
+  slides.forEach((slide, idx)=>{
+    // Fit layer (sized to image aspect)
+    const fit = document.createElement('div');
+    fit.className = 'fit';
+
+    const zoom = document.createElement('div');
+    zoom.className = 'zoom';
+    if (slide.dataset.mode === 'zoom') {
+      const ox = parseFloat(slide.dataset.ox || '50');
+      const oy = parseFloat(slide.dataset.oy || '50');
+      const z  = parseFloat(slide.dataset.z  || '1');
+      zoom.style.setProperty('--ox', ox + '%');
+      zoom.style.setProperty('--oy', oy + '%');
+      zoom.style.setProperty('--tx', (50 - ox) + '%');
+      zoom.style.setProperty('--ty', (50 - oy) + '%');
+      zoom.style.setProperty('--z', z);
+    }
+
+    const img = document.createElement('img');
+    img.className = 'screen';
+    img.src = slide.dataset.img;
+    img.alt = '';
+    if (slide.dataset.bgDim === '1') img.style.filter = 'saturate(.9) brightness(.45) blur(2px)';
+
+    // When image loads, set the fit aspect-ratio
+    slideReady[idx] = new Promise(res=>{
+      const apply = ()=>{
+        const w = img.naturalWidth, h = img.naturalHeight;
+        imgDims[slide.dataset.img] = {w,h,ratio:w/h};
+        fit.style.setProperty('--img-ratio', `${w}/${h}`);
+        res();
+      };
+      if (img.complete && img.naturalWidth) apply();
+      else img.addEventListener('load', apply, {once:true});
+    });
+    zoom.appendChild(img);
+
+    // Callout (image-anchored, lives inside fit layer at z=1)
+    if (slide.dataset.cw) {
+      const c = document.createElement('div');
+      c.className = 'callout';
+      c.style.setProperty('--cx', slide.dataset.cx + '%');
+      c.style.setProperty('--cy', slide.dataset.cy + '%');
+      c.style.setProperty('--cw', slide.dataset.cw + '%');
+      c.style.setProperty('--ch', slide.dataset.ch + '%');
+      zoom.appendChild(c);
+    }
+
+    fit.appendChild(zoom);
+    slide.insertBefore(fit, slide.firstChild);
+
+    // Build the loupe (magnified cutaway) only for loupe-mode slides.
+    if (slide.dataset.mode === 'loupe' && slide.dataset.cw) {
+      slideReady[idx].then(()=>buildLoupe(slide));
+    }
+
+    // Spotlight dim. Strong for both zoom and loupe slides; soft only
+    // when explicitly opted-out. Skipped on overview + closing.
+    if (slide.dataset.cw) {
+      slideReady[idx].then(()=>{
+        const dim = document.createElement('div');
+        dim.className = 'dim strong';
+        if (slide.dataset.mode === 'zoom') {
+          dim.style.setProperty('--sx', '50%');
+          dim.style.setProperty('--sy', '50%');
+          const z = parseFloat(slide.dataset.z || '1');
+          const sr = Math.max(parseFloat(slide.dataset.cw), parseFloat(slide.dataset.ch)) * z * 0.6 + 8;
+          dim.style.setProperty('--sr', sr + '%');
+        } else {
+          // Loupe mode: spotlight the highlight box on the main screen.
+          const target = imgToStage(slide, parseFloat(slide.dataset.cx), parseFloat(slide.dataset.cy));
+          dim.style.setProperty('--sx', target.x + '%');
+          dim.style.setProperty('--sy', target.y + '%');
+          const sr = Math.max(parseFloat(slide.dataset.cw), parseFloat(slide.dataset.ch)) * 0.8 + 6;
+          dim.style.setProperty('--sr', sr + '%');
+        }
+        slide.appendChild(dim);
+      });
+    }
+
+    // Notes (rendered in stage coords; computed from image % after the fit layer is sized)
+    let notes = [];
+    try { notes = JSON.parse(slide.dataset.notes || '[]'); } catch(e){}
+    if (notes.length) {
+      slideReady[idx].then(()=>{
+        // Connectors svg
+        const svg = document.createElementNS(SVG_NS, 'svg');
+        svg.classList.add('connectors');
+        svg.setAttribute('viewBox', '0 0 100 100');
+        svg.setAttribute('preserveAspectRatio','none');
+        svg.setAttribute('aria-hidden', 'true');
+        svg.style.width = '100%'; svg.style.height = '100%';
+        slide.appendChild(svg);
+
+        notes.forEach(n=>{
+          const target = imgToStage(slide, n.nx, n.ny);
+          const tx = target.x, ty = target.y;
+          // Place note off the target so the arrow has somewhere to start.
+          const noteX = Math.max(10, Math.min(90, tx));
+          let noteY;
+          if (ty < 30) noteY = Math.max(6, ty - 8);
+          else if (ty > 70) noteY = Math.min(94, ty + 8);
+          else noteY = ty < 50 ? ty - 14 : ty + 14;
+
+          // Direction from note &#8594; target
+          const vx = tx - noteX, vy = ty - noteY;
+          const vl = Math.sqrt(vx*vx + vy*vy) || 1;
+          const ux = vx / vl, uy = vy / vl;
+
+          // Arrowhead at the target end
+          const arrowSize = 2.2;
+          const wing = arrowSize * 0.62;
+          const tipX = tx - ux * 0.8, tipY = ty - uy * 0.8;
+          const baseX = tipX - ux * arrowSize, baseY = tipY - uy * arrowSize;
+          const perpX = -uy, perpY = ux;
+
+          // Shaft from note edge to arrow base
+          const path = document.createElementNS(SVG_NS,'path');
+          path.setAttribute('class','line');
+          path.setAttribute('d', `M ${noteX} ${noteY} L ${baseX} ${baseY}`);
+          svg.appendChild(path);
+
+          const tri = document.createElementNS(SVG_NS,'polygon');
+          tri.setAttribute('class','arrow');
+          tri.setAttribute('points',
+            `${tipX},${tipY} ${baseX + perpX*wing},${baseY + perpY*wing} ${baseX - perpX*wing},${baseY - perpY*wing}`);
+          svg.appendChild(tri);
+
+          const note = document.createElement('div');
+          note.className = 'note';
+          note.style.setProperty('--nx', noteX + '%');
+          note.style.setProperty('--ny', noteY + '%');
+          note.innerHTML = `<span class="lbl">${n.lbl}</span>${n.txt}`;
+          slide.appendChild(note);
+        });
+      });
+    }
+
+    // Cursor (only when from/to provided)
+    if (slide.dataset.cursorTo) {
+      const cur = document.createElement('div');
+      cur.className = 'cursor';
+      cur.setAttribute('aria-hidden', 'true');
+      cur.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 2l7 18 2.5-7.5L20 10z" fill="#1B1464" stroke="#fff" stroke-width="1.4"/></svg>';
+      slide.appendChild(cur);
+      const rip = document.createElement('div');
+      rip.className = 'ripple';
+      rip.setAttribute('aria-hidden', 'true');
+      slide.appendChild(rip);
+    }
+  });
+
+  // Convert image-% (relative to image bitmap) &#8594; stage-% (relative to .stage).
+  // Screen is now always at natural scale; only need to account for the
+  // .fit layer's letterbox offset inside the stage.
+  function imgToStage(slide, ix, iy) {
+    const stage = document.getElementById('stage').getBoundingClientRect();
+    const fit = slide.querySelector('.fit').getBoundingClientRect();
+    const offX = (fit.left - stage.left) / stage.width * 100;
+    const offY = (fit.top  - stage.top ) / stage.height * 100;
+    const sclX = fit.width  / stage.width;
+    const sclY = fit.height / stage.height;
+    return { x: offX + ix * sclX, y: offY + iy * sclY };
+  }
+
+  // Build a floating magnifier panel near the callout, showing the same screen
+  // region enlarged. Visual link: matching blue border + dashed connector line.
+  function buildLoupe(slide) {
+    // Highlight box on the main screen (image %)
+    const cx = parseFloat(slide.dataset.cx);
+    const cy = parseFloat(slide.dataset.cy);
+    const cw = parseFloat(slide.dataset.cw);
+    const ch = parseFloat(slide.dataset.ch);
+    // Region SHOWN in the loupe (defaults to the highlight box, but the slide
+    // can override with data-loupe-cx/cy/cw/ch for a tighter or wider crop).
+    const rx = parseFloat(slide.dataset.loupeCx || cx);
+    const ry = parseFloat(slide.dataset.loupeCy || cy);
+    const rw = parseFloat(slide.dataset.loupeCw || cw);
+    const rh = parseFloat(slide.dataset.loupeCh || ch);
+    const label = slide.dataset.loupeLbl || 'Zoom';
+
+    const stageEl = document.getElementById('stage');
+    const stageR = stageEl.getBoundingClientRect();
+    const fitR = slide.querySelector('.fit').getBoundingClientRect();
+
+    // Loupe panel size. Slide can hint via data-lw/data-lh, but we always cap
+    // to ~45% width and ~55% height of stage so the panel never overflows
+    // on small viewports (mobile, narrow iframes).
+    const maxW = stageR.width * 0.45;
+    const maxH = stageR.height * 0.55;
+    let lwPx = parseFloat(slide.dataset.lw) || Math.min(stageR.width * 0.30, 380);
+    let lhPx = parseFloat(slide.dataset.lh) || Math.round(lwPx * 0.68);
+    if (lwPx > maxW) { lhPx = lhPx * (maxW / lwPx); lwPx = maxW; }
+    if (lhPx > maxH) { lwPx = lwPx * (maxH / lhPx); lhPx = maxH; }
+
+    // Auto-magnification: pick the largest scale that keeps the loupe region
+    // fully inside the panel, with ~10% padding.
+    const padding = 0.88;
+    const regionWPx = rw / 100 * fitR.width;
+    const regionHPx = rh / 100 * fitR.height;
+    const magW = (lwPx * padding) / regionWPx;
+    const magH = (lhPx * padding) / regionHPx;
+    let mag = Math.min(magW, magH);
+    if (slide.dataset.mag) mag = parseFloat(slide.dataset.mag);
+    mag = Math.max(1.05, mag); // never shrink
+
+    // Highlight target centre in stage coords (%) &#8212; for connector anchor
+    const target = imgToStage(slide, cx, cy);
+    const targetXPx = target.x / 100 * stageR.width;
+    const targetYPx = target.y / 100 * stageR.height;
+
+    // Magnified image size: scale the fit layer by mag.
+    const imgW = fitR.width  * mag;
+    const imgH = fitR.height * mag;
+    // Inside the loupe, place the magnified image so (rx, ry) &#8212; the region
+    // centre &#8212; lands at the loupe centre.
+    const magImgX = lwPx / 2 - (rx / 100) * imgW;
+    const magImgY = lhPx / 2 - (ry / 100) * imgH;
+
+    // Decide loupe position. Place opposite of target so callout stays visible.
+    // Loupe edge should clear the callout by at least cw/2 + 20px.
+    const callout = slide.querySelector('.callout').getBoundingClientRect();
+    let lxPx, lyPx;
+    const margin = 24;
+    const halfLw = lwPx / 2, halfLh = lhPx / 2;
+
+    // Horizontal: put loupe on the side with more room
+    const roomLeft  = targetXPx - (callout.width / 2) - margin;
+    const roomRight = stageR.width - targetXPx - (callout.width / 2) - margin;
+    if (roomRight >= lwPx) {
+      lxPx = targetXPx + callout.width / 2 + margin + halfLw;
+    } else if (roomLeft >= lwPx) {
+      lxPx = targetXPx - callout.width / 2 - margin - halfLw;
+    } else {
+      // Not enough horizontal room either side; place below/above
+      lxPx = stageR.width - halfLw - margin;
+    }
+    // Vertical: pin the loupe near the top of the stage so the overlay
+    // always slots cleanly below it. Connector reaches down to the target.
+    const minLoupeCentreY = halfLh + margin + 50; // clear of the top progress bar
+    lyPx = minLoupeCentreY;
+
+    const lxPct = lxPx / stageR.width * 100;
+    const lyPct = lyPx / stageR.height * 100;
+
+    // Build DOM
+    const loupe = document.createElement('div');
+    loupe.className = 'loupe';
+    loupe.style.setProperty('--lx', lxPct + '%');
+    loupe.style.setProperty('--ly', lyPct + '%');
+    loupe.style.setProperty('--lw', lwPx + 'px');
+    loupe.style.setProperty('--lh', lhPx + 'px');
+
+    const inner = document.createElement('div');
+    inner.className = 'loupe-inner';
+    const magImg = document.createElement('img');
+    magImg.src = slide.dataset.img;
+    magImg.alt = '';
+    magImg.style.width  = imgW + 'px';
+    magImg.style.height = imgH + 'px';
+    magImg.style.left   = magImgX + 'px';
+    magImg.style.top    = magImgY + 'px';
+    inner.appendChild(magImg);
+    loupe.appendChild(inner);
+
+    const lblEl = document.createElement('div');
+    lblEl.className = 'loupe-label';
+    // Direction arrow points back toward the callout on the main screen.
+    const dxL = target.x - lxPct;
+    const dyL = target.y - lyPct;
+    let arrowPath = 'M3 9 L9 3 M9 3 L9 7 M9 3 L5 3'; // default &#8599; (loupe is below-left of target)
+    if (Math.abs(dxL) > Math.abs(dyL)) {
+      arrowPath = dxL > 0
+        ? 'M2 6 L10 6 M10 6 L6 2 M10 6 L6 10'   // &#8594; loupe left of target
+        : 'M10 6 L2 6 M2 6 L6 2 M2 6 L6 10';    // &#8592; loupe right of target
+    } else {
+      arrowPath = dyL > 0
+        ? 'M6 2 L6 10 M6 10 L2 6 M6 10 L10 6'   // &#8595; loupe above target
+        : 'M6 10 L6 2 M6 2 L2 6 M6 2 L10 6';    // &#8593; loupe below target
+    }
+    lblEl.innerHTML =
+      `<svg viewBox="0 0 12 12" fill="none" stroke="#7C3AED" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="${arrowPath}"/></svg>` +
+      label;
+    loupe.appendChild(lblEl);
+
+    slide.appendChild(loupe);
+
+    // Connector SVG: line from highlight box edge to nearest loupe edge
+    const svg = document.createElementNS(SVG_NS, 'svg');
+    svg.classList.add('loupe-link');
+    svg.setAttribute('viewBox', '0 0 100 100');
+    svg.setAttribute('preserveAspectRatio','none');
+    svg.setAttribute('aria-hidden', 'true');
+    svg.style.width = '100%'; svg.style.height = '100%';
+
+    // Anchor points (stage %)
+    const ax = target.x;
+    const ay = target.y;
+    // Pick the loupe-edge anchor closest to the callout
+    const dx = ax - lxPct;
+    const dy = ay - lyPct;
+    const halfLwPct = (lwPx / stageR.width) * 50;
+    const halfLhPct = (lhPx / stageR.height) * 50;
+    let bx = lxPct, by = lyPct;
+    if (Math.abs(dx) * halfLhPct > Math.abs(dy) * halfLwPct) {
+      bx = lxPct + (dx > 0 ? halfLwPct : -halfLwPct);
+      by = lyPct + (dy / Math.abs(dx)) * halfLwPct;
+    } else {
+      by = lyPct + (dy > 0 ? halfLhPct : -halfLhPct);
+      bx = lxPct + (dx / Math.abs(dy)) * halfLhPct;
+    }
+    // Direction vector from loupe edge &#8594; callout (ax,ay is callout centre,
+    // bx,by is the loupe edge anchor).
+    const vx = ax - bx, vy = ay - by;
+    const vl = Math.sqrt(vx*vx + vy*vy) || 1;
+    const ux = vx / vl, uy = vy / vl;
+
+    // Arrowhead pointing AT the callout.
+    const arrowSize = 2.6; // viewBox units (0-100)
+    const wing = arrowSize * 0.62;
+    const tipX = ax - ux * 1.2, tipY = ay - uy * 1.2;
+    const baseX = tipX - ux * arrowSize, baseY = tipY - uy * arrowSize;
+    const perpX = -uy, perpY = ux;
+    const p1 = `${tipX},${tipY}`;
+    const p2 = `${baseX + perpX*wing},${baseY + perpY*wing}`;
+    const p3 = `${baseX - perpX*wing},${baseY - perpY*wing}`;
+
+    // Straight solid shaft from loupe edge to arrowhead base &#8212; no curve,
+    // no dashes (avoids the "scribble" feel).
+    const path = document.createElementNS(SVG_NS,'path');
+    path.setAttribute('class','line');
+    path.setAttribute('d', `M ${bx} ${by} L ${baseX} ${baseY}`);
+    svg.appendChild(path);
+
+    const tri = document.createElementNS(SVG_NS,'polygon');
+    tri.setAttribute('class','arrow');
+    tri.setAttribute('points', `${p1} ${p2} ${p3}`);
+    svg.appendChild(tri);
+    slide.appendChild(svg);
+
+    // Persist loupe geometry so the motion code (Screen 7) can position
+    // the cursor and popups INSIDE the loupe panel.
+    slide._loupeGeom = {
+      lxPct, lyPct, lwPx, lhPx, mag,
+      rx, ry,
+      fitW: fitR.width, fitH: fitR.height,
+      stageW: stageR.width, stageH: stageR.height
+    };
+
+    // Pin the overlay directly below the loupe so the copy lives next to
+    // the magnified content (not stranded at the stage corner).
+    const overlay = slide.querySelector('.overlay');
+    if (overlay) {
+      overlay.classList.add('under-loupe');
+      overlay.classList.remove('right','top');
+      const loupeBottomPct = lyPct + (lhPx / stageR.height) * 50;
+      const overlayWidthPx = Math.max(lwPx, 300);
+      const overlayWidthPct = (overlayWidthPx / stageR.width) * 100;
+      const halfPct = overlayWidthPct / 2;
+      const ulxClamped = Math.max(halfPct + 1, Math.min(99 - halfPct, lxPct));
+      let ulyTop = loupeBottomPct + 2;
+      if (ulyTop > 86) {
+        // Loupe sits too low; tuck overlay alongside the loupe instead.
+        ulyTop = lyPct;
+        const sideOffsetPct = (lwPx / stageR.width) * 60;
+        overlay.style.setProperty('--ulx',
+          Math.max(halfPct + 1, Math.min(99 - halfPct, lxPct - sideOffsetPct)) + '%');
+      } else {
+        overlay.style.setProperty('--ulx', ulxClamped + '%');
+      }
+      overlay.style.setProperty('--uly', ulyTop + '%');
+      overlay.style.setProperty('--ulw', overlayWidthPx + 'px');
+    }
+  }
+
+  /* Convert an image-% point to stage-% position *inside* the loupe panel.
+     Mirrors the placement math used when rendering the magnified image. */
+  function loupeImgToStage(slide, ix, iy) {
+    const g = slide._loupeGeom;
+    if (!g) return imgToStage(slide, ix, iy);
+    const stage = document.getElementById('stage').getBoundingClientRect();
+    const xPx = (g.lxPct / 100) * stage.width  + (ix - g.rx) / 100 * g.fitW * g.mag;
+    const yPx = (g.lyPct / 100) * stage.height + (iy - g.ry) / 100 * g.fitH * g.mag;
+    return { x: xPx / stage.width * 100, y: yPx / stage.height * 100 };
+  }
+
+  function activateMotion(slide){
+    const ready = slideReady[slides.indexOf(slide)] || Promise.resolve();
+    ready.then(()=>{
+      if (slide.dataset.mode === 'zoom') runZoomIn(slide);
+      _activateMotion(slide);
+    });
+  }
+  /* For zoom-mode slides: open at full screen, hold ~700ms so the user
+     reads the layout, then smoothly zoom toward the focus point. */
+  function runZoomIn(slide){
+    const z  = parseFloat(slide.dataset.z  || '1');
+    const ox = parseFloat(slide.dataset.ox || '50');
+    const oy = parseFloat(slide.dataset.oy || '50');
+    const zoom = slide.querySelector('.zoom');
+    if (!zoom) return;
+    zoom.style.transition = 'none';
+    zoom.style.setProperty('--ox', '50%');
+    zoom.style.setProperty('--oy', '50%');
+    zoom.style.setProperty('--tx', '0%');
+    zoom.style.setProperty('--ty', '0%');
+    zoom.style.setProperty('--z', '1');
+    void zoom.offsetWidth;
+    requestAnimationFrame(()=>{
+      zoom.style.transition = '';
+      // Screen 1 holds an intro card for ~3.5s before kicking off the zoom.
+      const hold = slide.classList.contains('s1') ? 3700 : 700;
+      setTimeout(()=>{
+        if (!slide.classList.contains('active')) return;
+        zoom.style.setProperty('--ox', ox + '%');
+        zoom.style.setProperty('--oy', oy + '%');
+        zoom.style.setProperty('--tx', (50 - ox) + '%');
+        zoom.style.setProperty('--ty', (50 - oy) + '%');
+        zoom.style.setProperty('--z', z);
+      }, hold);
+    });
+  }
+  function _activateMotion(slide){
+    slide.querySelectorAll('.target-dot').forEach(d=>{ d.style.opacity='1' });
+    const curTo = slide.dataset.cursorTo;
+    if (!curTo) return;
+    const cur = slide.querySelector('.cursor');
+    const rip = slide.querySelector('.ripple');
+    if (!cur) return;
+
+    const [fx, fy] = (slide.dataset.cursorFrom || '50,50').split(',').map(Number);
+    const [tx, ty] = curTo.split(',').map(Number);
+
+    // For zoom-mode slides, the screen scales toward (ox,oy); compute the
+    // post-zoom positions so the cursor lands on the rendered target.
+    const isZoom = slide.dataset.mode === 'zoom';
+    let from, to;
+    if (isZoom) {
+      const ox = parseFloat(slide.dataset.ox || '50');
+      const oy = parseFloat(slide.dataset.oy || '50');
+      const z  = parseFloat(slide.dataset.z  || '1');
+      const px = ix => (ix - ox) * z + 50;
+      const py = iy => (iy - oy) * z + 50;
+      from = imgToStage(slide, px(fx), py(fy));
+      to   = imgToStage(slide, px(tx), py(ty));
+    } else {
+      from = imgToStage(slide, fx, fy);
+      to   = imgToStage(slide, tx, ty);
+    }
+
+    // Snap to start without animation (avoids the "boomerang" from the
+    // cursor's previous position).
+    cur.style.transition = 'none';
+    cur.style.setProperty('--mx', from.x + '%');
+    cur.style.setProperty('--my', from.y + '%');
+    cur.classList.remove('click');
+    rip && rip.classList.remove('on');
+    void cur.offsetWidth;
+    cur.style.transition = '';
+
+    // For Screen 7 the motion plays out INSIDE the loupe so the eye stays
+    // on the magnified ladder. Override target with loupe-internal coords.
+    let target = to;
+    if (slide.classList.contains('s7')) {
+      target = loupeImgToStage(slide, parseFloat(slide.dataset.cx), parseFloat(slide.dataset.cy));
+    }
+
+    const startDelay = isZoom
+      ? (slide.classList.contains('s1') ? 5400 : 2400)
+      : 600;
+    trackTimer(slide, setTimeout(()=>{
+      if (!slide.classList.contains('active')) return;
+      cur.style.setProperty('--mx', target.x + '%');
+      cur.style.setProperty('--my', target.y + '%');
+      trackTimer(slide, setTimeout(()=>{
+        if (!slide.classList.contains('active')) return;
+        cur.classList.add('click');
+        if (rip) {
+          rip.style.setProperty('--mx', target.x + '%');
+          rip.style.setProperty('--my', target.y + '%');
+          rip.classList.add('on');
+        }
+        trackTimer(slide, setTimeout(()=>cur && cur.classList.remove('click'), 220));
+        if (slide.classList.contains('s7')) {
+          runOrderConfirm(slide, target);
+        }
+      }, 1100));
+    }, startDelay));
+  }
+
+  // Screen 7: motion sequence for "place order from ladder".
+  // After cursor clicks the price, show a BUY confirmation, fade, then
+  // shift the cursor to the offer column and show a SELL confirmation.
+  function runOrderConfirm(slide, clickPos) {
+    const toast = ensureOrderToast(slide);
+    // BUY: quantity popup -> green toast + Super Fast badge.
+    showQtyPopup(slide, clickPos, 'buy', 65, 187);
+    trackTimer(slide, setTimeout(()=>{
+      if (!slide.classList.contains('active')) return;
+      showOrderToast(toast, clickPos, 'buy', 'Buy @ 187');
+      showSpeedBadge(slide, clickPos);
+    }, 360));
+
+    // SELL: ~2.8s later cursor slides to the Offers side INSIDE the loupe,
+    // clicks, popup, red toast + Super Fast badge.
+    trackTimer(slide, setTimeout(()=>{
+      if (!slide.classList.contains('active')) return;
+      hideOrderToast(toast);
+      hideQtyPopup(slide);
+      hideSpeedBadge(slide);
+      moveCursorAndClickLoupe(slide, 28, 59.1, ()=>{
+        if (!slide.classList.contains('active')) return;
+        const sellPos = loupeImgToStage(slide, 28, 59.1);
+        showQtyPopup(slide, sellPos, 'sell', 65, 187);
+        trackTimer(slide, setTimeout(()=>{
+          if (!slide.classList.contains('active')) return;
+          showOrderToast(toast, sellPos, 'sell', 'Sell @ 187');
+          showSpeedBadge(slide, sellPos);
+        }, 360));
+      });
+    }, 2800));
+  }
+
+  function ensureQtyPopup(slide){
+    let q = slide.querySelector('.qty-popup');
+    if (q) return q;
+    q = document.createElement('div');
+    q.className = 'qty-popup';
+    slide.appendChild(q);
+    return q;
+  }
+  function showQtyPopup(slide, anchor, kind, lots, price){
+    const q = ensureQtyPopup(slide);
+    q.className = 'qty-popup' + (kind === 'sell' ? ' sell' : '');
+    q.innerHTML =
+      '<span class="qty-val">' + lots + '</span>' +
+      '<span class="qty-price">' + price + '</span>' +
+      '<span class="qty-btn">+</span>' +
+      '<span class="qty-btn">&#8722;</span>';
+    // Offset slightly above the click so it doesn't sit on top of the cursor.
+    const px = anchor.x;
+    const py = Math.max(6, anchor.y - 5);
+    q.style.setProperty('--qx', px + '%');
+    q.style.setProperty('--qy', py + '%');
+    q.classList.remove('show');
+    void q.offsetWidth;
+    q.classList.add('show');
+
+    // Tiny pop ring at the click point for the "pop" feel.
+    let r = slide.querySelector('.qty-pop-ring');
+    if (!r) { r = document.createElement('div'); r.className = 'qty-pop-ring'; slide.appendChild(r); }
+    r.style.setProperty('--qx', anchor.x + '%');
+    r.style.setProperty('--qy', anchor.y + '%');
+    r.classList.remove('pop'); void r.offsetWidth; r.classList.add('pop');
+  }
+  function hideQtyPopup(slide){
+    const q = slide.querySelector('.qty-popup');
+    q && q.classList.remove('show');
+  }
+
+  /* Same as moveCursorAndClick but positions the cursor INSIDE the loupe. */
+  function moveCursorAndClickLoupe(slide, ix, iy, onClick) {
+    const cur = slide.querySelector('.cursor');
+    const rip = slide.querySelector('.ripple');
+    if (!cur) return;
+    const to = loupeImgToStage(slide, ix, iy);
+    cur.style.setProperty('--mx', to.x + '%');
+    cur.style.setProperty('--my', to.y + '%');
+    trackTimer(slide, setTimeout(()=>{
+      if (!slide.classList.contains('active')) return;
+      cur.classList.add('click');
+      if (rip) {
+        rip.style.setProperty('--mx', to.x + '%');
+        rip.style.setProperty('--my', to.y + '%');
+        rip.classList.remove('on'); void rip.offsetWidth; rip.classList.add('on');
+      }
+      trackTimer(slide, setTimeout(()=>cur && cur.classList.remove('click'), 220));
+      if (onClick) trackTimer(slide, setTimeout(onClick, 260));
+    }, 900));
+  }
+
+  function ensureOrderToast(slide) {
+    let t = slide.querySelector('.order-toast');
+    if (t) return t;
+    t = document.createElement('div');
+    t.className = 'order-toast';
+    slide.appendChild(t);
+    return t;
+  }
+
+  function ensureSpeedBadge(slide){
+    let b = slide.querySelector('.speed-badge');
+    if (!b) {
+      b = document.createElement('div');
+      b.className = 'speed-badge';
+      b.setAttribute('aria-hidden','true');
+      b.innerHTML =
+        '<span class="bolt"><svg viewBox="0 0 16 16" fill="#fff" aria-hidden="true">' +
+          '<path d="M9.5 1 L3 9 H7 L6 15 L13 7 H9 L9.5 1 Z"/>' +
+        '</svg></span>' +
+        '<span>Super Fast Execution</span>';
+      slide.appendChild(b);
+    }
+    let s = slide.querySelector('.speed-streaks');
+    if (!s) {
+      s = document.createElement('div');
+      s.className = 'speed-streaks';
+      s.setAttribute('aria-hidden','true');
+      s.innerHTML = '<i></i><i></i><i></i>';
+      slide.appendChild(s);
+    }
+    return { badge: b, streaks: s };
+  }
+
+  function showSpeedBadge(slide, anchor) {
+    const { badge, streaks } = ensureSpeedBadge(slide);
+    // Place the badge BELOW the click point so it never collides with the
+    // order-confirmation toast (which sits above-right of the click).
+    // Clamp so the badge stays inside the stage.
+    const bx = Math.max(18, Math.min(82, anchor.x));
+    const by = Math.max(20, Math.min(92, anchor.y + 22));
+    badge.style.setProperty('--sbx', bx + '%');
+    badge.style.setProperty('--sby', by + '%');
+    streaks.style.setProperty('--sbx', bx + '%');
+    streaks.style.setProperty('--sby', by + '%');
+    badge.classList.remove('show'); streaks.classList.remove('show');
+    void badge.offsetWidth;
+    badge.classList.add('show');
+    streaks.classList.add('show');
+  }
+  function hideSpeedBadge(slide) {
+    const b = slide.querySelector('.speed-badge');
+    const s = slide.querySelector('.speed-streaks');
+    b && b.classList.remove('show');
+    s && s.classList.remove('show');
+  }
+
+  function showOrderToast(toast, anchor, kind, priceLabel) {
+    // Position the toast above the click point so it doesn't cover the ladder
+    const tx = Math.max(20, Math.min(80, anchor.x + 18));
+    const ty = Math.max(14, anchor.y - 14);
+    toast.style.setProperty('--tx', tx + '%');
+    toast.style.setProperty('--ty', ty + '%');
+    const tickColor = kind === 'buy' ? '#0F8A4E' : '#B91C1C';
+    const gradient  = kind === 'buy'
+      ? 'linear-gradient(135deg, #0F8A4E 0%, #16A34A 100%)'
+      : 'linear-gradient(135deg, #B91C1C 0%, #E11D48 100%)';
+    const shadow    = kind === 'buy'
+      ? '0 24px 48px rgba(22,163,74,.40), 0 6px 14px rgba(15,23,42,.25), inset 0 1px 0 rgba(255,255,255,.20)'
+      : '0 24px 48px rgba(225,29,72,.42), 0 6px 14px rgba(15,23,42,.25), inset 0 1px 0 rgba(255,255,255,.20)';
+    toast.style.background = gradient;
+    toast.style.boxShadow  = shadow;
+    toast.innerHTML =
+      '<div class="tick"><svg viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5 L7 12 L13 4"/></svg></div>' +
+      '<div class="body"><small>Order placed</small><strong>' + priceLabel + '</strong></div>';
+    // Ensure we get a fresh entry transition even if .show was already on.
+    toast.classList.remove('show');
+    void toast.offsetWidth;
+    toast.classList.add('show');
+  }
+
+  function hideOrderToast(toast) {
+    toast && toast.classList.remove('show');
+  }
+
+  function moveCursorAndClick(slide, ix, iy, onClick) {
+    const cur = slide.querySelector('.cursor');
+    const rip = slide.querySelector('.ripple');
+    if (!cur) return;
+    const to = imgToStage(slide, ix, iy);
+    cur.style.setProperty('--mx', to.x + '%');
+    cur.style.setProperty('--my', to.y + '%');
+    trackTimer(slide, setTimeout(()=>{
+      if (!slide.classList.contains('active')) return;
+      cur.classList.add('click');
+      if (rip) {
+        rip.style.setProperty('--mx', to.x + '%');
+        rip.style.setProperty('--my', to.y + '%');
+        rip.classList.remove('on');
+        void rip.offsetWidth;
+        rip.classList.add('on');
+      }
+      trackTimer(slide, setTimeout(()=>cur && cur.classList.remove('click'), 220));
+      if (onClick) trackTimer(slide, setTimeout(onClick, 240));
+    }, 900));
+  }
+
+  // Per-slide pending timers &#8212; cleared on resetSlide to avoid leaks.
+  const slideTimers = new WeakMap();
+  function trackTimer(slide, t){
+    const list = slideTimers.get(slide) || [];
+    list.push(t);
+    slideTimers.set(slide, list);
+    return t;
+  }
+  function clearSlideTimers(slide){
+    const list = slideTimers.get(slide);
+    if (!list) return;
+    list.forEach(t=>clearTimeout(t));
+    slideTimers.set(slide, []);
+  }
+
+  function resetSlide(slide){
+    clearSlideTimers(slide);
+    slide.querySelectorAll('.target-dot').forEach(d=>{ d.style.opacity='0' });
+    const cur = slide.querySelector('.cursor');
+    const rip = slide.querySelector('.ripple');
+    cur && cur.classList.remove('click');
+    rip && rip.classList.remove('on');
+    const toast = slide.querySelector('.order-toast');
+    toast && toast.classList.remove('show');
+    const qty = slide.querySelector('.qty-popup');
+    qty && qty.classList.remove('show');
+    const ring = slide.querySelector('.qty-pop-ring');
+    ring && ring.classList.remove('pop');
+    const sb = slide.querySelector('.speed-badge');
+    sb && sb.classList.remove('show');
+    const sk = slide.querySelector('.speed-streaks');
+    sk && sk.classList.remove('show');
+  }
+
+  // Progress dots
+  const progressBar = document.getElementById('progress');
+  for (let i=0;i<total;i++) progressBar.appendChild(document.createElement('span'));
+  const dots = Array.from(progressBar.children);
+  const stepLabel = document.getElementById('stepLabel');
+
+  let idx = 0;
+  let playing = true;
+  let timer = null;
+
+  function goTo(n){
+    const next = ((n % total) + total) % total;
+    const prev = slides[idx];
+    prev.classList.remove('active');
+    resetSlide(prev);
+    idx = next;
+    const slide = slides[idx];
+    slide.classList.add('active');
+    dots.forEach((d,i)=>{ d.className = i < idx ? 'done' : (i === idx ? 'now' : '') });
+    stepLabel.textContent = (idx+1) + ' / ' + total;
+    // Hide the brandbar + progress chrome on in-product slides (s4&#8211;s9).
+    const stageEl = document.getElementById('stage');
+    stageEl.classList.toggle('hide-chrome', slide.classList.contains('no-chrome'));
+    activateMotion(slide);
+    scheduleNext();
+  }
+
+  function scheduleNext(){
+    clearTimeout(timer);
+    if (!playing) return;
+    // Hold on the final card; don't loop back to the start.
+    if (idx === total - 1) return;
+    const dur = parseInt(slides[idx].dataset.dur || '6200', 10);
+    timer = setTimeout(()=>goTo(idx+1), dur);
+  }
+
+  document.getElementById('next').addEventListener('click', ()=>goTo(idx+1));
+  document.getElementById('prev').addEventListener('click', ()=>goTo(idx-1));
+  const pp = document.getElementById('playPause');
+  pp.addEventListener('click', ()=>{
+    playing = !playing;
+    pp.textContent = playing ? String.fromCharCode(0x275A, 0x275A) : String.fromCharCode(0x25B6);
+    if (playing) scheduleNext(); else clearTimeout(timer);
+  });
+  // Pause auto-advance when the page is hidden (tab switch / WebView background)
+  // and resume on return. Prevents timers from firing in the background and
+  // keeps the deck in a recoverable state per Plotline cleanup guidance.
+  document.addEventListener('visibilitychange', ()=>{
+    if (document.hidden) {
+      clearTimeout(timer);
+    } else if (playing) {
+      scheduleNext();
+    }
+  });
+
+  document.addEventListener('keydown', (e)=>{
+    if (e.key === 'ArrowRight') goTo(idx+1);
+    else if (e.key === 'ArrowLeft') goTo(idx-1);
+    else if (e.key === ' ') { e.preventDefault(); pp.click(); }
+  });
+  document.getElementById('stage').addEventListener('click', (e)=>{
+    if (e.target.closest('.controls')) return;
+    goTo(idx+1);
+  });
+
+  // ============ Plotline CTA wiring (Web only) ============
+  // Per Plotline guidelines: never use <a href>; bind a click handler that
+  // fires TRACK_EVENT first, then REDIRECT 80ms later so the event flushes
+  // before navigation. Unique actionId so per-CTA analytics roll up cleanly.
+  const CTA_URL = 'https://finx.choiceindia.com/?productType=strikex&widgets=name:price-ladder,underlyingInternalToken:Nifty%2050,tickSize:0.1|name:chart,internalToken:Nifty%2050|name:option-chain,underlyingInternalToken:Nifty%2050';
+  const CTA_ACTION_ID = 'strikex_walkthrough_explore_trader_mode';
+
+  function trackEventOnPlotline(eventName, properties){
+    if (!(window.PlotlineWeb && window.PlotlineWeb.onClick)) return;
+    try {
+      const eventData = JSON.stringify({ eventName, properties: properties || {} });
+      window.PlotlineWeb.onClick(null, 'TRACK_EVENT', eventData, 'WEB', false, false, false);
+    } catch (e) { /* analytics must never break UX */ }
+  }
+
+  function redirectOnPlotline(actionId, url){
+    if (window.PlotlineWeb && window.PlotlineWeb.onClick) {
+      try {
+        window.PlotlineWeb.onClick(actionId, 'REDIRECT', url, 'WEB', true, false, true);
+        return;
+      } catch (e) { /* fall through to browser fallback */ }
+    }
+    // Outside the Plotline iframe (e.g. dev preview): plain navigation
+    window.open(url, '_blank', 'noopener');
+  }
+
+  const ctaBtn = document.getElementById('cta_explore_trader_mode');
+  if (ctaBtn) {
+    ctaBtn.addEventListener('click', function(e){
+      e.preventDefault();
+      trackEventOnPlotline('strikex_walkthrough_cta_click', {
+        cta: 'Explore Trader Mode',
+        actionId: CTA_ACTION_ID,
+        slide: 's9',
+        source: 'strikex_real_screen_analysis'
+      });
+      // 80ms gap so the TRACK_EVENT leaves the queue before REDIRECT kills it.
+      setTimeout(()=>redirectOnPlotline(CTA_ACTION_ID, CTA_URL), 80);
+    });
+  }
+
+  // Boot
+  activateMotion(slides[0]);
+  dots[0].className = 'now';
+  scheduleNext();
+})();
+</script>
+</body>
+</html>

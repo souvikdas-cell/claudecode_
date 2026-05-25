@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FinX — Discovery</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:      #EEF1F8;
+  --card:    #FFFFFF;
+  --brand:   #2777F3;
+  --green:   #16A34A;
+  --red:     #DC2626;
+  --amber:   #D97706;
+  --purple:  #7C3AED;
+  --border:  #E2E8F0;
+  --t1:      #0F172A;
+  --t2:      #475569;
+  --t3:      #94A3B8;
+  --sh:      0 1px 3px rgba(0,0,0,.06), 0 2px 8px rgba(0,0,0,.04);
+  --sh-h:    0 4px 20px rgba(39,119,243,.13), 0 2px 8px rgba(0,0,0,.08);
+}
+
+body { font-family: -apple-system,'Inter',sans-serif; background: var(--bg); color: var(--t1); min-height: 100vh; }
+
+/* ─── HEADER ─── */
+.hdr {
+  background: #fff;
+  border-bottom: 1px solid var(--border);
+  height: 56px;
+  padding: 0 28px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex-shrink: 0;
+}
+.logo-icon {
+  width: 30px; height: 30px;
+  background: var(--brand);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 14px; font-weight: 900;
+}
+.logo-text { font-size: 15px; font-weight: 700; }
+.logo-text span { color: var(--brand); }
+
+.hdivider { width: 1px; height: 26px; background: var(--border); }
+
+/* Market pills */
+.mkt-pills { display: flex; gap: 6px; flex: 1; min-width: 0; }
+.mkt-pill {
+  display: flex; align-items: center; gap: 5px;
+  padding: 4px 10px;
+  background: var(--bg);
+  border-radius: 20px;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+.mkt-pill .mn { font-weight: 600; color: var(--t2); }
+.mkt-pill .mv { font-weight: 800; color: var(--t1); }
+.mkt-pill .mc { font-weight: 700; }
+.mc.up  { color: var(--green); }
+.mc.dn  { color: var(--red); }
+
+/* Mode toggle */
+.mode-wrap { display: flex; background: var(--bg); border-radius: 20px; padding: 3px; gap: 2px; flex-shrink: 0; }
+.mode-btn {
+  padding: 4px 14px; border-radius: 16px; border: none;
+  background: transparent; font-size: 12px; font-weight: 700;
+  color: var(--t2); cursor: pointer; transition: all .15s;
+}
+.mode-btn.active { background: #fff; color: var(--brand); box-shadow: 0 1px 4px rgba(0,0,0,.12); }
+
+/* ─── TABS ─── */
+.tabs {
+  background: #fff;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  padding: 0 28px;
+}
+.tab {
+  padding: 14px 22px;
+  font-size: 13px; font-weight: 600;
+  color: var(--t2);
+  cursor: pointer;
+  border-bottom: 2.5px solid transparent;
+  display: flex; align-items: center; gap: 7px;
+  transition: all .15s;
+  user-select: none;
+}
+.tab:hover { color: var(--brand); }
+.tab.active { color: var(--brand); border-bottom-color: var(--brand); }
+
+.badge-live {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 8px; background: #FEF2F2; border-radius: 20px;
+  font-size: 10px; font-weight: 800; color: var(--red); letter-spacing: .4px;
+}
+.live-dot {
+  width: 5px; height: 5px; background: var(--red); border-radius: 50%;
+  animation: blink 1.4s ease-in-out infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.25} }
+
+.tab-num {
+  background: var(--brand); color: #fff;
+  border-radius: 10px; padding: 1px 6px;
+  font-size: 10px; font-weight: 800;
+}
+
+/* ─── MAIN ─── */
+.main { padding: 24px 28px; max-width: 1200px; margin: 0 auto; }
+
+.tc { display: none; }
+.tc.active { display: block; }
+
+/* ─── FILTER ROW ─── */
+.frow {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 22px;
+  flex-wrap: wrap;
+}
+.flabel { font-size: 11px; font-weight: 700; color: var(--t3); text-transform: uppercase; letter-spacing: .6px; margin-right: 2px; }
+
+.tpill {
+  padding: 6px 15px;
+  border-radius: 20px;
+  border: 1.5px solid var(--border);
+  background: #fff;
+  font-size: 12px; font-weight: 700;
+  color: var(--t2); cursor: pointer;
+  transition: all .15s;
+}
+.tpill:hover { border-color: var(--brand); color: var(--brand); }
+.tpill.active { background: var(--brand); border-color: var(--brand); color: #fff; }
+
+.fspacer { flex: 1; }
+
+.sig-count {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 11px; font-weight: 700; color: var(--t2);
+}
+.sig-count .dot { width: 7px; height: 7px; background: var(--green); border-radius: 50%; }
+
+/* ─── SECTION LABEL ─── */
+.sec-lbl {
+  font-size: 12px; font-weight: 700; color: var(--t2);
+  margin-bottom: 16px;
+  display: flex; align-items: center; gap: 10px;
+}
+.sec-lbl::after { content:''; flex:1; height:1px; background:var(--border); }
+
+/* ─── FAST MOVERS GRID ─── */
+.fast-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+/* ─── SIGNAL CARD ─── */
+.sc {
+  background: #fff;
+  border-radius: 14px;
+  padding: 18px;
+  border: 1.5px solid transparent;
+  box-shadow: var(--sh);
+  cursor: pointer;
+  transition: all .22s;
+  position: relative;
+  overflow: hidden;
+}
+.sc::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  border-radius: 14px 14px 0 0;
+}
+.sc.conv-high::before   { background: var(--brand); }
+.sc.conv-strong::before { background: var(--green); }
+.sc.conv-watch::before  { background: var(--amber); }
+
+.sc:hover { border-color: #93C5FD; box-shadow: var(--sh-h); transform: translateY(-2px); }
+.sc.expanded { border-color: var(--brand); }
+
+/* Card header */
+.sc-head { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 14px; }
+.sc-asset {}
+.sc-name { font-size: 15px; font-weight: 900; color: var(--t1); line-height: 1; }
+.sc-strike { font-size: 12px; color: var(--t2); font-weight: 600; margin-top: 3px; }
+.sc-badges { display: flex; gap: 5px; margin-top: 6px; align-items: center; }
+
+.opt-tag {
+  padding: 2px 7px; border-radius: 5px;
+  font-size: 10px; font-weight: 800; letter-spacing: .3px;
+}
+.opt-tag.ce { background: #EFF6FF; color: #1D4ED8; }
+.opt-tag.pe { background: #FFF1F2; color: #BE123C; }
+
+/* Conviction badge */
+.cv {
+  display: flex; flex-direction: column; align-items: flex-end; gap: 2px;
+}
+.cv-pill {
+  padding: 3px 10px; border-radius: 20px;
+  font-size: 11px; font-weight: 800; letter-spacing: .3px;
+}
+.cv-pill.high   { background: #EFF6FF; color: var(--brand); }
+.cv-pill.strong { background: #F0FDF4; color: var(--green); }
+.cv-pill.watch  { background: #FFFBEB; color: var(--amber); }
+.cv-score { font-size: 10px; color: var(--t3); font-weight: 600; }
+
+/* Big % */
+.sc-pct { margin-bottom: 10px; }
+.pct-big { font-size: 30px; font-weight: 900; line-height: 1; }
+.pct-big.up { color: var(--green); }
+.pct-big.dn { color: var(--red); }
+.pct-lbl { font-size: 11px; color: var(--t3); font-weight: 500; margin-top: 3px; }
+
+/* Story */
+.sc-story {
+  font-size: 12.5px; font-weight: 600; color: var(--t1);
+  line-height: 1.45;
+  padding: 9px 11px;
+  background: #F8FAFC;
+  border-radius: 8px;
+  border-left: 3px solid var(--brand);
+  margin-bottom: 14px;
+}
+
+/* Activity bars */
+.sc-bars { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+.bar-r { display: flex; align-items: center; gap: 8px; }
+.bar-lbl { font-size: 10px; font-weight: 600; color: var(--t3); width: 88px; flex-shrink: 0; }
+.bar-track { flex:1; height: 6px; background: #F1F5F9; border-radius: 3px; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 3px; transition: width .5s ease; }
+.bar-fill.vol { background: var(--brand); }
+.bar-fill.oi  { background: var(--green); }
+.bar-fill.red { background: var(--red); }
+.bar-v { font-size: 10px; font-weight: 700; color: var(--t1); width: 30px; text-align: right; }
+
+/* Window */
+.sc-win {
+  display: flex; align-items: center; gap: 5px;
+  margin-bottom: 13px;
+}
+.win-t { font-size: 10px; color: var(--t3); font-weight: 500; }
+.win-v { font-size: 10px; font-weight: 800; color: var(--amber); }
+
+/* CTA */
+.sc-cta {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 13px;
+  background: var(--brand); color: #fff;
+  border-radius: 8px;
+  font-size: 12px; font-weight: 700;
+  cursor: pointer;
+  transition: background .15s;
+  user-select: none;
+}
+.sc-cta:hover { background: #1a5fd4; }
+
+/* Pro panel (hidden by default) */
+.sc-pro {
+  margin-top: 13px;
+  padding: 12px;
+  background: #F8FAFC;
+  border-radius: 8px;
+  display: none;
+}
+.sc-pro.vis { display: block; }
+.pro-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.pm { text-align: center; }
+.pm-v { font-size: 13px; font-weight: 800; color: var(--t1); }
+.pm-l { font-size: 9px; font-weight: 700; color: var(--t3); text-transform: uppercase; margin-top: 1px; letter-spacing: .4px; }
+
+/* ─── CATEGORY FILTER ─── */
+.cat-row { display: flex; gap: 8px; margin-bottom: 22px; flex-wrap: wrap; }
+.cat-pill {
+  padding: 7px 16px;
+  border-radius: 20px;
+  border: 1.5px solid var(--border);
+  background: #fff;
+  font-size: 12px; font-weight: 700; color: var(--t2);
+  cursor: pointer; transition: all .15s;
+  display: flex; align-items: center; gap: 6px;
+}
+.cat-pill .cdot { width: 7px; height: 7px; border-radius: 50%; }
+.cat-pill:hover { border-color: var(--brand); }
+.cat-pill.active { border-color: var(--brand); background: #EFF6FF; color: var(--brand); }
+
+/* ─── STOCK GRID ─── */
+.stock-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+
+/* ─── STOCK CARD ─── */
+.stk {
+  background: #fff; border-radius: 14px; padding: 20px;
+  border: 1.5px solid transparent; box-shadow: var(--sh);
+  cursor: pointer; transition: all .22s;
+  position: relative; overflow: hidden;
+}
+.stk::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; border-radius: 14px 14px 0 0;
+}
+.stk.conv-high::before   { background: var(--brand); }
+.stk.conv-strong::before { background: var(--green); }
+.stk.conv-watch::before  { background: var(--amber); }
+.stk:hover { border-color: #93C5FD; box-shadow: var(--sh-h); transform: translateY(-2px); }
+
+.stk-head {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  margin-bottom: 12px;
+}
+.stk-name { font-size: 17px; font-weight: 900; color: var(--t1); }
+.stk-sub  { font-size: 11px; color: var(--t3); font-weight: 500; margin-top: 2px; }
+.stk-tags { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; }
+
+.stk-badge {
+  padding: 3px 9px; border-radius: 6px;
+  font-size: 10px; font-weight: 800; letter-spacing: .3px;
+}
+.stk-badge.fallen   { background: #FFF1F2; color: #BE123C; }
+.stk-badge.momentum { background: #EFF6FF; color: #1D4ED8; }
+.stk-badge.event    { background: #F5F3FF; color: var(--purple); }
+
+.stk-move { font-size: 24px; font-weight: 900; margin-bottom: 8px; }
+.stk-move.up { color: var(--green); }
+.stk-move.dn { color: var(--red); }
+.stk-move.na { font-size: 14px; color: var(--t2); font-weight: 700; margin-top: 4px; }
+
+.stk-story {
+  font-size: 12.5px; font-weight: 600; color: var(--t2);
+  line-height: 1.45; margin-bottom: 16px;
+}
+
+/* Tension Meter */
+.tension { margin-bottom: 16px; }
+.ten-head {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 7px;
+}
+.ten-lbl { font-size: 10px; font-weight: 700; color: var(--t3); text-transform: uppercase; letter-spacing: .5px; }
+.ten-val { font-size: 11px; font-weight: 800; }
+.ten-val.extreme { color: var(--red); }
+.ten-val.high    { color: #EA580C; }
+.ten-val.mod     { color: var(--amber); }
+.ten-val.low     { color: var(--green); }
+
+.ten-track { height: 8px; background: #F1F5F9; border-radius: 4px; overflow: hidden; margin-bottom: 5px; }
+.ten-fill  { height: 100%; border-radius: 4px; transition: width .6s ease; }
+
+.ten-sub { font-size: 10px; color: var(--t3); line-height: 1.4; }
+
+/* Stock micro-metrics */
+.stk-mets { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 14px; }
+.stk-m { text-align: center; padding: 7px 4px; background: var(--bg); border-radius: 8px; }
+.stk-mv { font-size: 13px; font-weight: 800; color: var(--t1); }
+.stk-ml { font-size: 9px; font-weight: 700; color: var(--t3); text-transform: uppercase; letter-spacing: .4px; margin-top: 2px; }
+
+/* ─── WATCH EMPTY ─── */
+.empty {
+  text-align: center; padding: 72px 24px; color: var(--t3);
+}
+.empty-ico { font-size: 44px; margin-bottom: 14px; }
+.empty-t { font-size: 16px; font-weight: 700; color: var(--t2); margin-bottom: 7px; }
+.empty-s { font-size: 13px; line-height: 1.6; }
+
+/* ─── DISCLAIMER ─── */
+.disc {
+  max-width: 1200px; margin: 8px auto 0;
+  padding: 16px 28px 24px;
+  font-size: 10px; color: var(--t3); line-height: 1.7;
+  text-align: center;
+  border-top: 1px solid var(--border);
+}
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 1000px) {
+  .fast-grid { grid-template-columns: repeat(2,1fr); }
+  .mkt-pills .mkt-pill:nth-child(4) { display:none; }
+}
+@media (max-width: 700px) {
+  .fast-grid, .stock-grid { grid-template-columns: 1fr; }
+  .mkt-pills { display: none; }
+  .main { padding: 16px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ HEADER ═══ -->
+<div class="hdr">
+  <div class="logo">
+    <div class="logo-icon">F</div>
+    <div class="logo-text">Fin<span>X</span> Discovery</div>
+  </div>
+  <div class="hdivider"></div>
+  <div class="mkt-pills">
+    <div class="mkt-pill"><span class="mn">NIFTY</span><span class="mv">24,850</span><span class="mc up">▲ 0.81%</span></div>
+    <div class="mkt-pill"><span class="mn">BANKNIFTY</span><span class="mv">53,240</span><span class="mc up">▲ 1.14%</span></div>
+    <div class="mkt-pill"><span class="mn">SENSEX</span><span class="mv">82,150</span><span class="mc up">▲ 0.72%</span></div>
+    <div class="mkt-pill"><span class="mn">VIX</span><span class="mv">13.4</span><span class="mc dn">▼ 4.2%</span></div>
+  </div>
+  <div class="mode-wrap">
+    <button class="mode-btn active" onclick="setMode('signal',this)">Signal</button>
+    <button class="mode-btn" onclick="setMode('pro',this)">Pro</button>
+  </div>
+</div>
+
+<!-- ═══ TABS ═══ -->
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('fast',this)">
+    Fast Movers &nbsp;<span class="badge-live"><span class="live-dot"></span>LIVE</span>
+  </div>
+  <div class="tab" onclick="switchTab('stocks',this)">
+    Stock Plays <span class="tab-num">12</span>
+  </div>
+  <div class="tab" onclick="switchTab('watch',this)">My Watch</div>
+</div>
+
+<!-- ═══ MAIN ═══ -->
+<div class="main">
+
+  <!-- ── FAST MOVERS ── -->
+  <div id="tab-fast" class="tc active">
+
+    <div class="frow">
+      <span class="flabel">Window</span>
+      <div class="tpill active" onclick="setTime('15m',this)">15 MIN</div>
+      <div class="tpill" onclick="setTime('30m',this)">30 MIN</div>
+      <div class="tpill" onclick="setTime('1d',this)">TODAY</div>
+      <div class="fspacer"></div>
+      <div class="sig-count"><span class="dot"></span>6 signals active now</div>
+    </div>
+
+    <div class="sec-lbl" id="fast-lbl">Index options moving fastest in the last 15 minutes</div>
+
+    <div class="fast-grid" id="fast-grid"></div>
+  </div>
+
+  <!-- ── STOCK PLAYS ── -->
+  <div id="tab-stocks" class="tc">
+
+    <div class="cat-row">
+      <div class="cat-pill active" onclick="setCat('fallen',this)">
+        <span class="cdot" style="background:var(--red)"></span>Fallen Angels
+      </div>
+      <div class="cat-pill" onclick="setCat('momentum',this)">
+        <span class="cdot" style="background:var(--brand)"></span>Smart Money
+      </div>
+      <div class="cat-pill" onclick="setCat('event',this)">
+        <span class="cdot" style="background:var(--purple)"></span>Event Watch
+      </div>
+    </div>
+
+    <div class="sec-lbl" id="stk-lbl">Stocks down 4%+ — options fear overpriced</div>
+    <div class="stock-grid" id="stock-grid"></div>
+  </div>
+
+  <!-- ── MY WATCH ── -->
+  <div id="tab-watch" class="tc">
+    <div class="empty">
+      <div class="empty-ico">🎯</div>
+      <div class="empty-t">Your radar is empty</div>
+      <div class="empty-s">Tap any signal card and click "Add to Radar"<br>to track setups you are watching.</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- DISCLAIMER -->
+<div class="disc">
+  For informational and educational purposes only · Not investment advice · Options trading involves substantial risk of loss<br>
+  Past signal patterns are not indicative of future results · Please consult a SEBI-registered advisor before trading
+</div>
+
+<script>
+// ═══ DATA ═══
+
+var D = {
+  fast: {
+    '15m': {
+      lbl: 'Index options moving fastest in the last 15 minutes',
+      signals: [
+        { asset:'BANKNIFTY', strike:'53500 CE', type:'ce', pct:'+38%', dir:'up', conv:'high', score:88,
+          story:'Call buyers rushing in — BANKNIFTY is pushing to a new intraday high.',
+          vol:72, oi:58, win:'~42 min remaining',
+          ltp:'₹118', iv:'17.8%', delta:'0.42', oid:'+18L', pcr:'0.68' },
+        { asset:'NIFTY', strike:'25000 CE', type:'ce', pct:'+22%', dir:'up', conv:'strong', score:79,
+          story:'Mild call surge testing the 25000 resistance — bulls are probing.',
+          vol:55, oi:41, win:'~42 min remaining',
+          ltp:'₹64', iv:'14.2%', delta:'0.38', oid:'+9L', pcr:'0.74' },
+        { asset:'BANKNIFTY', strike:'53000 PE', type:'pe', pct:'−41%', dir:'dn', conv:'high', score:86,
+          story:'Bears are exiting 53000 puts fast — downside bets unwinding.',
+          vol:81, oi:66, win:'~42 min remaining',
+          ltp:'₹88', iv:'19.1%', delta:'−0.44', oid:'−22L', pcr:'0.68' },
+        { asset:'SENSEX', strike:'82500 CE', type:'ce', pct:'+29%', dir:'up', conv:'strong', score:76,
+          story:'Sensex call activity catching up with NIFTY — breakout spreading.',
+          vol:61, oi:44, win:'~42 min remaining',
+          ltp:'₹142', iv:'13.8%', delta:'0.39', oid:'+7L', pcr:'0.71' },
+        { asset:'NIFTY', strike:'24800 PE', type:'pe', pct:'+18%', dir:'up', conv:'watch', score:61,
+          story:'Protective put buying ticking up — some traders hedging a possible dip.',
+          vol:44, oi:33, win:'~42 min remaining',
+          ltp:'₹52', iv:'15.3%', delta:'−0.31', oid:'+4L', pcr:'0.74' },
+        { asset:'BANKNIFTY', strike:'52500 CE', type:'ce', pct:'+31%', dir:'up', conv:'strong', score:82,
+          story:'Deep in-the-money calls activating — strong directional conviction.',
+          vol:67, oi:49, win:'~42 min remaining',
+          ltp:'₹892', iv:'16.4%', delta:'0.71', oid:'+12L', pcr:'0.68' }
+      ]
+    },
+    '30m': {
+      lbl: 'Index options with the sharpest moves over the last 30 minutes',
+      signals: [
+        { asset:'BANKNIFTY', strike:'53500 CE', type:'ce', pct:'+62%', dir:'up', conv:'high', score:92,
+          story:'Bulls loading calls aggressively — highest call activity of the session so far.',
+          vol:88, oi:74, win:'~27 min remaining',
+          ltp:'₹142', iv:'18.2%', delta:'0.44', oid:'+24L', pcr:'0.67' },
+        { asset:'NIFTY', strike:'25000 CE', type:'ce', pct:'+45%', dir:'up', conv:'high', score:87,
+          story:'Call momentum building — the market is pricing in a 25000 breakout today.',
+          vol:76, oi:61, win:'~27 min remaining',
+          ltp:'₹84', iv:'14.9%', delta:'0.41', oid:'+16L', pcr:'0.71' },
+        { asset:'SENSEX', strike:'82500 CE', type:'ce', pct:'+38%', dir:'up', conv:'strong', score:81,
+          story:'Sensex call surge aligning with NIFTY — broad-based bullish setup.',
+          vol:68, oi:52, win:'~27 min remaining',
+          ltp:'₹178', iv:'13.4%', delta:'0.40', oid:'+10L', pcr:'0.72' },
+        { asset:'BANKNIFTY', strike:'53000 PE', type:'pe', pct:'−55%', dir:'dn', conv:'high', score:89,
+          story:'Bears cutting losses fast — 53000 put holders throwing in the towel.',
+          vol:84, oi:71, win:'~27 min remaining',
+          ltp:'₹68', iv:'19.8%', delta:'−0.38', oid:'−31L', pcr:'0.67' },
+        { asset:'BANKNIFTY', strike:'54000 CE', type:'ce', pct:'+41%', dir:'up', conv:'strong', score:77,
+          story:'Higher strike CE waking up — bulls targeting the next resistance level.',
+          vol:59, oi:43, win:'~27 min remaining',
+          ltp:'₹38', iv:'20.1%', delta:'0.27', oid:'+8L', pcr:'0.67' },
+        { asset:'NIFTY', strike:'24800 PE', type:'pe', pct:'+28%', dir:'up', conv:'watch', score:64,
+          story:'Hedge demand rising — cautious traders buying downside protection.',
+          vol:51, oi:39, win:'~27 min remaining',
+          ltp:'₹61', iv:'15.8%', delta:'−0.33', oid:'+7L', pcr:'0.71' }
+      ]
+    },
+    '1d': {
+      lbl: "Today's biggest index option movers since market open",
+      signals: [
+        { asset:'BANKNIFTY', strike:'53500 CE', type:'ce', pct:'+148%', dir:'up', conv:'high', score:94,
+          story:"Day's biggest winner — BANKNIFTY call rode the full morning breakout.",
+          vol:96, oi:81, win:'Day trade', ltp:'₹248', iv:'18.8%', delta:'0.56', oid:'+42L', pcr:'0.66' },
+        { asset:'NIFTY', strike:'25000 CE', type:'ce', pct:'+89%', dir:'up', conv:'high', score:91,
+          story:'Strong trending day for NIFTY calls — bulls in full control since 9:30.',
+          vol:89, oi:73, win:'Day trade', ltp:'₹141', iv:'15.2%', delta:'0.48', oid:'+28L', pcr:'0.70' },
+        { asset:'SENSEX', strike:'82500 CE', type:'ce', pct:'+72%', dir:'up', conv:'strong', score:83,
+          story:'Sensex riding NIFTY momentum — consistent call buying all day.',
+          vol:78, oi:62, win:'Day trade', ltp:'₹284', iv:'13.6%', delta:'0.44', oid:'+18L', pcr:'0.72' },
+        { asset:'NIFTY', strike:'25500 CE', type:'ce', pct:'+61%', dir:'up', conv:'strong', score:79,
+          story:'Breakout-target CE getting aggressive buyers — bulls extending the range.',
+          vol:71, oi:57, win:'Day trade', ltp:'₹22', iv:'21.4%', delta:'0.21', oid:'+14L', pcr:'0.70' },
+        { asset:'BANKNIFTY', strike:'52000 PE', type:'pe', pct:'−78%', dir:'dn', conv:'high', score:88,
+          story:'Far OTM puts collapsed — no fear in the market today at all.',
+          vol:82, oi:68, win:'Day trade', ltp:'₹12', iv:'24.2%', delta:'−0.08', oid:'−38L', pcr:'0.66' },
+        { asset:'NIFTY', strike:'24500 PE', type:'pe', pct:'−65%', dir:'dn', conv:'strong', score:84,
+          story:'Downside hedges unwound — market confident, all bear positions closed.',
+          vol:76, oi:64, win:'Day trade', ltp:'₹18', iv:'17.9%', delta:'−0.12', oid:'−22L', pcr:'0.70' }
+      ]
+    }
+  },
+  stocks: {
+    fallen: {
+      lbl: 'Stocks down 4%+ today — options fear is overpriced',
+      items: [
+        { name:'BAJFINANCE', sub:'Bajaj Finance', move:'−5.2%', mdir:'dn', badge:'fallen',
+          story:'Big single-day dip with options market in panic mode. Historically, fear this high often reverses. Classic sell-the-fear setup.',
+          ten:88, tenLbl:'EXTREME', tenCls:'extreme',
+          tenSub:'Options are very overpriced — sellers have an edge here',
+          m1:'58%', ml1:'Curr IV', m2:'94th%', ml2:'Fear Rank', m3:'94', ml3:'Conviction',
+          conv:'high', score:94 },
+        { name:'WIPRO', sub:'Wipro Ltd', move:'−6.3%', mdir:'dn', badge:'fallen',
+          story:"Sharpest fall in today's session. Option buyers pricing in 2× more downside than historical moves suggest. Possible short strangle opportunity.",
+          ten:82, tenLbl:'EXTREME', tenCls:'extreme',
+          tenSub:'Options very overpriced — elevated sell opportunity',
+          m1:'45%', ml1:'Curr IV', m2:'91st%', ml2:'Fear Rank', m3:'91', ml3:'Conviction',
+          conv:'high', score:91 },
+        { name:'HDFCBANK', sub:'HDFC Bank', move:'−4.8%', mdir:'dn', badge:'fallen',
+          story:'Solid support zone nearby. Option market pricing more fear than likely needed — IV elevated relative to typical move size.',
+          ten:74, tenLbl:'HIGH', tenCls:'high',
+          tenSub:'Options overpriced — possible sell setup',
+          m1:'42%', ml1:'Curr IV', m2:'89th%', ml2:'Fear Rank', m3:'89', ml3:'Conviction',
+          conv:'high', score:89 },
+        { name:'AXISBANK', sub:'Axis Bank', move:'−4.1%', mdir:'dn', badge:'fallen',
+          story:'Mild fear elevated. Watch for a bounce confirmation before entering — conviction slightly lower.',
+          ten:61, tenLbl:'HIGH', tenCls:'high',
+          tenSub:'Options overpriced — wait for bounce signal',
+          m1:'38%', ml1:'Curr IV', m2:'82nd%', ml2:'Fear Rank', m3:'72', ml3:'Conviction',
+          conv:'strong', score:72 }
+      ]
+    },
+    momentum: {
+      lbl: 'Smart money signals — OI + price tells the real story',
+      items: [
+        { name:'RELIANCE', sub:'Reliance Industries', move:'+1.4%', mdir:'up', badge:'momentum',
+          story:'Smart money adding long positions — OI rising with price. Classic bull buildup. Institutions accumulating.',
+          ten:42, tenLbl:'MODERATE', tenCls:'mod',
+          tenSub:'Options fairly priced — directional play favoured',
+          m1:'+38L', ml1:'OI Added', m2:'5.2×', ml2:'Vol vs Avg', m3:'86', ml3:'Conviction',
+          conv:'high', score:86 },
+        { name:'INFY', sub:'Infosys Ltd', move:'+2.1%', mdir:'up', badge:'momentum',
+          story:'Bears running for cover — OI falling as price rises. Short covering underway. Adds upward fuel.',
+          ten:38, tenLbl:'LOW', tenCls:'low',
+          tenSub:'Options cheap — buy setups available',
+          m1:'−24L', ml1:'OI Exit', m2:'7.1×', ml2:'Vol vs Avg', m3:'83', ml3:'Conviction',
+          conv:'strong', score:83 },
+        { name:'TATASTEEL', sub:'Tata Steel', move:'−0.8%', mdir:'dn', badge:'momentum',
+          story:'New short positions building with price dropping. Bears adding conviction — watch for continued downside.',
+          ten:55, tenLbl:'MODERATE', tenCls:'mod',
+          tenSub:'Options fairly priced — short side active',
+          m1:'+31L', ml1:'Short OI', m2:'4.8×', ml2:'Vol vs Avg', m3:'77', ml3:'Conviction',
+          conv:'strong', score:77 },
+        { name:'HCLTECH', sub:'HCL Technologies', move:'+1.8%', mdir:'up', badge:'momentum',
+          story:'Long buildup continuing from yesterday. Institutional accumulation pattern — steady, not speculative.',
+          ten:45, tenLbl:'MODERATE', tenCls:'mod',
+          tenSub:'Options fairly priced — slow build in progress',
+          m1:'+28L', ml1:'OI Added', m2:'3.9×', ml2:'Vol vs Avg', m3:'74', ml3:'Conviction',
+          conv:'strong', score:74 }
+      ]
+    },
+    event: {
+      lbl: 'Upcoming events — IV building before the trigger',
+      items: [
+        { name:'LTIMindtree', sub:'LTI Mindtree Ltd', move:'Results tomorrow', mdir:'na', badge:'event',
+          story:'Q4 results pre-market tomorrow. IV inflated going in — straddle or strangle buyers active now.',
+          ten:78, tenLbl:'HIGH', tenCls:'high',
+          tenSub:'Event premium building — volatility play window open',
+          m1:'52%', ml1:'Curr IV', m2:'Results', ml2:'Event Type', m3:'81', ml3:'Conviction',
+          conv:'high', score:81 },
+        { name:'HINDALCO', sub:'Hindalco Industries', move:'Board meeting today', mdir:'na', badge:'event',
+          story:'Board meeting + possible dividend announcement. IV elevated pre-event — uncertainty priced in.',
+          ten:65, tenLbl:'HIGH', tenCls:'high',
+          tenSub:'Elevated event tension — cautious entry',
+          m1:'44%', ml1:'Curr IV', m2:'Board', ml2:'Event Type', m3:'74', ml3:'Conviction',
+          conv:'strong', score:74 },
+        { name:'APOLLOHOSP', sub:'Apollo Hospitals', move:'Results in 3 days', mdir:'na', badge:'event',
+          story:'Results in 3 days. Steady IV build-up in progress — event play setting up, not yet at peak.',
+          ten:58, tenLbl:'MODERATE', tenCls:'mod',
+          tenSub:'Event tension building — early entry window',
+          m1:'39%', ml1:'Curr IV', m2:'Earnings', ml2:'Event Type', m3:'68', ml3:'Conviction',
+          conv:'strong', score:68 },
+        { name:'PIDILITIND', sub:'Pidilite Industries', move:'Results in 5 days', mdir:'na', badge:'event',
+          story:'Quiet IV now — early entry window before event premium spikes. Low urgency, low risk entry.',
+          ten:34, tenLbl:'LOW', tenCls:'low',
+          tenSub:'Options cheap — ideal for event straddle builders',
+          m1:'28%', ml1:'Curr IV', m2:'Earnings', ml2:'Event Type', m3:'61', ml3:'Conviction',
+          conv:'watch', score:61 }
+      ]
+    }
+  }
+};
+
+// ═══ STATE ═══
+var mode = 'signal';
+var timeKey = '15m';
+var cat = 'fallen';
+
+// ═══ RENDER FAST MOVERS ═══
+function renderFast(key) {
+  var d = D.fast[key];
+  document.getElementById('fast-lbl').textContent = d.lbl;
+  var html = '';
+  d.signals.forEach(function(s) {
+    var volW = Math.round(s.vol * 0.9);
+    var oiW  = Math.round(s.oi  * 0.9);
+    var oidClass = s.oid.charAt(0) === '+' ? 'oi' : 'red';
+    var proVis = mode === 'pro' ? 'vis' : '';
+    var dirLabel = key === '1d' ? 'since market open today' : 'in the last ' + key;
+    html += '<div class="sc conv-' + s.conv + '" onclick="toggleCard(this)">'
+      + '<div class="sc-head">'
+        + '<div class="sc-asset">'
+          + '<div class="sc-name">' + s.asset + '</div>'
+          + '<div class="sc-strike">' + s.strike + '</div>'
+          + '<div class="sc-badges"><span class="opt-tag ' + s.type + '">' + s.type.toUpperCase() + '</span></div>'
+        + '</div>'
+        + '<div class="cv">'
+          + '<span class="cv-pill ' + s.conv + '">' + s.conv.toUpperCase() + '</span>'
+          + '<span class="cv-score">' + s.score + ' / 100</span>'
+        + '</div>'
+      + '</div>'
+      + '<div class="sc-pct">'
+        + '<div class="pct-big ' + s.dir + '">' + s.pct + '</div>'
+        + '<div class="pct-lbl">' + dirLabel + '</div>'
+      + '</div>'
+      + '<div class="sc-story">' + s.story + '</div>'
+      + '<div class="sc-bars">'
+        + '<div class="bar-r"><span class="bar-lbl">Activity</span>'
+          + '<div class="bar-track"><div class="bar-fill vol" style="width:' + volW + '%"></div></div>'
+          + '<span class="bar-v">' + s.vol + '%</span>'
+        + '</div>'
+        + '<div class="bar-r"><span class="bar-lbl">Position chg</span>'
+          + '<div class="bar-track"><div class="bar-fill ' + oidClass + '" style="width:' + oiW + '%"></div></div>'
+          + '<span class="bar-v">' + s.oi + '%</span>'
+        + '</div>'
+      + '</div>'
+      + '<div class="sc-win"><span class="win-t">⏱ Signal window:</span><span class="win-v">&nbsp;' + s.win + '</span></div>'
+      + '<div class="sc-pro ' + proVis + '">'
+        + '<div class="pro-row">'
+          + '<div class="pm"><div class="pm-v">' + s.ltp + '</div><div class="pm-l">LTP</div></div>'
+          + '<div class="pm"><div class="pm-v">' + s.iv + '</div><div class="pm-l">IV</div></div>'
+          + '<div class="pm"><div class="pm-v">' + s.delta + '</div><div class="pm-l">Delta</div></div>'
+          + '<div class="pm"><div class="pm-v">' + s.oid + '</div><div class="pm-l">OI Δ</div></div>'
+        + '</div>'
+      + '</div>'
+      + '<div class="sc-cta" onclick="event.stopPropagation()">Explore Setup <span>→</span></div>'
+    + '</div>';
+  });
+  document.getElementById('fast-grid').innerHTML = html;
+}
+
+// ═══ RENDER STOCK PLAYS ═══
+function renderStocks(c) {
+  var d = D.stocks[c];
+  document.getElementById('stk-lbl').textContent = d.lbl;
+  var html = '';
+  d.items.forEach(function(s) {
+    var tenColor = s.tenCls === 'extreme' ? '#DC2626'
+                 : s.tenCls === 'high'    ? '#EA580C'
+                 : s.tenCls === 'mod'     ? '#D97706' : '#16A34A';
+    var mvCls = s.mdir === 'up' ? 'up' : s.mdir === 'dn' ? 'dn' : 'na';
+    var bdgTxt = { fallen:'FALLEN', momentum:'MOMENTUM', event:'EVENT' }[s.badge];
+    html += '<div class="stk conv-' + s.conv + '" onclick="toggleCard(this)">'
+      + '<div class="stk-head">'
+        + '<div><div class="stk-name">' + s.name + '</div><div class="stk-sub">' + s.sub + '</div></div>'
+        + '<div class="stk-tags">'
+          + '<span class="stk-badge ' + s.badge + '">' + bdgTxt + '</span>'
+          + '<span class="cv-pill ' + s.conv + '" style="font-size:10px">' + s.conv.toUpperCase() + '</span>'
+        + '</div>'
+      + '</div>'
+      + '<div class="stk-move ' + mvCls + '">' + s.move + '</div>'
+      + '<div class="stk-story">' + s.story + '</div>'
+      + '<div class="tension">'
+        + '<div class="ten-head"><span class="ten-lbl">Options Tension</span><span class="ten-val ' + s.tenCls + '">' + s.tenLbl + '</span></div>'
+        + '<div class="ten-track"><div class="ten-fill" style="width:' + s.ten + '%;background:' + tenColor + '"></div></div>'
+        + '<div class="ten-sub">' + s.tenSub + '</div>'
+      + '</div>'
+      + '<div class="stk-mets">'
+        + '<div class="stk-m"><div class="stk-mv">' + s.m1 + '</div><div class="stk-ml">' + s.ml1 + '</div></div>'
+        + '<div class="stk-m"><div class="stk-mv">' + s.m2 + '</div><div class="stk-ml">' + s.ml2 + '</div></div>'
+        + '<div class="stk-m"><div class="stk-mv" style="font-size:11px">' + s.m3 + ' ' + s.conv.toUpperCase() + '</div><div class="stk-ml">' + s.ml3 + '</div></div>'
+      + '</div>'
+      + '<div class="sc-cta" onclick="event.stopPropagation()">Explore Setup <span>→</span></div>'
+    + '</div>';
+  });
+  document.getElementById('stock-grid').innerHTML = html;
+}
+
+// ═══ INTERACTIONS ═══
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
+  btn.classList.add('active');
+  document.querySelectorAll('.tc').forEach(function(c){ c.classList.remove('active'); });
+  document.getElementById('tab-' + name).classList.add('active');
+}
+
+function setTime(key, el) {
+  document.querySelectorAll('.tpill').forEach(function(p){ p.classList.remove('active'); });
+  el.classList.add('active');
+  timeKey = key;
+  renderFast(key);
+}
+
+function setCat(key, el) {
+  document.querySelectorAll('.cat-pill').forEach(function(p){ p.classList.remove('active'); });
+  el.classList.add('active');
+  cat = key;
+  renderStocks(key);
+}
+
+function setMode(m, btn) {
+  document.querySelectorAll('.mode-btn').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  mode = m;
+  document.querySelectorAll('.sc-pro').forEach(function(p){
+    if (m === 'pro') p.classList.add('vis');
+    else p.classList.remove('vis');
+  });
+}
+
+function toggleCard(card) {
+  var was = card.classList.contains('expanded');
+  document.querySelectorAll('.sc.expanded,.stk.expanded').forEach(function(c){ c.classList.remove('expanded'); });
+  if (!was) card.classList.add('expanded');
+}
+
+// ═══ INIT ═══
+renderFast('15m');
+renderStocks('fallen');
+</script>
+</body>
+</html>

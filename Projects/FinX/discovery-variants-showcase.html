@@ -1,0 +1,914 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800;900&display=swap');
+
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+:root {
+  --navy:#1B1464; --blue:#2777F3; --green:#45B644; --red:#DE493B;
+  --amber:#F59E0B; --purple:#8B5CF6; --cyan:#06B6D4; --orange:#EA580C;
+  --bg:#F0F3FA; --white:#FFFFFF; --border:#E4E9F2; --muted:#7C8497;
+  --spring:cubic-bezier(0.34,1.56,0.64,1);
+  --smooth:cubic-bezier(0.4,0,0.2,1);
+}
+
+/* ── SHOWCASE SHELL ───────────────────────────────────────────── */
+body {
+  font-family:'Onest',-apple-system,sans-serif;
+  background:#060E1F;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding:36px 20px 60px;
+  overflow-x:hidden;
+}
+
+.sc-eyebrow {
+  font-size:10px; font-weight:700; letter-spacing:2px; text-transform:uppercase;
+  color:#2777F3; margin-bottom:8px;
+}
+.sc-title {
+  font-size:28px; font-weight:900; color:#FFFFFF; letter-spacing:-0.5px;
+  text-align:center; line-height:1.15; margin-bottom:6px;
+}
+.sc-sub {
+  font-size:13px; color:rgba(255,255,255,0.45); text-align:center;
+  font-weight:500; margin-bottom:32px;
+}
+
+/* Controls */
+.sc-controls {
+  display:flex; align-items:center; gap:10px; margin-bottom:36px;
+  flex-wrap:wrap; justify-content:center;
+}
+.wf-btn {
+  font-family:'Onest',sans-serif;
+  display:flex; align-items:center; gap:6px;
+  padding:9px 18px; border-radius:99px;
+  border:1.5px solid rgba(255,255,255,0.2);
+  background:transparent; color:rgba(255,255,255,0.65);
+  font-size:12px; font-weight:700; cursor:pointer;
+  letter-spacing:0.3px; transition:all 0.2s var(--smooth);
+}
+.wf-btn.on {
+  background:rgba(39,119,243,0.15); border-color:#2777F3;
+  color:#2777F3;
+}
+.wf-dot { width:7px; height:7px; border-radius:50%; background:currentColor; }
+
+/* Devices row */
+.devices-row {
+  display:flex; gap:28px; justify-content:center;
+  align-items:flex-start; overflow-x:auto;
+  padding:0 10px 20px; width:100%;
+}
+.device-col {
+  display:flex; flex-direction:column; align-items:center; gap:16px;
+  flex-shrink:0;
+}
+.device-label {
+  text-align:center;
+}
+.device-label .dl-variant {
+  display:inline-block;
+  font-size:10px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase;
+  color:#2777F3; background:rgba(39,119,243,0.12);
+  border:1px solid rgba(39,119,243,0.25);
+  padding:3px 10px; border-radius:99px; margin-bottom:6px;
+}
+.device-label .dl-name {
+  display:block; font-size:14px; font-weight:800; color:#FFFFFF; letter-spacing:-0.2px;
+}
+.device-label .dl-desc {
+  display:block; font-size:11px; color:rgba(255,255,255,0.4); font-weight:500; margin-top:2px;
+}
+
+/* Device frame */
+.device {
+  width:300px;
+  background:#FFFFFF;
+  border-radius:36px;
+  border:8px solid #111C33;
+  box-shadow:
+    0 0 0 1px #1E3058,
+    0 32px 80px rgba(0,0,0,0.6),
+    inset 0 0 0 1px rgba(255,255,255,0.04);
+  overflow:hidden;
+  position:relative;
+  height:560px;
+}
+/* Notch */
+.device::before {
+  content:'';
+  position:absolute; top:0; left:50%; transform:translateX(-50%);
+  width:80px; height:22px;
+  background:#111C33; border-radius:0 0 14px 14px;
+  z-index:200;
+}
+.device-screen {
+  width:100%; height:100%; overflow:hidden;
+  background:var(--bg);
+  font-family:'Onest',sans-serif;
+  transition:filter 0.3s var(--smooth);
+}
+
+/* ── WIREFRAME MODE ────────────────────────────────────────────── */
+.wf-mode .device-screen {
+  filter:grayscale(1) contrast(0.85) brightness(1.08);
+}
+.wf-mode .device {
+  border-color:#2C3E55;
+  box-shadow:0 0 0 1px #2C3E55, 0 32px 80px rgba(0,0,0,0.5);
+}
+.wf-mode .va-card,
+.wf-mode .vb-hero,
+.wf-mode .vc-row {
+  outline:1.5px dashed #BBBBBB !important;
+  outline-offset:-1px;
+}
+.wf-mode .va-cta,
+.wf-mode .vb-cta,
+.wf-mode .vc-cta {
+  outline:1.5px dashed #BBBBBB !important;
+}
+.wf-mode .va-tabs, .wf-mode .vb-queue, .wf-mode .vc-chips {
+  outline:1px dashed #CCCCCC;
+}
+
+/* WF Legend */
+.wf-legend {
+  display:none;
+  margin-top:32px; width:100%; max-width:940px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:16px; padding:20px 24px;
+}
+.wf-mode .wf-legend { display:block; }
+.wf-legend-title {
+  font-size:11px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase;
+  color:#2777F3; margin-bottom:16px;
+}
+.wf-legend-grid {
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:10px;
+}
+.wf-legend-item {
+  display:flex; align-items:center; gap:10px;
+}
+.wf-num {
+  width:22px; height:22px; border-radius:50%;
+  background:rgba(39,119,243,0.15); border:1px solid rgba(39,119,243,0.3);
+  color:#2777F3; font-size:10px; font-weight:800;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+}
+.wf-item-text { font-size:11px; color:rgba(255,255,255,0.55); font-weight:500; }
+
+/* ── SHARED WIDGET PARTS ──────────────────────────────────────── */
+.w-handle-wrap { display:flex; justify-content:center; padding:8px 0 4px; }
+.w-handle { width:32px; height:3px; background:#E4E9F2; border-radius:99px; }
+
+.w-live-badge {
+  display:flex; align-items:center; gap:4px;
+  background:#ECFDF5; border:1px solid #BBF7D0;
+  border-radius:99px; padding:3px 8px 3px 6px;
+}
+.w-live-dot-wrap { position:relative; width:6px; height:6px; }
+.w-live-dot,
+.w-live-ring {
+  width:6px; height:6px; border-radius:50%;
+  background:var(--green); position:absolute; top:0; left:0;
+}
+.w-live-ring { animation:ringPulse 1.8s ease-out infinite; }
+@keyframes ringPulse {
+  0%   { transform:scale(1);   opacity:0.8; }
+  100% { transform:scale(2.8); opacity:0;   }
+}
+.w-live-text { font-size:9px; font-weight:800; color:#16A34A; letter-spacing:0.2px; }
+
+.w-metric-grid {
+  display:grid; grid-template-columns:1fr 1fr 1fr;
+  background:var(--bg); border-radius:9px; overflow:hidden;
+  border:1px solid var(--border);
+}
+.w-metric-cell {
+  display:flex; flex-direction:column; align-items:center;
+  padding:8px 4px; gap:2px; position:relative;
+}
+.w-metric-cell+.w-metric-cell::before {
+  content:''; position:absolute; left:0; top:20%; bottom:20%;
+  width:1px; background:var(--border);
+}
+.w-metric-label { font-size:8px; font-weight:700; letter-spacing:0.5px; text-transform:uppercase; color:var(--muted); }
+.w-metric-val   { font-size:13px; font-weight:800; color:var(--navy); letter-spacing:-0.2px; }
+.w-metric-val.pos { color:var(--green); }
+.w-metric-val.neg { color:var(--red);   }
+
+.w-cdots { display:flex; gap:3px; align-items:center; }
+.w-cdot { width:6px; height:6px; border-radius:50%; background:var(--border); }
+.w-cdot.on { background:var(--blue); }
+.w-cdot.hot{ background:var(--green);}
+
+/* ═══════════════════════════════════════════════════════════════
+   VARIANT A — Signal Stream
+   ═══════════════════════════════════════════════════════════════ */
+.va-widget {
+  display:flex; flex-direction:column;
+  height:100%; background:var(--white);
+}
+.va-header {
+  display:flex; align-items:flex-start; justify-content:space-between;
+  padding:26px 14px 8px;
+}
+.va-title { font-size:20px; font-weight:900; color:var(--navy); letter-spacing:-0.4px; }
+.va-header-sub { font-size:10px; color:var(--muted); font-weight:500; margin-top:2px; }
+
+.va-dir-row { display:flex; gap:5px; padding:0 14px 8px; }
+.va-pill {
+  padding:4px 11px; border-radius:99px; font-size:10px; font-weight:700;
+  border:1.5px solid var(--border); background:transparent; color:var(--muted);
+  font-family:'Onest',sans-serif; cursor:pointer;
+}
+.va-pill.on { background:var(--navy); border-color:var(--navy); color:#fff; }
+
+.va-tabs {
+  display:flex; border-bottom:1.5px solid var(--border);
+  padding:0 14px; gap:2px; flex-shrink:0;
+  position:relative; overflow:hidden;
+}
+.va-tab {
+  display:flex; align-items:center; gap:4px;
+  padding:8px 10px; font-size:11px; font-weight:700; color:var(--muted);
+  white-space:nowrap; position:relative; cursor:pointer;
+  border-bottom:2px solid transparent; margin-bottom:-1.5px;
+}
+.va-tab.on { color:var(--navy); border-bottom-color:var(--blue); }
+.va-tc {
+  font-size:8px; font-weight:800; padding:1px 4px;
+  background:#EEF2FF; color:var(--blue); border-radius:99px;
+}
+
+.va-feed {
+  flex:1; overflow-y:auto; padding:10px 10px 0;
+  scrollbar-width:none; -webkit-overflow-scrolling:touch;
+}
+.va-feed::-webkit-scrollbar { display:none; }
+
+.va-card {
+  background:var(--white); border-radius:13px;
+  border:1.5px solid var(--border); margin-bottom:8px;
+  overflow:hidden; cursor:pointer;
+  animation:cardIn 0.38s var(--spring) both;
+}
+@keyframes cardIn {
+  from { opacity:0; transform:translateY(16px) scale(0.97); }
+  to   { opacity:1; transform:translateY(0) scale(1); }
+}
+.va-stripe { height:3px; opacity:0.7; }
+.va-card-body { padding:10px 12px 12px; }
+.va-r1 { display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; }
+.va-badge {
+  display:inline-flex; align-items:center; gap:3px;
+  font-size:8px; font-weight:800; letter-spacing:0.6px; text-transform:uppercase;
+  padding:2px 7px 2px 6px; border-radius:99px;
+}
+.va-fresh { font-size:9px; color:var(--muted); font-weight:600; }
+.va-instrument { font-size:15px; font-weight:900; color:var(--navy); letter-spacing:-0.3px; margin-bottom:1px; }
+.va-sub { font-size:10px; color:var(--muted); font-weight:500; margin-bottom:8px; }
+.va-r4 { display:flex; align-items:center; justify-content:space-between; margin:8px 0 9px; }
+.va-conv { display:flex; align-items:center; gap:5px; }
+.va-clabel { font-size:9px; font-weight:700; color:var(--muted); }
+.va-dir-tag { font-size:10px; font-weight:800; padding:3px 9px; border-radius:99px; }
+.va-cta {
+  width:100%; padding:10px; border-radius:10px;
+  font-family:'Onest',sans-serif; font-size:12px; font-weight:800;
+  border:1.5px solid; cursor:pointer; text-align:center; letter-spacing:0.1px;
+  transition:transform 0.15s var(--spring);
+}
+.va-cta:active { transform:scale(0.97); }
+.va-refresh {
+  height:32px; background:var(--white); border-top:1px solid var(--border);
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 14px; flex-shrink:0;
+}
+.va-refresh-text { font-size:9px; color:var(--muted); }
+.va-refresh-btn { font-size:9px; color:var(--blue); font-weight:700; font-family:'Onest',sans-serif; background:none; border:none; cursor:pointer; }
+.va-prog { position:relative; overflow:hidden; }
+.va-prog::after {
+  content:''; position:absolute; bottom:0; left:0;
+  height:2px; width:40%; background:var(--blue); opacity:0.3;
+  border-radius:0 99px 99px 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   VARIANT B — Spotlight Focus
+   ═══════════════════════════════════════════════════════════════ */
+.vb-widget {
+  display:flex; flex-direction:column;
+  height:100%; background:#0E1726;
+}
+.vb-header {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:26px 16px 12px;
+}
+.vb-title { font-size:20px; font-weight:900; color:#FFFFFF; letter-spacing:-0.4px; }
+.vb-header-sub { font-size:10px; color:rgba(255,255,255,0.4); font-weight:500; margin-top:2px; }
+
+.vb-hero {
+  margin:0 12px;
+  background:linear-gradient(145deg,#162240,#1a2d50);
+  border-radius:18px;
+  border:1px solid rgba(255,255,255,0.08);
+  padding:16px 14px 14px;
+  flex-shrink:0;
+  position:relative;
+  overflow:hidden;
+}
+.vb-hero::before {
+  content:''; position:absolute;
+  top:-40px; right:-40px; width:120px; height:120px;
+  background:radial-gradient(circle, rgba(69,182,68,0.18) 0%, transparent 70%);
+  pointer-events:none;
+}
+.vb-badge {
+  display:inline-flex; align-items:center; gap:4px;
+  font-size:8.5px; font-weight:800; letter-spacing:0.7px; text-transform:uppercase;
+  padding:3px 9px 3px 7px; border-radius:99px; margin-bottom:10px;
+}
+.vb-instrument {
+  font-size:22px; font-weight:900; color:#FFFFFF; letter-spacing:-0.5px; line-height:1.1;
+  margin-bottom:2px;
+}
+.vb-sub { font-size:10px; color:rgba(255,255,255,0.45); font-weight:500; margin-bottom:12px; }
+
+.vb-metric-grid {
+  display:grid; grid-template-columns:1fr 1fr 1fr;
+  gap:6px; margin-bottom:12px;
+}
+.vb-metric-cell {
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:10px; padding:8px 6px; text-align:center;
+}
+.vb-metric-label { font-size:8px; font-weight:700; letter-spacing:0.5px; text-transform:uppercase; color:rgba(255,255,255,0.4); margin-bottom:2px; }
+.vb-metric-val   { font-size:14px; font-weight:900; color:#FFFFFF; letter-spacing:-0.3px; }
+.vb-metric-val.pos { color:#4ADE80; }
+.vb-metric-val.neg { color:#F87171; }
+
+.vb-r4 { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+.vb-conv { display:flex; align-items:center; gap:5px; }
+.vb-clabel { font-size:9px; font-weight:700; color:rgba(255,255,255,0.4); }
+.vb-cdot { width:7px; height:7px; border-radius:50%; background:rgba(255,255,255,0.2); }
+.vb-cdot.on { background:#4ADE80; }
+
+.vb-dir-tag { font-size:10px; font-weight:800; padding:4px 10px; border-radius:99px; }
+.vb-cta {
+  width:100%; padding:11px; border-radius:11px;
+  font-family:'Onest',sans-serif; font-size:12px; font-weight:800;
+  cursor:pointer; letter-spacing:0.1px; border:none; color:#fff;
+  background:linear-gradient(135deg, rgba(69,182,68,0.9), rgba(45,152,45,0.9));
+  box-shadow:0 4px 14px rgba(69,182,68,0.3);
+}
+
+/* Pagination dots */
+.vb-dots {
+  display:flex; align-items:center; justify-content:center;
+  gap:5px; padding:10px 0 8px;
+}
+.vb-dot { width:5px; height:5px; border-radius:50%; background:rgba(255,255,255,0.2); }
+.vb-dot.on { background:var(--blue); width:16px; border-radius:99px; }
+
+/* Mini queue */
+.vb-queue {
+  padding:0 12px 12px;
+  display:flex; gap:7px;
+  overflow-x:auto; scrollbar-width:none;
+  -webkit-overflow-scrolling:touch;
+  flex-shrink:0;
+}
+.vb-queue::-webkit-scrollbar { display:none; }
+.vb-mini {
+  flex-shrink:0; width:68px;
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:11px; padding:8px 7px;
+  cursor:pointer;
+}
+.vb-mini.on {
+  background:rgba(39,119,243,0.15);
+  border-color:rgba(39,119,243,0.35);
+}
+.vb-mini-dot { width:5px; height:5px; border-radius:50%; margin-bottom:5px; }
+.vb-mini-name { font-size:8.5px; font-weight:800; color:#FFFFFF; letter-spacing:-0.1px; line-height:1.2; margin-bottom:2px; }
+.vb-mini-val  { font-size:8px; font-weight:700; color:rgba(255,255,255,0.45); }
+
+/* ═══════════════════════════════════════════════════════════════
+   VARIANT C — Compact Command
+   ═══════════════════════════════════════════════════════════════ */
+.vc-widget {
+  display:flex; flex-direction:column;
+  height:100%; background:var(--white);
+}
+.vc-header {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:26px 14px 8px;
+}
+.vc-title { font-size:18px; font-weight:900; color:var(--navy); letter-spacing:-0.3px; }
+
+.vc-chips {
+  display:flex; gap:5px; padding:0 14px 10px;
+  overflow-x:auto; scrollbar-width:none;
+  -webkit-overflow-scrolling:touch; flex-shrink:0;
+}
+.vc-chips::-webkit-scrollbar { display:none; }
+.vc-chip {
+  flex-shrink:0; padding:5px 12px; border-radius:99px;
+  font-size:10px; font-weight:700; border:1.5px solid var(--border);
+  background:transparent; color:var(--muted); cursor:pointer;
+  font-family:'Onest',sans-serif; white-space:nowrap;
+}
+.vc-chip.on { background:var(--navy); border-color:var(--navy); color:#fff; }
+
+.vc-feed {
+  flex:1; overflow-y:auto; scrollbar-width:none;
+  -webkit-overflow-scrolling:touch;
+}
+.vc-feed::-webkit-scrollbar { display:none; }
+
+.vc-row {
+  display:flex; align-items:stretch;
+  border-bottom:1px solid var(--border);
+  cursor:pointer; transition:background 0.15s;
+  padding:10px 14px 10px 0;
+}
+.vc-row:hover { background:#FAFBFF; }
+.vc-accent {
+  width:3px; border-radius:0 2px 2px 0; margin-right:11px;
+  flex-shrink:0; align-self:stretch;
+}
+.vc-body { flex:1; min-width:0; }
+.vc-r1 {
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:2px;
+}
+.vc-name { font-size:13px; font-weight:900; color:var(--navy); letter-spacing:-0.2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:140px; }
+.vc-right { display:flex; align-items:center; gap:5px; flex-shrink:0; }
+.vc-dir-tag { font-size:9px; font-weight:800; padding:2px 7px; border-radius:99px; }
+.vc-conviction { display:flex; gap:2px; }
+.vc-cdot { width:5px; height:5px; border-radius:50%; background:var(--border); }
+.vc-cdot.on { background:var(--blue); }
+.vc-cdot.hot { background:var(--green); }
+
+.vc-signal-type { font-size:9px; font-weight:700; color:var(--muted); margin-bottom:4px; }
+.vc-metrics-line {
+  display:flex; gap:0; background:var(--bg);
+  border-radius:7px; overflow:hidden;
+  border:1px solid var(--border); margin-bottom:6px;
+}
+.vc-m {
+  flex:1; padding:5px 4px; text-align:center;
+  position:relative;
+}
+.vc-m+.vc-m::before {
+  content:''; position:absolute; left:0; top:15%; bottom:15%;
+  width:1px; background:var(--border);
+}
+.vc-ml { font-size:7px; font-weight:700; letter-spacing:0.4px; text-transform:uppercase; color:var(--muted); }
+.vc-mv { font-size:11px; font-weight:800; color:var(--navy); letter-spacing:-0.1px; }
+.vc-mv.pos { color:var(--green); }
+.vc-mv.neg { color:var(--red); }
+
+.vc-cta {
+  font-family:'Onest',sans-serif;
+  font-size:10px; font-weight:800; padding:5px 10px; border-radius:7px;
+  border:1.5px solid; cursor:pointer; letter-spacing:0.1px;
+  transition:transform 0.15s var(--spring);
+}
+.vc-cta:active { transform:scale(0.96); }
+
+.vc-refresh {
+  height:32px; background:var(--white); border-top:1px solid var(--border);
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 14px; flex-shrink:0;
+}
+.vc-refresh-text { font-size:9px; color:var(--muted); }
+.vc-refresh-btn  { font-size:9px; color:var(--blue); font-weight:700; background:none; border:none; cursor:pointer; font-family:'Onest',sans-serif; }
+</style>
+</head>
+<body>
+
+<div class="sc-eyebrow">FinX · Discovery Widget</div>
+<div class="sc-title">Design Variants</div>
+<div class="sc-sub">Three UX directions · High fidelity &amp; Wireframe mode</div>
+
+<div class="sc-controls">
+  <button class="wf-btn" id="wfBtn">
+    <div class="wf-dot"></div> Wireframe Mode
+  </button>
+</div>
+
+<div class="devices-row" id="devicesRow">
+
+  <!-- ── DEVICE A ── Signal Stream ────────────────────────────── -->
+  <div class="device-col">
+    <div class="device-label">
+      <span class="dl-variant">Variant A</span>
+      <span class="dl-name">Signal Stream</span>
+      <span class="dl-desc">Tabbed feed · browse all signals</span>
+    </div>
+    <div class="device">
+      <div class="device-screen">
+        <div class="va-widget">
+          <div class="w-handle-wrap"><div class="w-handle"></div></div>
+          <div class="va-header">
+            <div>
+              <div class="va-title">Discover</div>
+              <div class="va-header-sub">F&amp;O signals · ranked by conviction</div>
+            </div>
+            <div class="w-live-badge">
+              <div class="w-live-dot-wrap"><div class="w-live-ring"></div><div class="w-live-dot"></div></div>
+              <span class="w-live-text">LIVE</span>
+            </div>
+          </div>
+          <div class="va-dir-row">
+            <button class="va-pill on">All</button>
+            <button class="va-pill">↑ Bullish</button>
+            <button class="va-pill">↓ Bearish</button>
+            <button class="va-pill">↔ Neutral</button>
+          </div>
+          <div class="va-tabs">
+            <div class="va-tab on">All <span class="va-tc">9</span></div>
+            <div class="va-tab">OI <span class="va-tc">3</span></div>
+            <div class="va-tab">Strikes <span class="va-tc">1</span></div>
+            <div class="va-tab">Spreads</div>
+          </div>
+          <div class="va-feed">
+            <!-- Card 1 -->
+            <div class="va-card" style="animation-delay:0ms">
+              <div class="va-stripe" style="background:#45B644"></div>
+              <div class="va-card-body">
+                <div class="va-r1">
+                  <span class="va-badge" style="background:#DCFCE7;color:#16A34A">● LONG BUILDUP</span>
+                  <span class="va-fresh">Just now</span>
+                </div>
+                <div class="va-instrument">NIFTY 24500 CE</div>
+                <div class="va-sub">29 May Expiry · Weekly</div>
+                <div class="w-metric-grid">
+                  <div class="w-metric-cell"><div class="w-metric-label">OI CHG%</div><div class="w-metric-val pos">+38.4%</div></div>
+                  <div class="w-metric-cell"><div class="w-metric-label">VOL / OI</div><div class="w-metric-val">0.61×</div></div>
+                  <div class="w-metric-cell"><div class="w-metric-label">PRICE CHG%</div><div class="w-metric-val pos">+1.8%</div></div>
+                </div>
+                <div class="va-r4">
+                  <div class="va-conv">
+                    <div class="w-cdots">
+                      <div class="w-cdot hot"></div><div class="w-cdot hot"></div><div class="w-cdot hot"></div><div class="w-cdot hot"></div><div class="w-cdot"></div>
+                    </div>
+                    <span class="va-clabel">Strong</span>
+                  </div>
+                  <div class="va-dir-tag" style="background:#DCFCE7;color:#16A34A">↑ Bullish</div>
+                </div>
+                <button class="va-cta" style="background:rgba(69,182,68,0.1);color:#16A34A;border-color:rgba(69,182,68,0.3)">Analyse OI →</button>
+              </div>
+            </div>
+            <!-- Card 2 -->
+            <div class="va-card" style="animation-delay:65ms">
+              <div class="va-stripe" style="background:#2777F3"></div>
+              <div class="va-card-body">
+                <div class="va-r1">
+                  <span class="va-badge" style="background:#DBEAFE;color:#2777F3">● HIGH OI STRIKE</span>
+                  <span class="va-fresh">3m ago</span>
+                </div>
+                <div class="va-instrument">NIFTY 24000 PE 🔥</div>
+                <div class="va-sub">29 May · Max Pain Zone · Gamma Wall</div>
+                <div class="w-metric-grid">
+                  <div class="w-metric-cell"><div class="w-metric-label">OI (LACS)</div><div class="w-metric-val">84.2</div></div>
+                  <div class="w-metric-cell"><div class="w-metric-label">OI CHG%</div><div class="w-metric-val pos">+22.1%</div></div>
+                  <div class="w-metric-cell"><div class="w-metric-label">PCR STRIKE</div><div class="w-metric-val">1.82</div></div>
+                </div>
+                <div class="va-r4">
+                  <div class="va-conv">
+                    <div class="w-cdots">
+                      <div class="w-cdot hot"></div><div class="w-cdot hot"></div><div class="w-cdot hot"></div><div class="w-cdot hot"></div><div class="w-cdot hot"></div>
+                    </div>
+                    <span class="va-clabel">Very Strong</span>
+                  </div>
+                  <div class="va-dir-tag" style="background:#DBEAFE;color:#2777F3">↔ Neutral</div>
+                </div>
+                <button class="va-cta" style="background:rgba(39,119,243,0.1);color:#2777F3;border-color:rgba(39,119,243,0.3)">View Strike →</button>
+              </div>
+            </div>
+            <!-- Card 3 partial -->
+            <div class="va-card" style="animation-delay:130ms">
+              <div class="va-stripe" style="background:#DE493B"></div>
+              <div class="va-card-body">
+                <div class="va-r1">
+                  <span class="va-badge" style="background:#FEE2E2;color:#DC2626">● SHORT BUILDUP</span>
+                  <span class="va-fresh">6m ago</span>
+                </div>
+                <div class="va-instrument">BANKNIFTY 52000 CE</div>
+                <div class="va-sub">22 May Expiry · Near ATM</div>
+                <div class="w-metric-grid">
+                  <div class="w-metric-cell"><div class="w-metric-label">OI CHG%</div><div class="w-metric-val neg">+29.7%</div></div>
+                  <div class="w-metric-cell"><div class="w-metric-label">VOL / OI</div><div class="w-metric-val">0.38×</div></div>
+                  <div class="w-metric-cell"><div class="w-metric-label">PRICE CHG%</div><div class="w-metric-val neg">-0.9%</div></div>
+                </div>
+                <div class="va-r4">
+                  <div class="va-conv">
+                    <div class="w-cdots">
+                      <div class="w-cdot on"></div><div class="w-cdot on"></div><div class="w-cdot on"></div><div class="w-cdot"></div><div class="w-cdot"></div>
+                    </div>
+                    <span class="va-clabel">Developing</span>
+                  </div>
+                  <div class="va-dir-tag" style="background:#FEE2E2;color:#DC2626">↓ Bearish</div>
+                </div>
+                <button class="va-cta" style="background:rgba(222,73,59,0.1);color:#C73832;border-color:rgba(222,73,59,0.3)">Analyse OI →</button>
+              </div>
+            </div>
+          </div>
+          <div class="va-refresh va-prog">
+            <span class="va-refresh-text">Auto-refreshing every 3 min</span>
+            <button class="va-refresh-btn">↺ Refresh</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── DEVICE B ── Spotlight Focus ──────────────────────────── -->
+  <div class="device-col">
+    <div class="device-label">
+      <span class="dl-variant">Variant B</span>
+      <span class="dl-name">Spotlight Focus</span>
+      <span class="dl-desc">One signal at a time · swipe through</span>
+    </div>
+    <div class="device">
+      <div class="device-screen">
+        <div class="vb-widget">
+          <div class="vb-header">
+            <div>
+              <div class="vb-title">Discover</div>
+              <div class="vb-header-sub">Top signal right now</div>
+            </div>
+            <div class="w-live-badge">
+              <div class="w-live-dot-wrap"><div class="w-live-ring"></div><div class="w-live-dot"></div></div>
+              <span class="w-live-text">LIVE</span>
+            </div>
+          </div>
+
+          <div class="vb-hero">
+            <div class="vb-badge" style="background:rgba(69,182,68,0.2);color:#4ADE80">● LONG BUILDUP</div>
+            <div class="vb-instrument">NIFTY<br>24500 CE</div>
+            <div class="vb-sub">29 May Expiry · Weekly · ATM</div>
+            <div class="vb-metric-grid">
+              <div class="vb-metric-cell"><div class="vb-metric-label">OI CHG%</div><div class="vb-metric-val pos">+38.4%</div></div>
+              <div class="vb-metric-cell"><div class="vb-metric-label">VOL / OI</div><div class="vb-metric-val">0.61×</div></div>
+              <div class="vb-metric-cell"><div class="vb-metric-label">PRICE CHG%</div><div class="vb-metric-val pos">+1.8%</div></div>
+            </div>
+            <div class="vb-r4">
+              <div class="vb-conv">
+                <div class="w-cdots">
+                  <div class="vb-cdot on"></div><div class="vb-cdot on"></div><div class="vb-cdot on"></div><div class="vb-cdot on"></div><div class="vb-cdot"></div>
+                </div>
+                <span class="vb-clabel">Strong · 4 / 5</span>
+              </div>
+              <div class="vb-dir-tag" style="background:rgba(69,182,68,0.2);color:#4ADE80">↑ Bullish</div>
+            </div>
+            <button class="vb-cta">Analyse OI →</button>
+          </div>
+
+          <div class="vb-dots">
+            <div class="vb-dot on"></div>
+            <div class="vb-dot"></div><div class="vb-dot"></div><div class="vb-dot"></div>
+            <div class="vb-dot"></div><div class="vb-dot"></div><div class="vb-dot"></div>
+            <div class="vb-dot"></div><div class="vb-dot"></div>
+          </div>
+
+          <div class="vb-queue">
+            <div class="vb-mini on">
+              <div class="vb-mini-dot" style="background:#4ADE80"></div>
+              <div class="vb-mini-name">NF 24500 CE</div>
+              <div class="vb-mini-val">+38.4%</div>
+            </div>
+            <div class="vb-mini">
+              <div class="vb-mini-dot" style="background:#60A5FA"></div>
+              <div class="vb-mini-name">NF 24000 PE</div>
+              <div class="vb-mini-val">84.2L OI</div>
+            </div>
+            <div class="vb-mini">
+              <div class="vb-mini-dot" style="background:#F87171"></div>
+              <div class="vb-mini-name">BNF 52000</div>
+              <div class="vb-mini-val">+29.7%</div>
+            </div>
+            <div class="vb-mini">
+              <div class="vb-mini-dot" style="background:#C084FC"></div>
+              <div class="vb-mini-name">NF Bull Spr</div>
+              <div class="vb-mini-val">1:2.5 RR</div>
+            </div>
+            <div class="vb-mini">
+              <div class="vb-mini-dot" style="background:#FB923C"></div>
+              <div class="vb-mini-name">IT Sector</div>
+              <div class="vb-mini-val">+24.3%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── DEVICE C ── Compact Command ──────────────────────────── -->
+  <div class="device-col">
+    <div class="device-label">
+      <span class="dl-variant">Variant C</span>
+      <span class="dl-name">Compact Command</span>
+      <span class="dl-desc">Dense list · power user · max signals</span>
+    </div>
+    <div class="device">
+      <div class="device-screen">
+        <div class="vc-widget">
+          <div class="vc-header">
+            <div>
+              <div class="vc-title">Discover</div>
+            </div>
+            <div class="w-live-badge">
+              <div class="w-live-dot-wrap"><div class="w-live-ring"></div><div class="w-live-dot"></div></div>
+              <span class="w-live-text">LIVE</span>
+            </div>
+          </div>
+          <div class="vc-chips">
+            <button class="vc-chip on">All 9</button>
+            <button class="vc-chip">OI 3</button>
+            <button class="vc-chip">Strikes 1</button>
+            <button class="vc-chip">Spreads 1</button>
+            <button class="vc-chip">News 1</button>
+          </div>
+
+          <div class="vc-feed">
+            <!-- Row 1 -->
+            <div class="vc-row">
+              <div class="vc-accent" style="background:#45B644"></div>
+              <div class="vc-body">
+                <div class="vc-r1">
+                  <div class="vc-name">NIFTY 24500 CE</div>
+                  <div class="vc-right">
+                    <div class="vc-dir-tag" style="background:#DCFCE7;color:#16A34A">↑</div>
+                    <div class="vc-conviction">
+                      <div class="vc-cdot hot"></div><div class="vc-cdot hot"></div><div class="vc-cdot hot"></div><div class="vc-cdot hot"></div><div class="vc-cdot"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="vc-signal-type">LONG BUILDUP · 29 May · Just now</div>
+                <div class="vc-metrics-line">
+                  <div class="vc-m"><div class="vc-ml">OI CHG%</div><div class="vc-mv pos">+38.4%</div></div>
+                  <div class="vc-m"><div class="vc-ml">VOL/OI</div><div class="vc-mv">0.61×</div></div>
+                  <div class="vc-m"><div class="vc-ml">PRICE</div><div class="vc-mv pos">+1.8%</div></div>
+                </div>
+                <button class="vc-cta" style="background:rgba(69,182,68,0.1);color:#16A34A;border-color:rgba(69,182,68,0.3)">Analyse OI →</button>
+              </div>
+            </div>
+            <!-- Row 2 -->
+            <div class="vc-row">
+              <div class="vc-accent" style="background:#2777F3"></div>
+              <div class="vc-body">
+                <div class="vc-r1">
+                  <div class="vc-name">NIFTY 24000 PE 🔥</div>
+                  <div class="vc-right">
+                    <div class="vc-dir-tag" style="background:#DBEAFE;color:#2777F3">↔</div>
+                    <div class="vc-conviction">
+                      <div class="vc-cdot hot"></div><div class="vc-cdot hot"></div><div class="vc-cdot hot"></div><div class="vc-cdot hot"></div><div class="vc-cdot hot"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="vc-signal-type">HIGH OI STRIKE · Max Pain · 3m ago</div>
+                <div class="vc-metrics-line">
+                  <div class="vc-m"><div class="vc-ml">OI LACS</div><div class="vc-mv">84.2</div></div>
+                  <div class="vc-m"><div class="vc-ml">OI CHG%</div><div class="vc-mv pos">+22.1%</div></div>
+                  <div class="vc-m"><div class="vc-ml">PCR</div><div class="vc-mv">1.82</div></div>
+                </div>
+                <button class="vc-cta" style="background:rgba(39,119,243,0.1);color:#2777F3;border-color:rgba(39,119,243,0.3)">View Strike →</button>
+              </div>
+            </div>
+            <!-- Row 3 -->
+            <div class="vc-row">
+              <div class="vc-accent" style="background:#DE493B"></div>
+              <div class="vc-body">
+                <div class="vc-r1">
+                  <div class="vc-name">BANKNIFTY 52000 CE</div>
+                  <div class="vc-right">
+                    <div class="vc-dir-tag" style="background:#FEE2E2;color:#DC2626">↓</div>
+                    <div class="vc-conviction">
+                      <div class="vc-cdot on"></div><div class="vc-cdot on"></div><div class="vc-cdot on"></div><div class="vc-cdot"></div><div class="vc-cdot"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="vc-signal-type">SHORT BUILDUP · 22 May · 6m ago</div>
+                <div class="vc-metrics-line">
+                  <div class="vc-m"><div class="vc-ml">OI CHG%</div><div class="vc-mv neg">+29.7%</div></div>
+                  <div class="vc-m"><div class="vc-ml">VOL/OI</div><div class="vc-mv">0.38×</div></div>
+                  <div class="vc-m"><div class="vc-ml">PRICE</div><div class="vc-mv neg">-0.9%</div></div>
+                </div>
+                <button class="vc-cta" style="background:rgba(222,73,59,0.1);color:#C73832;border-color:rgba(222,73,59,0.3)">Analyse OI →</button>
+              </div>
+            </div>
+            <!-- Row 4 -->
+            <div class="vc-row">
+              <div class="vc-accent" style="background:#8B5CF6"></div>
+              <div class="vc-body">
+                <div class="vc-r1">
+                  <div class="vc-name">NIFTY Bull Call Spread</div>
+                  <div class="vc-right">
+                    <div class="vc-dir-tag" style="background:#EDE9FE;color:#7C3AED">↑</div>
+                    <div class="vc-conviction">
+                      <div class="vc-cdot hot"></div><div class="vc-cdot hot"></div><div class="vc-cdot hot"></div><div class="vc-cdot hot"></div><div class="vc-cdot"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="vc-signal-type">SPREAD OPPTY · 24300–24600 · 8m ago</div>
+                <div class="vc-metrics-line">
+                  <div class="vc-m"><div class="vc-ml">MAX PNL</div><div class="vc-mv pos">₹4,500</div></div>
+                  <div class="vc-m"><div class="vc-ml">MAX LOSS</div><div class="vc-mv neg">₹1,800</div></div>
+                  <div class="vc-m"><div class="vc-ml">R:R</div><div class="vc-mv">1:2.5</div></div>
+                </div>
+                <button class="vc-cta" style="background:rgba(139,92,246,0.1);color:#7C3AED;border-color:rgba(139,92,246,0.3)">Open Spread →</button>
+              </div>
+            </div>
+            <!-- Row 5 -->
+            <div class="vc-row">
+              <div class="vc-accent" style="background:#EA580C"></div>
+              <div class="vc-body">
+                <div class="vc-r1">
+                  <div class="vc-name">IT Sector</div>
+                  <div class="vc-right">
+                    <div class="vc-dir-tag" style="background:#FFEDD5;color:#C2410C">↑</div>
+                    <div class="vc-conviction">
+                      <div class="vc-cdot hot"></div><div class="vc-cdot hot"></div><div class="vc-cdot hot"></div><div class="vc-cdot hot"></div><div class="vc-cdot"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="vc-signal-type">SECTOR SIGNAL · 8/11 Long Buildup · 18m ago</div>
+                <div class="vc-metrics-line">
+                  <div class="vc-m"><div class="vc-ml">SECT OI</div><div class="vc-mv pos">+24.3%</div></div>
+                  <div class="vc-m"><div class="vc-ml">TOP</div><div class="vc-mv">INFY</div></div>
+                  <div class="vc-m"><div class="vc-ml">INFY</div><div class="vc-mv pos">+2.8%</div></div>
+                </div>
+                <button class="vc-cta" style="background:rgba(39,119,243,0.1);color:#2777F3;border-color:rgba(39,119,243,0.3)">Sector View →</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="vc-refresh">
+            <span class="vc-refresh-text">Auto-refreshing every 3 min</span>
+            <button class="vc-refresh-btn">↺ Refresh</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /devices-row -->
+
+<!-- Wireframe legend -->
+<div class="wf-legend" id="wfLegend">
+  <div class="wf-legend-title">Wireframe · Component Map</div>
+  <div class="wf-legend-grid">
+    <div class="wf-legend-item"><div class="wf-num">①</div><div class="wf-item-text">Signal Type Badge — classifies signal</div></div>
+    <div class="wf-legend-item"><div class="wf-num">②</div><div class="wf-item-text">Freshness Timestamp — signal age</div></div>
+    <div class="wf-legend-item"><div class="wf-num">③</div><div class="wf-item-text">Instrument Name + Expiry</div></div>
+    <div class="wf-legend-item"><div class="wf-num">④</div><div class="wf-item-text">Metric Row — 3 KPIs (OI / VOL/OI / Price)</div></div>
+    <div class="wf-legend-item"><div class="wf-num">⑤</div><div class="wf-item-text">Conviction Score — 1 to 5 dots</div></div>
+    <div class="wf-legend-item"><div class="wf-num">⑥</div><div class="wf-item-text">Direction Tag — Bullish / Bearish / Neutral</div></div>
+    <div class="wf-legend-item"><div class="wf-num">⑦</div><div class="wf-item-text">Primary CTA — routes to Strategy Builder</div></div>
+    <div class="wf-legend-item"><div class="wf-num">⑧</div><div class="wf-item-text">Direction Filter Pills — AND logic with tabs</div></div>
+    <div class="wf-legend-item"><div class="wf-num">⑨</div><div class="wf-item-text">Category Tabs — with signal count badge</div></div>
+    <div class="wf-legend-item"><div class="wf-num">⑩</div><div class="wf-item-text">Live Pulse Indicator — auto-refresh status</div></div>
+    <div class="wf-legend-item"><div class="wf-num">⑪</div><div class="wf-item-text">Left Accent Bar — signal color identity</div></div>
+    <div class="wf-legend-item"><div class="wf-num">⑫</div><div class="wf-item-text">Mini Queue (Var B) — upcoming signal strip</div></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var wfBtn = document.getElementById('wfBtn');
+  var body  = document.body;
+  var isWF  = false;
+
+  wfBtn.addEventListener('click', function(){
+    isWF = !isWF;
+    if(isWF){
+      body.classList.add('wf-mode');
+      wfBtn.classList.add('on');
+      wfBtn.innerHTML = '<div class="wf-dot"></div> Exit Wireframe';
+    } else {
+      body.classList.remove('wf-mode');
+      wfBtn.classList.remove('on');
+      wfBtn.innerHTML = '<div class="wf-dot"></div> Wireframe Mode';
+    }
+  });
+})();
+</script>
+
+</body>
+</html>

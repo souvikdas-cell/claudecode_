@@ -1,0 +1,319 @@
+                                                                                                            NIFTY 08 APR 24000 CE
+
+TOrpatdiionng
+
+       StrikeX
+
+The Future of 
+
+Option Trading
+
+A Comprehensive and Professional Trading Platform.
+Enjoy One-Click Trading from Price Ladder, Auto SL Trailing, Spot Level based Trading, Bracket (OCO)
+Orders, MTM Protection, Option Chain & Greeks, TradingView Charts, Multi Broker Support, and more.
+       Price
+                                                                   NIFTY 08 APR 
+                                 NIFTY 22567.50
+                                                                                24000 CE                                       NIFTY 08 APR 
+
+                                                                                                                               24000 CE
+
+       Ladder
+
+                                                                         NIFTY                                         SENSEX
+                                                                                                                       74000
+       Super Fast Execution                                              24000
+                                                                                                134
+       Instantly place orders at your desired price by                                          129
+       clicking directly on the price ladder, reducing
+       delays. Drag and drop to modify orders.
+
+       Visual Clarity
+
+       Easily track live bid-ask spreads, market
+       depth, and price movement for quick
+       decision-making. Set custom tick size, slice
+       market orders, trade unlimited quantity.
+
+       Precision Control
+
+       Modify, cancel, exit partial quantities or scale
+       orders with a single click, allowing for more
+       accurate trading during volatile markets.
+
+       NIFTY 08 APR 
+                                    NIFTY 08 APR 
+         One Click
+
+       24000 CE                                          24000 CE               Trading
+
+NIFTY                        SENSEX                                                Speed - Capture Gamma Moves
+
+                                                                                    Execute all kinds of trades instantly with just one-
+                                                                                    click, minimizing time delays in fast-moving markets
+                                                                                    and allowing to capture huge gamma moves.
+
+                                                                                   Precision
+
+                                                                                    Reduce manual errors by placing orders swiftly and
+                                                                                    accurately on a robust and feature rich price ladder
+                                                                                    based trading system.
+
+                                                                                   Efficiency
+
+                                                                                    Maximize trading opportunities by quickly entering
+                                                                                    and exiting positions without navigating complex
+                                                                                    menus.
+
+       FinX
+OCO Bracket
+                                                                                                                                                         NIFTY 08 APR 
+          NIFTY 22567.50
+Order                                                                                                                                                                24000 CE                NIFTY 08 APR 
+
+                                                                                                                                                                                             24000 CE
+                                                                                                                                                              NIFTY
+                                                                                                                                                              74000                  SENSEX
+                                                                                                                                                                                     74000
+   Automated Trade Management
+
+     Once triggered, an entry order is paired
+     automatically with two legs to sets profit target
+     and stop-loss, reducing manual intervention.
+
+   Superior Risk Control
+
+    Ensures predefined exit points, helping limit
+
+     losses and lock in profits during fast-moving
+
+    intraday trades (In-fact you can trail profits as
+    well).
+
+   Efficiency
+
+    Saves time by placing both exit orders
+    immediately after the entry, allowing
+
+
+     traders to focus on other opportunities.
+
+                                                                                                                                                                     Profit
+
+                                                                                                                                                                     Protection
+
+                                                                                                                                                                        Profit Lock-in
+
+                                                                                                                                                                          Do not loose unrealized profit. Automatically exit
+                                                                                                                                                                          positions when your target profit or set max loss is
+                                                                                                                                                                          reached, securing gains without manual intervention.
+
+                                                                                                                                                                        Dynamic Loss Control
+
+                                                                                                                                                                          Trailing feature dynamically adjusts max loss threshold
+                                                                                                                                                                          as PnL increases, protecting profits while limiting
+                                                                                                                                                                          downside risk.
+
+                                                                                                                                                                        Stress- Free Trading
+
+                                                                                                                                                                          Focus on strategy rather than manual
+                                                                                                                                                                          monitoring of PnL. Avoid impulsive decisions
+                                                                                                                                                                          by letting PnL guide your exits, maintaining
+                                                                                                                                                                          trading discipline.
+
+FinX
+TradingView
+                                                                   NIFTY 08 APR 2025 24000 CE  NIFTY 08 APR 2025 24000 CE
+Charts
+
+   Free Access to TradingView Charts
+
+     Access unlimited Index and Options charts in a
+     single screen simultaneously. Get fastest and
+     most accurate tick by tick data charts.
+
+   Indicators and Studies
+
+     Access advanced indicators and charting
+     tools to perform technical analysis.
+
+   Templates
+
+     Save chart layouts with instrument timeframes,
+     support & resistance levels and indicators, so that
+     you don't have to do it all over again.
+
+NIFTY 08 APR 24000 CE  NIFTY  NIFTY                                            Index 
+
+                                                                               based Ladder
+                              Buy and sell options at strategy
+                              level based on a market Index.                      Index Level Based Order Execution
+
+                                                   Buy and sell options based       Set Limit, SL or Bracket orders based on Index levels.
+                                                        on a market Index.          Orders are automatically executed with predefined
+                                                                                    target and SL. Also, trail orders based on Index values.
+
+                                                                                  Auto Breakout & Reversal Trading
+                                                                                  Place orders at support or resistance levels, ideal for
+                                                                                  erexveecrusatel,dbaretaakoliguht,tnoirngbrfeaastkdspoweendsotrfalteesgsitehsa. nO5rdmesr.s are
+
+                                                                                 More Focus & Less Screen Time
+
+                                                                                  RNeodunceeesdscrteoenmtaimneu,aallynd tfroaccuksinmg orIendoenxbrporaicdeesr;
+
+                                                                                    market analysis without missing trades.
+Spread Ladder For                                          NIFTY 08 APR 24000 CE
+Multileg Trading
+
+                                                           NIFTY
+
+Trade Iron Condor, Strangle in 1 Click                                            NIFTY
+
+Create, analyze payoff and execute complex multileg                               NIFTY
+
+option strategies with a single click from the price                              NIFTY
+
+ladder, streamlining the process and reducing slippage.
+
+Customizable Strategies
+
+Perform real-time adjustments to strategies, like                                 NIFTY
+
+changes to ratios, strikes, expiries, and instruments,                            NIFTY
+offering flexibility for dynamic market conditions.
+
+Multileg Option Strategy Chart                                                           Review the Greeks and
+                                                                                         the net premium by
+Access real-time tick by tick superfast chart of multileg                                analyzing payoff charts.
+strategies like Butterfly, Ratios, Iron Condor, Box,
+Calendar Spreads etc.
+
+Intelligent Execution
+
+Parallel and Serial execution in multileg strategies.
+Robust execution logic based on bid & ask of derived
+strategy, for minimal slippage.
+
+                         Move, Add and Exit Position              Position Adjustment
+                             through single click
+                                                                     Roll Up - Roll Down Adjustment
+
+                                                                       Effortlessly adjust your option positions with a single
+                                                                       click. Move part or all of your positions between ITM,
+                                                                       ATM, and OTM strikes in an instant, ensuring you stay
+                                                                       aligned with market shifts as they happen.
+
+                                                                     Increase Position
+
+                                                                       Seamlessly expand your position by adding more lots.
+                                                                       Whether you're capitalizing on a winning trade or
+                                                                       scalping for quick gains, enhancing your position is fast
+                                                                       and hassle-free.
+
+                                                                     Exit Position
+
+                                                                       Simplify your exit strategy with an intuitive interface.
+                                                                       Exit positions by lot size or percentage of your total
+                                                                       position for greater control and precision.
+
+FinX
+Option Chain &                                      NIFTY
+
+Greeks
+
+Quick Insights
+
+View real-time option prices, volatility, open
+interest and Greeks in one glance to make
+informed decisions.
+
+Strategy Building
+
+Easily identify support, resistance, access option
+ladder & charts and also add option legs to
+strategy builder, to craft meticulous trading
+strategies.
+
+Efficient Analysis
+
+Spot liquidity, OI changes, and premiums
+to quickly react to market movements and
+opportunities.
+
+                                                           Auto Trailing
+
+                                                           Stop Loss
+
+                                                              Minimizes Losses
+
+                                                               As the market moves in your favor, SL order is auto
+                                                               modified to bring closer to LTP, to protect profits,
+                                                               ensuring you exit a position before losses escalate.
+
+                                                              Dynamic Trailing Speed
+
+                                                               For every X point change in premium, SL order
+                                                               price can be moved by Y points, trailing speed can
+                                                               be controlled in between a trade to lock profits
+                                                               more aggressively.
+
+                                                              No Emotional Decision Making
+
+                                                               By automating exit points, trailing stops reduce
+                                                               the need for constant monitoring, leading to more
+                                                               disciplined trading.
+
+FinX
+        "Choice FinX is incredibly user-friendly! 
+       One-click trading from Price Ladder on a
+
+            single screen interface is seamless"
+
+                                                  Ajay Mittal, Option Trader
+
+                                                                 10 years of Trading Experience
+
+NIFTY 08 APR 74000 CE  NIFTY                                               NIFTY 22567.56
+                              NIFTY 08 APR 24000 CE
+
+NIFTY
+
+       74000
+
+                              NIFTY 08 APR 24000 CE                                                                            NIFTY
+                                                                                                                               NIFTY
+                                                                                                                               NIFTY
+
+                                                                                           SENSEX Target
+
+FinX
+Platform USPs
+
+Price Ladder Centric Trading                                 Low Latency Performance
+
+Single-screen interface with the ability to place,           Tick-to-Trade execution of internal rules in less
+modify, and cancel orders instantly with one click.          than 1 millisecond.
+
+Customizable Interface                                       Trader Workflow Automation
+
+Tailored workspaces, infinite watchlists, and                One-click Risk-on/Risk-off, Spot Level Based
+integrated TradingView charts to enhance user                Trading in FnO, Bracket Orders, 
+
+experience.                                                  PnL-based exits, Greeks, Option Chain.
+
+Robust Order Management                                      High Platform Reliability
+
+Auto stop-loss trailing, drag-and-drop                       Secure and Near-Perfect Uptime of 99.99%
+modifications, bulk order cancellation, kill switch,
+quantity slicing & more.
+
+                                                      Stats
+
+       6x                                                     99.99%
+
+Faster Order Placement                                       Platform Uptime
+
+   < 1ms
+
+Rule Execution Time
+

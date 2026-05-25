@@ -1,0 +1,70 @@
+{
+  "brand": {
+    "primary": "#2777F3",
+    "primary_alt": "#2D77F4",
+    "navy": "#1B1464",
+    "legacy_yellow": "#F9EB21"
+  },
+  "text": {
+    "primary": "#0F0E16",
+    "secondary": "#6F6E73",
+    "tertiary": "#87868A",
+    "muted": "#797979",
+    "disabled": "#B7B7B9",
+    "inverse": "#FFFFFF"
+  },
+  "market": {
+    "positive": "#45B644",
+    "positive_alt": "#3CBA54",
+    "negative": "#DE493B",
+    "negative_alt": "#EE404A",
+    "warning": "#F6B925"
+  },
+  "surface": {
+    "base": "#FFFFFF",
+    "page": "#F9F9F9",
+    "soft_blue": "#F4F8FE",
+    "blue_tint": "#EAF2FE",
+    "neutral": "#F1F1F1",
+    "dark_terminal": "#131722"
+  },
+  "border": {
+    "default": "#E3E1EB",
+    "subtle": "#EBEBEB",
+    "dark_surface": "#1C2A35",
+    "muted": "#C6C4D8"
+  },
+  "radius": {
+    "xs": "4px",
+    "sm": "6px",
+    "md": "8px",
+    "lg": "12px",
+    "pill": "999px"
+  },
+  "shadow": {
+    "card_soft": "0 0 50px rgba(169,172,189,0.15)",
+    "overlay": "0 0 30px rgba(0,0,0,0.30)",
+    "header": "4px 6px 38px -8px rgba(46,45,46,0.70)"
+  },
+  "typography": {
+    "family": "Onest, sans-serif",
+    "base_html": "12px",
+    "base_body": "1rem",
+    "line_height": "1.428571429",
+    "weights": [
+      200,
+      300,
+      400,
+      500,
+      600,
+      700,
+      800
+    ]
+  },
+  "layout": {
+    "desktop_canvas": "1366 x 768 / 1367 x 768 common SVG export",
+    "full_page_canvas": "1440 wide for long pages",
+    "watchlist_width": "340px standard, 400px large desktop, 300px smaller desktop",
+    "main_container": "calc(100% - 370px) desktop with watchlist rail"
+  }
+}

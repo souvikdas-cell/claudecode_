@@ -1,0 +1,530 @@
+# Custom HTML View Guidelines
+
+This document defines the **mandatory constraints**, **best practices**, and **platform-specific requirements** for building custom HTML views rendered inside Plotline.
+
+Custom HTML views are rendered in the following environments:
+
+* **Android**: Inside a WebView
+* **iOS**: Inside a WKWebView
+* **Web**: Inside an iframe
+
+Because the same HTML runs across all platforms, the implementation **must be defensive, deterministic, and optimized for constrained runtimes**.
+
+***
+
+### 1. Document Structure Constraints (Mandatory)
+
+The following constraints are **strictly enforced**. Violating them may cause rendering failures or undefined behaviour.
+
+#### Do NOT include
+
+* `<!DOCTYPE html>` at the beginning of the file
+* `lang` attribute on the `<html>` tag
+* Inline event handlers (`onclick`, `onload`, etc.)
+* Blocking or synchronous scripts
+
+#### Required structure
+
+* A single `<html>` root element
+* `<head>` containing only:
+  * `<meta charset="UTF-8">`
+  * `<meta name="viewport">`
+  * Inline `<style>` or deferred CSS
+* `<body>` containing only renderable UI
+
+**Rationale**\
+Plotline injects and mounts HTML into controlled containers. Certain global HTML constructs interfere with lifecycle hooks, platform bridges, and layout calculations.
+
+***
+
+### 2. Event Handling (Strict Requirement)
+
+#### Inline event handlers are not allowed
+
+```html
+<button onclick="handleClick()">Click</button>
+```
+
+#### Always attach event listeners programmatically
+
+```js
+const knowMoreButton = document.getElementById('know_more_button');
+
+knowMoreButton.addEventListener('click', (event) => {
+  event.stopPropagation();
+  handleKnowMore();
+});
+```
+
+**Why this matters**
+
+* Inline handlers break when HTML is stringified
+* They conflict with injected platform bridges
+* They cause duplicate bindings during re-renders
+* They are difficult to debug in WebViews
+
+***
+
+### 3. Performance & Load Optimization
+
+Custom HTML is runtime-rendered. Poor performance directly impacts UX and engagement.
+
+#### Required practices
+
+* Use skeleton loaders for all primary UI
+* Defer heavy assets (images, audio, animations)
+* Avoid layout thrashing during initial render
+* Do not assume fonts or images are loaded
+
+#### Skeleton lifecycle
+
+Skeletons should be removed **only after**:
+
+* Fonts are loaded
+* Visible images are loaded
+* A small render buffer delay is applied
+
+```js
+Promise.all([document.fonts.ready, imagesLoaded]).then(() => {
+  setTimeout(removeSkeleton, 500);
+});
+```
+
+***
+
+### 4. Mobile Scroll Handling (Critical)
+
+Both `WKWebView` (iOS) and Android WebView have unreliable behaviour with nested or competing scroll containers. Any screen that requires scrolling **must explicitly handle mobile platforms**.
+
+#### Platform Detection
+
+```js
+const isIos = !!(window?.webkit?.messageHandlers?.Plotline);
+const isAndroid = !!window?.Plotline;
+const isMobileWebview = isIos || isAndroid;
+```
+
+#### Recommended Layout Pattern
+
+For full-screen scrollable views, use a two-container pattern:
+
+```css
+/* Viewport container - fixed size, no scroll */
+.overlay {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Scroll container - fills parent, handles scrolling */
+.modal {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+.modal::-webkit-scrollbar {
+  display: none;
+}
+```
+
+#### JavaScript Reinforcement (Optional)
+
+If the CSS above is applied correctly, JavaScript reinforcement is typically not required. However, for complex layouts or dynamic content where timing issues may occur, you can optionally reinforce scroll behavior:
+
+```js
+function applyScrollFixes() {
+  var modal = document.getElementById('modal');
+  var overlay = document.querySelector('.overlay');
+
+  if (modal) {
+    modal.style.height = '100%';
+    modal.style.overflowY = 'auto';
+    modal.style.webkitOverflowScrolling = 'touch';
+  }
+
+  if (overlay) {
+    overlay.style.height = '100vh';
+    overlay.style.overflow = 'hidden';
+  }
+}
+
+// Run immediately and on DOMContentLoaded for reliability
+applyScrollFixes();
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', applyScrollFixes);
+}
+```
+
+**Note:** This is a universal fix that applies to all platforms. The `-webkit-overflow-scrolling: touch` property is iOS-specific but harmless on other platforms.
+
+#### Rules
+
+* Avoid nested scrollable containers
+* Use a single primary scroll container at the parent level
+* Child layouts should use `overflow: auto` (or no overflow), **not** `overflow: scroll`
+* Do not rely on CSS-only scrolling for complex or dynamic layouts
+* Always reinforce scroll behavior via JavaScript for reliability
+
+***
+
+### 4a. Full-Screen Layouts with Docked CTAs
+
+For screens with scrollable content and a fixed bottom CTA, use this structure where the CTA is a **sibling** of the scroll container, not a child.
+
+#### HTML Structure
+
+```html
+<div class="overlay">
+  <div class="modal">
+    <!-- Scrollable content here -->
+  </div>
+  <!-- CTA is OUTSIDE the scroll container -->
+  <div class="bottom-cta">
+    <button>Action</button>
+  </div>
+</div>
+```
+
+#### CSS
+
+```css
+.overlay {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.modal {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: calc(100px + env(safe-area-inset-bottom, 0px)); /* Space for docked CTA + iOS safe area */
+}
+
+.bottom-cta {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+@media (prefers-color-scheme: dark) {
+  .bottom-cta {
+    background: rgba(24, 23, 22, 0.95);
+  }
+}
+```
+
+#### Docked CTA Rules
+
+* Parent container must be `position: relative`
+* CTA must be a **sibling** of the scroll container, not inside it
+* Add `padding-bottom` to scroll container to prevent content overlap
+* **Include `env(safe-area-inset-bottom)` in padding** for iOS devices with home indicator
+* Avoid `position: fixed` — use `position: absolute` for predictable behavior across platforms
+* Include dark mode support for background colors
+
+***
+
+### 5. CSS Compatibility & Layout Stability
+
+#### Required CSS practices
+
+* Include vendor prefixes:
+  * `-webkit-`
+  * `-moz-`
+* Avoid `position: fixed` unless strictly required
+* Avoid `vh`-only layouts without fallbacks
+* Ensure `vw` for sizing divs to ensure reliability in widgets
+* Ensure covering the entire viewport to avoid blank spaces
+* Disable tap highlights for interactive elements
+
+```css
+button {
+  -webkit-tap-highlight-color: transparent;
+}
+```
+
+#### Scrollbars
+
+Explicitly hide scrollbars where required:
+
+```css
+::-webkit-scrollbar {
+  display: none;
+}
+```
+
+***
+
+### 5a. Adaptive Icons for Light/Dark Mode
+
+When using background-image icons that need to adapt to color schemes, use CSS filters to invert colors appropriately.
+
+#### Using CSS Filters
+
+```css
+/* Light mode - make icons dark */
+.icon {
+  background-image: url('...');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  filter: brightness(0) saturate(100%);
+}
+
+/* Dark mode - make icons light */
+@media (prefers-color-scheme: dark) {
+  .icon {
+    filter: brightness(0) saturate(100%) invert(1);
+  }
+}
+```
+
+#### Preferred: Use CSS Variables for Colors
+
+For text and SVG elements that support `currentColor`:
+
+```css
+:root {
+  --icon-color: #32302f;
+  --text-color: #32302f;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --icon-color: #e4e2e1;
+    --text-color: #e4e2e1;
+  }
+}
+
+.icon-text {
+  color: var(--text-color);
+}
+```
+
+#### Icon Theming Rules
+
+* Always test icons in both light and dark modes
+* Use `filter` for raster or external SVG icons
+* Use CSS variables for inline SVGs and text
+* Ensure sufficient contrast in both modes
+
+***
+
+### 6. Liquid Tags & Dynamic Content Safety
+
+Liquid variables must be handled defensively.
+
+#### Mandatory rules
+
+* Always JSON-stringify dynamic values used in JavaScript
+* Avoid injecting raw Liquid output inside `<script>`
+* Never construct JS objects via string concatenation
+
+#### Safe example
+
+```js
+const action = JSON.parse('{{ .ActionJson | json }}');
+```
+
+**Why**
+
+* Prevents malformed HTML
+* Prevents script parsing failures
+* Prevents runtime crashes in WebViews
+
+***
+
+### 7. Script Loading Rules
+
+#### Mandatory
+
+* All scripts must be deferred
+* No blocking JavaScript in `<head>`
+* Avoid large libraries unless absolutely required
+
+```html
+<script defer src="..."></script>
+```
+
+***
+
+### 8. Animation & Media Guidelines
+
+* Audio must be user-initiated on iOS
+* Animations must be reinitialized when toggling visibility
+* `display: none → block` requires manual reinitialization
+
+```js
+if (typeof lottiePlayer?.load === 'function') {
+  lottiePlayer.load(lottiePlayer.src);
+}
+```
+
+***
+
+### 9. Memory Management & Cleanup
+
+Custom HTML views may re-render or transition between states.
+
+#### Required cleanup
+
+* Remove event listeners when screens are hidden
+* Clear timers (`setTimeout`, `setInterval`)
+* Avoid accumulating listeners across state changes
+
+Failure to clean up can cause:
+
+* Duplicate actions
+* Memory leaks
+* Crashes on low-end devices
+
+***
+
+### 10. Platform Communication & Debugging
+
+All platform communication must be **explicit, guarded, and platform-aware**. [Use this guide](/feature-guides/advanced/setting-up-ctas-in-custom-html-view.md) to use this to setup click listeners on buttons inside HTML views.
+
+#### Android
+
+```js
+if (window?.Plotline && androidAction) {
+  window.Plotline.onClick(...androidAction);
+}
+```
+
+#### iOS
+
+```js
+if (window?.webkit?.messageHandlers?.Plotline && iosAction) {
+  window.webkit.messageHandlers.Plotline.postMessage(iosAction);
+}
+```
+
+#### Web
+
+```js
+if (window?.PlotlineWeb && webAction) {
+  window.PlotlineWeb.onClick(...webAction);
+}
+```
+
+**Rules**
+
+* Always guard platform calls
+* Never assume a bridge exists
+* Actions must be JSON-serializable
+* Avoid inline JSON inside HTML attributes
+
+***
+
+### 11. Accessibility Guidelines
+
+While full accessibility support is not enforced, the following are required:
+
+* Minimum touch target size: **44px**
+* Do not place `pointer-events: none` on interactive parents
+* Ensure sufficient text contrast for dynamic themes
+* Avoid relying solely on color to convey meaning — use icons or text
+
+***
+
+### 12. Error Handling Expectations
+
+#### JavaScript errors
+
+* Should fail silently without breaking the host app
+* Must not block platform actions
+* Should leave the UI in a recoverable state
+
+#### Recommended
+
+* Defensive checks before DOM access
+* Graceful fallbacks if optional elements are missing
+
+***
+
+### 13. Size & Asset Limits (Recommended)
+
+To ensure consistent performance:
+
+* Images: Prefer optimized formats, avoid oversized assets
+* Audio: Keep files small and user-initiated
+* HTML payload: Avoid unnecessary duplication or large inline data
+
+***
+
+### 14. Security Constraints
+
+The following are **explicitly disallowed**:
+
+* `eval`
+* Inline script injection via Liquid
+* External scripts without approval
+* Dynamic script creation from user-controlled content
+
+***
+
+### 15. Testing Checklist (Mandatory)
+
+Before publishing a custom HTML view, test on:
+
+* Android WebView
+* iOS WKWebView
+* Web iframe (mobile viewport)
+* Low-end Android device
+* Slow network simulation
+
+Validate:
+
+* Load performance
+* Scroll behavior
+* Event firing
+* Platform bridge calls
+* Skeleton lifecycle
+
+***
+
+### 16. Reference Implementations
+
+[This link](https://cdn.plotline.so/guidelines/sample-custom-html.html) shares a custom HTML view that includes:
+
+* Canonical references for:
+  * Event handling
+  * Platform communication
+  * Skeleton lifecycle
+  * iOS scroll handling
+  * Deferred initialization
+* A safe starting point for new custom HTML views
+
+***
+
+
+---
+
+# Agent Instructions: Querying This Documentation
+
+If you need additional information that is not directly available in this page, you can query the documentation dynamically by asking a question.
+
+Perform an HTTP GET request on the current page URL with the `ask` query parameter:
+
+```
+GET https://docs.plotline.so/feature-guides/advanced/custom-html-view-guidelines.md?ask=<question>
+```
+
+The question should be specific, self-contained, and written in natural language.
+The response will contain a direct answer to the question and relevant excerpts and sources from the documentation.
+
+Use this mechanism when the answer is not explicitly present in the current page, you need clarification or additional context, or you want to retrieve related documentation sections.

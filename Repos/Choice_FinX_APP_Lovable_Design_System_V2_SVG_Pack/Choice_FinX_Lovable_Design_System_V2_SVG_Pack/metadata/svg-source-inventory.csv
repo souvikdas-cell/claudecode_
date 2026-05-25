@@ -1,0 +1,176 @@
+category,dest_rel,rel,filename,width,height,viewBox,size,colors
+platform-screens,reference-svg/platform-screens/001_android.svg,Choice FinX Design (5)/android.svg,android.svg,11811,1748,0 0 11811 1748,15018883,1
+platform-screens,reference-svg/platform-screens/002_Screenshot_20250515_124941_Choice.svg,Choice FinX Design (5)/Screenshot_20250515_124941_Choice.svg,Screenshot_20250515_124941_Choice.svg,280,621,0 0 280 621,95737,0
+platform-screens,reference-svg/platform-screens/003_Screenshot_20250515_120037_Choice_FinX.svg,Choice FinX Design (5)/Screenshot_20250515_120037_Choice FinX.svg,Screenshot_20250515_120037_Choice FinX.svg,280,621,0 0 280 621,439142,0
+platform-screens,reference-svg/platform-screens/004_Screenshot_20250515_120028_Choice_FinX.svg,Choice FinX Design (5)/Screenshot_20250515_120028_Choice FinX.svg,Screenshot_20250515_120028_Choice FinX.svg,280,621,0 0 280 621,398182,0
+platform-screens,reference-svg/platform-screens/005_Screenshot_20250515_115913_Choice_FinX.svg,Choice FinX Design (5)/Screenshot_20250515_115913_Choice FinX.svg,Screenshot_20250515_115913_Choice FinX.svg,280,621,0 0 280 621,406046,0
+platform-screens,reference-svg/platform-screens/006_Screenshot_20250515_115907_Choice_FinX.svg,Choice FinX Design (5)/Screenshot_20250515_115907_Choice FinX.svg,Screenshot_20250515_115907_Choice FinX.svg,280,621,0 0 280 621,410174,0
+platform-screens,reference-svg/platform-screens/007_Screenshot_20250515_115855_Choice_FinX.svg,Choice FinX Design (5)/Screenshot_20250515_115855_Choice FinX.svg,Screenshot_20250515_115855_Choice FinX.svg,280,621,0 0 280 621,424814,0
+platform-screens,reference-svg/platform-screens/008_Screenshot_20250515_115849_Choice_FinX.svg,Choice FinX Design (5)/Screenshot_20250515_115849_Choice FinX.svg,Screenshot_20250515_115849_Choice FinX.svg,280,621,0 0 280 621,438642,0
+platform-screens,reference-svg/platform-screens/009_ios.svg,Choice FinX Design (5)/ios.svg,ios.svg,10403,1677,0 0 10403 1677,15927699,1
+design-system,reference-svg/design-system/010_Design_System.svg,Choice FinX Design (4)/Design System.svg,Design System.svg,1440,900,0 0 1440 900,1615973,2
+design-system,reference-svg/design-system/011_Design_System-1.svg,Choice FinX Design (4)/Design System-1.svg,Design System-1.svg,1440,900,0 0 1440 900,1616000,2
+design-system,reference-svg/design-system/012_1_-_Color_Palette.svg,Choice FinX Design (4)/1 - Color Palette.svg,1 - Color Palette.svg,1440,900,0 0 1440 900,119678,49
+design-system,reference-svg/design-system/013_1_-_Color_Palette-1.svg,Choice FinX Design (4)/1 - Color Palette-1.svg,1 - Color Palette-1.svg,1440,1160,0 0 1440 1160,138397,50
+design-system,reference-svg/design-system/014_2_-_Typography.svg,Choice FinX Design (4)/2 - Typography.svg,2 - Typography.svg,1440,2548,0 0 1440 2548,976630,5
+design-system,reference-svg/design-system/015_2_-_Typography-1.svg,Choice FinX Design (4)/2 - Typography-1.svg,2 - Typography-1.svg,1440,1545,0 0 1440 1545,697078,5
+design-system,reference-svg/design-system/016_2_-_Typography-2.svg,Choice FinX Design (4)/2 - Typography-2.svg,2 - Typography-2.svg,1440,1545,0 0 1440 1545,697040,6
+design-system,reference-svg/design-system/017_3_-_Buttons.svg,Choice FinX Design (4)/3 - Buttons.svg,3 - Buttons.svg,1440,2938,0 0 1440 2938,554373,20
+design-system,reference-svg/design-system/018_3_-_Buttons-1.svg,Choice FinX Design (4)/3 - Buttons-1.svg,3 - Buttons-1.svg,1440,2938,0 0 1440 2938,556044,15
+design-system,reference-svg/design-system/019_3_-_Buttons-2.svg,Choice FinX Design (4)/3 - Buttons-2.svg,3 - Buttons-2.svg,1440,2719,0 0 1440 2719,392828,18
+design-system,reference-svg/design-system/020_6_-_Tags.svg,Choice FinX Design (4)/6 - Tags.svg,6 - Tags.svg,1440,814,0 0 1440 814,101062,14
+design-system,reference-svg/design-system/021_6_-_Tags-1.svg,Choice FinX Design (4)/6 - Tags-1.svg,6 - Tags-1.svg,1440,814,0 0 1440 814,101121,15
+design-system,reference-svg/design-system/022_4_-_Tabs.svg,Choice FinX Design (4)/4 - Tabs.svg,4 - Tabs.svg,1440,1343,0 0 1440 1343,243998,12
+design-system,reference-svg/design-system/023_4_-_Tabs-1.svg,Choice FinX Design (4)/4 - Tabs-1.svg,4 - Tabs-1.svg,1440,1343,0 0 1440 1343,244128,10
+design-system,reference-svg/design-system/024_17_-_Drop_down.svg,Choice FinX Design (4)/17 - Drop down.svg,17 - Drop down.svg,1440,652,0 0 1440 652,81762,7
+design-system,reference-svg/design-system/025_17_-_Drop_down-1.svg,Choice FinX Design (4)/17 - Drop down-1.svg,17 - Drop down-1.svg,1440,652,0 0 1440 652,81674,7
+design-system,reference-svg/design-system/026_18_-_Extra.svg,Choice FinX Design (4)/18 - Extra.svg,18 - Extra.svg,1440,2876,0 0 1440 2876,725245,18
+design-system,reference-svg/design-system/027_18_-_Extra-1.svg,Choice FinX Design (4)/18 - Extra-1.svg,18 - Extra-1.svg,1440,2876,0 0 1440 2876,725115,17
+design-system,reference-svg/design-system/028_7_-_Input_fields.svg,Choice FinX Design (4)/7 - Input fields.svg,7 - Input fields.svg,1440,1189,0 0 1440 1189,257099,16
+design-system,reference-svg/design-system/029_7_-_Input_fields-1.svg,Choice FinX Design (4)/7 - Input fields-1.svg,7 - Input fields-1.svg,1440,1189,0 0 1440 1189,257160,19
+design-system,reference-svg/design-system/030_8_-_Menu.svg,Choice FinX Design (4)/8 - Menu.svg,8 - Menu.svg,1440,1504,0 0 1440 1504,269215,9
+design-system,reference-svg/design-system/031_8_-_Menu-1.svg,Choice FinX Design (4)/8 - Menu-1.svg,8 - Menu-1.svg,1440,1504,0 0 1440 1504,269208,9
+design-system,reference-svg/design-system/032_9_-_Header.svg,Choice FinX Design (4)/9 - Header.svg,9 - Header.svg,1440,2070,0 0 1440 2070,274116,10
+design-system,reference-svg/design-system/033_9_-_Header-1.svg,Choice FinX Design (4)/9 - Header-1.svg,9 - Header-1.svg,1440,2070,0 0 1440 2070,274034,12
+design-system,reference-svg/design-system/034_11_-_Cards.svg,Choice FinX Design (4)/11 - Cards.svg,11 - Cards.svg,1440,9480,0 0 1440 9480,5427435,26
+design-system,reference-svg/design-system/035_11_-_Cards-1.svg,Choice FinX Design (4)/11 - Cards-1.svg,11 - Cards-1.svg,1440,9480,0 0 1440 9480,5427958,27
+design-system,reference-svg/design-system/036_13_-_Spacing.svg,Choice FinX Design (4)/13 - Spacing.svg,13 - Spacing.svg,1440,1109,0 0 1440 1109,80024,4
+design-system,reference-svg/design-system/037_13_-_Spacing-1.svg,Choice FinX Design (4)/13 - Spacing-1.svg,13 - Spacing-1.svg,1440,1109,0 0 1440 1109,80026,5
+design-system,reference-svg/design-system/038_14_-_Toast.svg,Choice FinX Design (4)/14 - Toast.svg,14 - Toast.svg,1440,806,0 0 1440 806,498460,12
+design-system,reference-svg/design-system/039_14_-_Toast-1.svg,Choice FinX Design (4)/14 - Toast-1.svg,14 - Toast-1.svg,1440,806,0 0 1440 806,498462,11
+design-system,reference-svg/design-system/040_10_-_Graph.svg,Choice FinX Design (4)/10 - Graph.svg,10 - Graph.svg,1440,2596,0 0 1440 2596,445269,24
+design-system,reference-svg/design-system/041_10_-_Graph-1.svg,Choice FinX Design (4)/10 - Graph-1.svg,10 - Graph-1.svg,1440,2596,0 0 1440 2596,445216,21
+design-system,reference-svg/design-system/042_5_-_Table.svg,Choice FinX Design (4)/5 - Table.svg,5 - Table.svg,1440,10970,0 0 1440 10970,3141758,21
+design-system,reference-svg/design-system/043_5_-_Table-1.svg,Choice FinX Design (4)/5 - Table-1.svg,5 - Table-1.svg,1440,10970,0 0 1440 10970,3141734,18
+design-system,reference-svg/design-system/044_listing_components.svg,Choice FinX Design (4)/listing components.svg,listing components.svg,1440,16538,0 0 1440 16538,5332572,30
+design-system,reference-svg/design-system/045_listing_components-1.svg,Choice FinX Design (4)/listing components-1.svg,listing components-1.svg,1440,18728,0 0 1440 18728,5330931,26
+design-system,reference-svg/design-system/046_15_-_Bottom_Sheet.svg,Choice FinX Design (4)/15 - Bottom Sheet.svg,15 - Bottom Sheet.svg,1440,2075,0 0 1440 2075,487588,12
+design-system,reference-svg/design-system/047_15_-_Bottom_Sheet-1.svg,Choice FinX Design (4)/15 - Bottom Sheet-1.svg,15 - Bottom Sheet-1.svg,1440,2320,0 0 1440 2320,485588,12
+design-system,reference-svg/design-system/048_16_-_Tool_Tip.svg,Choice FinX Design (4)/16 - Tool Tip.svg,16 - Tool Tip.svg,1440,348,0 0 1440 348,104402,4
+design-system,reference-svg/design-system/049_16_-_Tool_Tip-1.svg,Choice FinX Design (4)/16 - Tool Tip-1.svg,16 - Tool Tip-1.svg,1440,348,0 0 1440 348,104351,6
+design-system,reference-svg/design-system/050_Company_Detail_Page.svg,Choice FinX Design (4)/Company Detail Page.svg,Company Detail Page.svg,393,3288,0 0 393 3288,1635130,26
+design-system,reference-svg/design-system/051_Company_Detail_Page_light_grey_option.svg,Choice FinX Design (4)/Company Detail Page light grey option.svg,Company Detail Page light grey option.svg,393,3288,0 0 393 3288,1635247,25
+design-system,reference-svg/design-system/052_Radio_Button.svg,Choice FinX Design (4)/12 - Check box /Radio Button.svg,Radio Button.svg,1440,1935,0 0 1440 1935,227705,14
+design-system,reference-svg/design-system/053_Radio_Button-1.svg,Choice FinX Design (4)/12 - Check box /Radio Button-1.svg,Radio Button-1.svg,1440,1935,0 0 1440 1935,227610,11
+screens-misc,reference-svg/screens-misc/054_Rectangle_51.svg,Choice FinX Design (6)/Rectangle 51.svg,Rectangle 51.svg,388,861,0 0 388 861,153,0
+screens-misc,reference-svg/screens-misc/055_Frame_46.svg,Choice FinX Design (6)/Frame 46.svg,Frame 46.svg,300,162,0 0 300 162,72813,6
+screens-misc,reference-svg/screens-misc/056_Frame_47.svg,Choice FinX Design (6)/Frame 47.svg,Frame 47.svg,300,194,0 0 300 194,94279,8
+screen-onboarding-login,reference-svg/screen-onboarding-login/057_On_Boarding.svg,Choice FinX Design (6)/On Boarding.svg,On Boarding.svg,2734,1412,0 0 2734 1412,628606,9
+screens-misc,reference-svg/screens-misc/058_Frame_42.svg,Choice FinX Design (6)/Frame 42.svg,Frame 42.svg,353,152,0 0 353 152,138873,6
+screen-order-flow,reference-svg/screen-order-flow/059_Order_Page_-_Delivery.svg,Choice FinX Design (6)/Order Page - Delivery.svg,Order Page - Delivery.svg,393,852,0 0 393 852,168847,11
+screen-order-flow,reference-svg/screen-order-flow/060_Order_Page_-_Delivery-1.svg,Choice FinX Design (6)/Order Page - Delivery-1.svg,Order Page - Delivery-1.svg,393,852,0 0 393 852,189486,13
+screens-misc,reference-svg/screens-misc/061_Frame_21.svg,Choice FinX Design (6)/Frame 21.svg,Frame 21.svg,396,48,0 0 396 48,24076,4
+screens-misc,reference-svg/screens-misc/062_image_7.svg,Choice FinX Design (6)/image 7.svg,image 7.svg,506,1041,0 0 506 1041,817165,0
+screens-misc,reference-svg/screens-misc/063_image_5.svg,Choice FinX Design (6)/image 5.svg,image 5.svg,351,782,0 0 351 782,156260,0
+screen-order-flow,reference-svg/screen-order-flow/064_Order_Page_-_Delivery-2.svg,Choice FinX Design (6)/Order Page - Delivery-2.svg,Order Page - Delivery-2.svg,393,852,0 0 393 852,165883,11
+screen-company-detail,reference-svg/screen-company-detail/065_Company_Detail_Page.svg,Choice FinX Design (6)/Company Detail Page.svg,Company Detail Page.svg,393,2237,0 0 393 2237,545360,17
+screen-company-detail,reference-svg/screen-company-detail/066_Company_Detail_Page-1.svg,Choice FinX Design (6)/Company Detail Page-1.svg,Company Detail Page-1.svg,393,2237,0 0 393 2237,271746,15
+screens-misc,reference-svg/screens-misc/067_Frame_48.svg,Choice FinX Design (6)/Frame 48.svg,Frame 48.svg,393,381,0 0 393 381,65880,5
+screens-misc,reference-svg/screens-misc/068_image_2.svg,Choice FinX Design (6)/image 2.svg,image 2.svg,393,871,0 0 393 871,203254,0
+screen-watchlist,reference-svg/screen-watchlist/069_Watchlist.svg,Choice FinX Design (6)/Watchlist.svg,Watchlist.svg,2147,3159,0 0 2147 3159,2052554,18
+screen-portfolio,reference-svg/screen-portfolio/070_Portfolio.svg,Choice FinX Design (6)/Portfolio.svg,Portfolio.svg,2672,1638,0 0 2672 1638,1666600,18
+screen-order-flow,reference-svg/screen-order-flow/071_Order.svg,Choice FinX Design (6)/Order.svg,Order.svg,4379,1143,0 0 4379 1143,3159699,17
+screen-order-flow,reference-svg/screen-order-flow/072_Order-1.svg,Choice FinX Design (6)/Order-1.svg,Order-1.svg,393,852,0 0 393 852,214286,11
+screens-misc,reference-svg/screens-misc/073_Frame_186.svg,Choice FinX Design (6)/Frame 186.svg,Frame 186.svg,352,48,0 0 352 48,18558,7
+screens-misc,reference-svg/screens-misc/074_image_1.svg,Choice FinX Design (6)/image 1.svg,image 1.svg,2048,1536,0 0 2048 1536,883180,0
+screen-company-detail,reference-svg/screen-company-detail/075_Mobile_Company_Fundamental_page_1.svg,Choice FinX Design (6)/Mobile Company Fundamental page (1).svg,Mobile Company Fundamental page (1).svg,1151,4096,0 0 1151 4096,704999,0
+screen-company-detail,reference-svg/screen-company-detail/076_Mobile_Company_page_technical_section_1.svg,Choice FinX Design (6)/Mobile Company page technical section (1).svg,Mobile Company page technical section (1).svg,1220,2712,0 0 1220 2712,258440,0
+screen-portfolio,reference-svg/screen-portfolio/077_Mobile_Portfolio_page_1.svg,Choice FinX Design (6)/Mobile Portfolio page (1).svg,Mobile Portfolio page (1).svg,1220,2712,0 0 1220 2712,376576,0
+screens-misc,reference-svg/screens-misc/078_Screenshot_20250121-132008.Choice_FinX.svg,Choice FinX Design (6)/Screenshot_20250121-132008.Choice FinX.svg,Screenshot_20250121-132008.Choice FinX.svg,1220,2712,0 0 1220 2712,349340,0
+screens-misc,reference-svg/screens-misc/079_image_3.svg,Choice FinX Design (6)/image 3.svg,image 3.svg,396,867,0 0 396 867,225978,0
+screens-misc,reference-svg/screens-misc/080_image_4.svg,Choice FinX Design (6)/image 4.svg,image 4.svg,389,862,0 0 389 862,218878,0
+screens-misc,reference-svg/screens-misc/081_image_6.svg,Choice FinX Design (6)/image 6.svg,image 6.svg,394,865,0 0 394 865,221693,0
+screens-misc,reference-svg/screens-misc/082_Screenshot_20250328_104229_Choice_1.svg,Choice FinX Design (6)/Screenshot_20250328_104229_Choice 1.svg,Screenshot_20250328_104229_Choice 1.svg,720,1600,0 0 720 1600,83589,0
+screens-misc,reference-svg/screens-misc/083_Other_Pages.svg,Choice FinX Design (6)/Other Pages.svg,Other Pages.svg,5441,2499,0 0 5441 2499,7400795,34
+screens-misc,reference-svg/screens-misc/084_Screenshot_2025-04-17_at_9.21.05_PM_1.svg,Choice FinX Design (6)/Screenshot 2025-04-17 at 9.21.05 PM 1.svg,Screenshot 2025-04-17 at 9.21.05 PM 1.svg,349,747,0 0 349 747,123316,0
+screens-misc,reference-svg/screens-misc/085_Frame_108.svg,Choice FinX Design (6)/Frame 108.svg,Frame 108.svg,353,232,0 0 353 232,58195,5
+screens-misc,reference-svg/screens-misc/086_Frame_187.svg,Choice FinX Design (6)/Frame 187.svg,Frame 187.svg,353,162,0 0 353 162,138947,2
+screens-misc,reference-svg/screens-misc/087_image_25.svg,Choice FinX Design (6)/image 25.svg,image 25.svg,725,590,0 0 725 590,407438,0
+screen-recommendations,reference-svg/screen-recommendations/088_Recommendations.svg,Choice FinX Design (6)/Recommendations.svg,Recommendations.svg,393,1183,0 0 393 1183,459250,16
+screen-more-profile,reference-svg/screen-more-profile/089_Profile.svg,Choice FinX Design (6)/Profile.svg,Profile.svg,393,987,0 0 393 987,3843250,8
+screen-reports,reference-svg/screen-reports/090_Profit_and_Loss_Report.svg,Choice FinX Design (6)/Profit and Loss Report.svg,Profit and Loss Report.svg,393,852,0 0 393 852,248409,8
+screen-market,reference-svg/screen-market/091_Market.svg,Choice FinX Design (6)/Market.svg,Market.svg,393,1304,0 0 393 1304,357820,10
+screens-misc,reference-svg/screens-misc/092_image_22.svg,Choice FinX Design (6)/image 22.svg,image 22.svg,428,952,0 0 428 952,106018,0
+screen-ipo,reference-svg/screen-ipo/093_Mobile_IPO_Detail_page_1.svg,Choice FinX Design (6)/Mobile IPO Detail page 1.svg,Mobile IPO Detail page 1.svg,393,48,0 0 393 48,758167,0
+screens-misc,reference-svg/screens-misc/094_image_19.svg,Choice FinX Design (6)/image 19.svg,image 19.svg,524,1279,0 0 524 1279,47288,0
+screen-funds-bank,reference-svg/screen-funds-bank/095_funds.svg,Choice FinX Design (6)/funds.svg,funds.svg,393,852,0 0 393 852,212358,7
+screen-funds-bank,reference-svg/screen-funds-bank/096_funds-1.svg,Choice FinX Design (6)/funds-1.svg,funds-1.svg,393,852,0 0 393 852,318178,9
+screen-funds-bank,reference-svg/screen-funds-bank/097_Bank_Details.svg,Choice FinX Design (6)/Bank Details.svg,Bank Details.svg,393,863,0 0 393 863,238561,6
+screen-reports,reference-svg/screen-reports/098_Reports_statements.svg,Choice FinX Design (6)/Reports & statements.svg,Reports & statements.svg,393,863,0 0 393 863,68003,10
+screen-reports,reference-svg/screen-reports/099_Reports_statements-1.svg,Choice FinX Design (6)/Reports & statements-1.svg,Reports & statements-1.svg,393,1089,0 0 393 1089,299211,10
+screen-more-profile,reference-svg/screen-more-profile/100_Others.svg,Choice FinX Design (6)/Others.svg,Others.svg,393,863,0 0 393 863,58540,5
+screen-more-profile,reference-svg/screen-more-profile/101_Support_Feedback.svg,Choice FinX Design (6)/Support & Feedback.svg,Support & Feedback.svg,393,863,0 0 393 863,48186,5
+screen-more-profile,reference-svg/screen-more-profile/102_Support_Feedback-1.svg,Choice FinX Design (6)/Support & Feedback-1.svg,Support & Feedback-1.svg,393,863,0 0 393 863,130297,6
+screens-misc,reference-svg/screens-misc/103_Screenshot_20250404_162633_Choice_1.svg,Choice FinX Design (6)/Screenshot_20250404_162633_Choice 1.svg,Screenshot_20250404_162633_Choice 1.svg,388,863,0 0 388 863,58906,0
+screen-reports,reference-svg/screen-reports/104_Reports_statements-2.svg,Choice FinX Design (6)/Reports & statements-2.svg,Reports & statements-2.svg,393,852,0 0 393 852,156807,8
+screen-funds-bank,reference-svg/screen-funds-bank/105_Bank_Details-1.svg,Choice FinX Design (6)/Bank Details-1.svg,Bank Details-1.svg,393,863,0 0 393 863,855202,7
+screens-misc,reference-svg/screens-misc/106_Screenshot_20250403_111456_Choice_1.svg,Choice FinX Design (6)/Screenshot_20250403_111456_Choice 1.svg,Screenshot_20250403_111456_Choice 1.svg,720,1600,0 0 720 1600,100057,0
+screens-misc,reference-svg/screens-misc/107_Screenshot_20250403_111452_Choice_1.svg,Choice FinX Design (6)/Screenshot_20250403_111452_Choice 1.svg,Screenshot_20250403_111452_Choice 1.svg,720,1600,0 0 720 1600,90605,0
+screens-misc,reference-svg/screens-misc/108_Screenshot_20250403_111535_Choice_1.svg,Choice FinX Design (6)/Screenshot_20250403_111535_Choice 1.svg,Screenshot_20250403_111535_Choice 1.svg,720,1600,0 0 720 1600,48585,0
+screen-reports,reference-svg/screen-reports/109_Transaction_history.svg,Choice FinX Design (6)/Transaction history.svg,Transaction history.svg,393,852,0 0 393 852,360820,7
+screen-funds-bank,reference-svg/screen-funds-bank/110_withdraw.svg,Choice FinX Design (6)/withdraw.svg,withdraw.svg,393,852,0 0 393 852,221225,9
+screen-funds-bank,reference-svg/screen-funds-bank/111_withdraw-1.svg,Choice FinX Design (6)/withdraw-1.svg,withdraw-1.svg,393,852,0 0 393 852,241657,10
+screen-funds-bank,reference-svg/screen-funds-bank/112_UPI.svg,Choice FinX Design (6)/UPI.svg,UPI.svg,393,852,0 0 393 852,924406,6
+screens-misc,reference-svg/screens-misc/113_Image_20250403_114104_699_1.svg,Choice FinX Design (6)/Image_20250403_114104_699 1.svg,Image_20250403_114104_699 1.svg,740,1600,0 0 740 1600,244653,0
+screens-misc,reference-svg/screens-misc/114_Screenshot_20250403_111545_Choice_1.svg,Choice FinX Design (6)/Screenshot_20250403_111545_Choice 1.svg,Screenshot_20250403_111545_Choice 1.svg,720,1600,0 0 720 1600,82033,0
+screens-misc,reference-svg/screens-misc/115_Image_20250403_142309_978_1.svg,Choice FinX Design (6)/Image_20250403_142309_978 1.svg,Image_20250403_142309_978 1.svg,1170,2532,0 0 1170 2532,782280,0
+screens-misc,reference-svg/screens-misc/116_Screenshot_20250403_143227_Choice_1.svg,Choice FinX Design (6)/Screenshot_20250403_143227_Choice 1.svg,Screenshot_20250403_143227_Choice 1.svg,720,1600,0 0 720 1600,64729,0
+screens-misc,reference-svg/screens-misc/117_Image_20250403_114104_733_1.svg,Choice FinX Design (6)/Image_20250403_114104_733 1.svg,Image_20250403_114104_733 1.svg,740,1600,0 0 740 1600,142013,0
+screens-misc,reference-svg/screens-misc/118_Image_20250403_114104_545_1.svg,Choice FinX Design (6)/Image_20250403_114104_545 1.svg,Image_20250403_114104_545 1.svg,740,1600,0 0 740 1600,222361,0
+screens-misc,reference-svg/screens-misc/119_Image_20250403_150514_337_1.svg,Choice FinX Design (6)/Image_20250403_150514_337 1.svg,Image_20250403_150514_337 1.svg,740,1600,0 0 740 1600,153049,0
+screens-misc,reference-svg/screens-misc/120_Screenshot_20250403_111550_Choice_1.svg,Choice FinX Design (6)/Screenshot_20250403_111550_Choice 1.svg,Screenshot_20250403_111550_Choice 1.svg,720,1600,0 0 720 1600,114005,0
+screens-misc,reference-svg/screens-misc/121_Screenshot_20250403_111605_Choice_1.svg,Choice FinX Design (6)/Screenshot_20250403_111605_Choice 1.svg,Screenshot_20250403_111605_Choice 1.svg,720,1600,0 0 720 1600,114733,0
+screens-misc,reference-svg/screens-misc/122_Image_20250403_114104_668_1.svg,Choice FinX Design (6)/Image_20250403_114104_668 1.svg,Image_20250403_114104_668 1.svg,740,1600,0 0 740 1600,202025,0
+screens-misc,reference-svg/screens-misc/123_Image_20250403_114104_578_1.svg,Choice FinX Design (6)/Image_20250403_114104_578 1.svg,Image_20250403_114104_578 1.svg,740,1600,0 0 740 1600,158857,0
+screens-misc,reference-svg/screens-misc/124_Frame.svg,Choice FinX Design (6)/Frame.svg,Frame.svg,512,512,0 0 512 512,10358,0
+screen-funds-bank,reference-svg/screen-funds-bank/125_Mutual_Fund.svg,Choice FinX Design (6)/Mutual Fund.svg,Mutual Fund.svg,3954,2809,0 0 3954 2809,1859063,34
+screen-funds-bank,reference-svg/screen-funds-bank/126_Mutual_Fund-1.svg,Choice FinX Design (6)/Mutual Fund-1.svg,Mutual Fund-1.svg,393,863,0 0 393 863,376920,10
+screens-misc,reference-svg/screens-misc/127_Basket.svg,Choice FinX Design (6)/Basket.svg,Basket.svg,3954,2792,0 0 3954 2792,2440591,24
+screen-ipo,reference-svg/screen-ipo/128_Mobile_IPO_Listing_page_2.svg,Choice FinX Design (6)/Mobile IPO Listing page 2.svg,Mobile IPO Listing page 2.svg,393,874,0 0 393 874,298062,0
+screen-ipo,reference-svg/screen-ipo/129_IPO.svg,Choice FinX Design (6)/IPO.svg,IPO.svg,393,823,0 0 393 823,149017,7
+screen-ipo,reference-svg/screen-ipo/130_IPO-1.svg,Choice FinX Design (6)/IPO-1.svg,IPO-1.svg,393,823,0 0 393 823,589403,10
+screens-misc,reference-svg/screens-misc/131_image_10.svg,Choice FinX Design (6)/image 10.svg,image 10.svg,391,848,0 0 391 848,1353894,0
+screens-misc,reference-svg/screens-misc/132_image_9.svg,Choice FinX Design (6)/image 9.svg,image 9.svg,443,960,0 0 443 960,976053,0
+screens-misc,reference-svg/screens-misc/133_Image_20250403_142309_741_1.svg,Choice FinX Design (6)/Image_20250403_142309_741 1.svg,Image_20250403_142309_741 1.svg,1170,2532,0 0 1170 2532,387896,0
+screens-misc,reference-svg/screens-misc/134_Image_20250403_142309_904_1_1.svg,Choice FinX Design (6)/Image_20250403_142309_904 (1) 1.svg,Image_20250403_142309_904 (1) 1.svg,1170,2532,0 0 1170 2532,432956,0
+screens-misc,reference-svg/screens-misc/135_Image_20250404_103437_001_1.svg,Choice FinX Design (6)/Image_20250404_103437_001 1.svg,Image_20250404_103437_001 1.svg,739,1600,0 0 739 1600,194088,0
+screens-misc,reference-svg/screens-misc/136_Screenshot_20250403_111610_Choice_1.svg,Choice FinX Design (6)/Screenshot_20250403_111610_Choice 1.svg,Screenshot_20250403_111610_Choice 1.svg,720,1600,0 0 720 1600,35077,0
+screens-misc,reference-svg/screens-misc/137_Screenshot_20250403_111614_Choice_1.svg,Choice FinX Design (6)/Screenshot_20250403_111614_Choice 1.svg,Screenshot_20250403_111614_Choice 1.svg,720,1600,0 0 720 1600,138637,0
+screen-reports,reference-svg/screen-reports/138_Ledger_Report.svg,Choice FinX Design (6)/Ledger Report.svg,Ledger Report.svg,393,863,0 0 393 863,434174,8
+screen-reports,reference-svg/screen-reports/139_Profit_and_Loss_Report-1.svg,Choice FinX Design (6)/Profit and Loss Report-1.svg,Profit and Loss Report-1.svg,393,852,0 0 393 852,249179,8
+screens-misc,reference-svg/screens-misc/140_Screenshot_20250403_111622_Choice_1.svg,Choice FinX Design (6)/Screenshot_20250403_111622_Choice 1.svg,Screenshot_20250403_111622_Choice 1.svg,384,852,0 0 384 852,62629,0
+screens-misc,reference-svg/screens-misc/141_Screenshot_20250404_115608_Choice_1.svg,Choice FinX Design (6)/Screenshot_20250404_115608_Choice 1.svg,Screenshot_20250404_115608_Choice 1.svg,384,852,0 0 384 852,102693,0
+screens-misc,reference-svg/screens-misc/142_image_11.svg,Choice FinX Design (6)/image 11.svg,image 11.svg,1024,768,0 0 1024 768,680055,0
+screen-more-profile,reference-svg/screen-more-profile/143_Insurance.svg,Choice FinX Design (6)/Insurance.svg,Insurance.svg,393,1001,0 0 393 1001,1129613,11
+screens-misc,reference-svg/screens-misc/144_Screenshot_20250404_152606_Choice.svg,Choice FinX Design (6)/Screenshot_20250404_152606_Choice.svg,Screenshot_20250404_152606_Choice.svg,388,863,0 0 388 863,78330,0
+screens-misc,reference-svg/screens-misc/145_Screenshot_20250404_152601_Choice.svg,Choice FinX Design (6)/Screenshot_20250404_152601_Choice.svg,Screenshot_20250404_152601_Choice.svg,389,863,0 0 389 863,75153,0
+screens-misc,reference-svg/screens-misc/146_Screenshot_20250404_163941_Choice_1.svg,Choice FinX Design (6)/Screenshot_20250404_163941_Choice 1.svg,Screenshot_20250404_163941_Choice 1.svg,388,863,0 0 388 863,38086,0
+screen-more-profile,reference-svg/screen-more-profile/147_More.svg,Choice FinX Design (6)/More.svg,More.svg,13722,1673,0 0 13722 1673,7207534,30
+screens-misc,reference-svg/screens-misc/148_Rectangle_28.svg,Choice FinX Design (6)/Rectangle 28.svg,Rectangle 28.svg,393,863,0 0 393 863,172,0
+screen-funds-bank,reference-svg/screen-funds-bank/149_funds-2.svg,Choice FinX Design (6)/funds-2.svg,funds-2.svg,393,852,0 0 393 852,321938,9
+screen-market,reference-svg/screen-market/150_Market-1.svg,Choice FinX Design (6)/Market-1.svg,Market-1.svg,393,863,0 0 393 863,348539,9
+screens-misc,reference-svg/screens-misc/151_IMG-20250417-WA0002_1.svg,Choice FinX Design (6)/IMG-20250417-WA0002 1.svg,IMG-20250417-WA0002 1.svg,720,1600,0 0 720 1600,45861,0
+screen-reports,reference-svg/screen-reports/152_Profit_and_Loss_Report-2.svg,Choice FinX Design (6)/Profit and Loss Report-2.svg,Profit and Loss Report-2.svg,393,852,0 0 393 852,219657,9
+screens-misc,reference-svg/screens-misc/153_Image_20250409_115454_348.svg,Choice FinX Design (6)/Image_20250409_115454_348.svg,Image_20250409_115454_348.svg,393,851,0 0 393 851,783382,0
+screen-funds-bank,reference-svg/screen-funds-bank/154_withdraw-2.svg,Choice FinX Design (6)/withdraw-2.svg,withdraw-2.svg,393,852,0 0 393 852,221165,9
+screen-funds-bank,reference-svg/screen-funds-bank/155_Deposit.svg,Choice FinX Design (6)/Deposit.svg,Deposit.svg,393,852,0 0 393 852,239472,10
+screen-more-profile,reference-svg/screen-more-profile/156_Profile-1.svg,Choice FinX Design (6)/Profile-1.svg,Profile-1.svg,393,863,0 0 393 863,3843143,7
+screens-misc,reference-svg/screens-misc/157_image_20.svg,Choice FinX Design (6)/image 20.svg,image 20.svg,1080,1920,0 0 1080 1920,156816,0
+screens-misc,reference-svg/screens-misc/158_Image_20250409_152208_004.svg,Choice FinX Design (6)/Image_20250409_152208_004.svg,Image_20250409_152208_004.svg,1220,2712,0 0 1220 2712,788632,0
+screens-misc,reference-svg/screens-misc/159_Image_20250409_152208_076.svg,Choice FinX Design (6)/Image_20250409_152208_076.svg,Image_20250409_152208_076.svg,1220,2712,0 0 1220 2712,690296,0
+screens-misc,reference-svg/screens-misc/160_Image_20250409_152208_171.svg,Choice FinX Design (6)/Image_20250409_152208_171.svg,Image_20250409_152208_171.svg,941,4096,0 0 941 4096,1276614,0
+screen-order-flow,reference-svg/screen-order-flow/161_MF_Place_Order_-_On_click_of_the_Mutual_Fund_scheme_click_need_to_open_MF_Place_Order_page_shown_o__878787.svg,"Choice FinX Design (6)/MF Place Order - On click of the Mutual Fund scheme click, need to open MF Place Order page % shown on the MF Company page, label is not shown CAGR 3Y Company Page _ The % shown with 1D, this not required. Company Page _ Expense Ratio is not shown..svg","MF Place Order - On click of the Mutual Fund scheme click, need to open MF Place Order page % shown on the MF Company page, label is not shown CAGR 3Y Company Page _ The % shown with 1D, this not required. Company Page _ Expense Ratio is not shown..svg",573,176,0 0 573 176,435538,1
+screen-company-detail,reference-svg/screen-company-detail/162_Company_Detail_Page-2.svg,Choice FinX Design (6)/Company Detail Page-2.svg,Company Detail Page-2.svg,393,2293,0 0 393 2293,1031950,21
+screens-misc,reference-svg/screens-misc/163_Frame_165.svg,Choice FinX Design (6)/Frame 165.svg,Frame 165.svg,616,162,0 0 616 162,148009,7
+screens-misc,reference-svg/screens-misc/164_image_23.svg,Choice FinX Design (6)/image 23.svg,image 23.svg,720,1600,0 0 720 1600,377724,0
+screen-company-detail,reference-svg/screen-company-detail/165_Open_and_Close_card._Status_wise_5_card_Technical_Card._Open_2._Closed_Call_Stop_Loss_Hit_Exit_Cal__825499.svg,"Choice FinX Design (6)/Open and Close card. Status wise 5 card Technical Card. Open 2. Closed Call _ Stop Loss Hit, Exit Call, Target Achived, Book Profit.svg","Open and Close card. Status wise 5 card Technical Card. Open 2. Closed Call _ Stop Loss Hit, Exit Call, Target Achived, Book Profit.svg",294,92,0 0 294 92,101530,0
+screens-misc,reference-svg/screens-misc/166_IMG-20250415-WA0002_1.svg,Choice FinX Design (6)/IMG-20250415-WA0002 1.svg,IMG-20250415-WA0002 1.svg,720,1600,0 0 720 1600,87973,0
+screens-misc,reference-svg/screens-misc/167_IMG-20250417-WA0004.svg,Choice FinX Design (6)/IMG-20250417-WA0004.svg,IMG-20250417-WA0004.svg,720,1600,0 0 720 1600,102665,0
+screen-company-detail,reference-svg/screen-company-detail/168_Company_Detail_Page_Recommendation.svg,Choice FinX Design (6)/Company Detail Page Recommendation.svg,Company Detail Page Recommendation.svg,393,1475,0 0 393 1475,685911,16
+screen-more-profile,reference-svg/screen-more-profile/169_View_More.svg,Choice FinX Design (6)/View More.svg,View More.svg,99,20,0 0 99 20,5003,1
+screens-misc,reference-svg/screens-misc/170_Toolbar.svg,Choice FinX Design (6)/Toolbar.svg,Toolbar.svg,393,95,0 0 393 95,27413,3
+screen-order-flow,reference-svg/screen-order-flow/171_Order_Flow.svg,Choice FinX Design (6)/Company/Order Flow.svg,Order Flow.svg,8578,3582,0 0 8578 3582,8169164,39
+screens-misc,reference-svg/screens-misc/172_Signup.svg,Choice FinX Design (6)/Login/Signup.svg,Signup.svg,4260,1412,0 0 4260 1412,1094477,16
+screens-misc,reference-svg/screens-misc/173_Cheque_Info.svg,Choice FinX Design (6)/NEFT/RTGS/Cheque Info.svg,Cheque Info.svg,393,1166,0 0 393 1166,473384,7
+screen-funds-bank,reference-svg/screen-funds-bank/174_NEFT_page_is_not_easily_highlighted_Banks_Page_-_Set_Autopay_button_is_not_provided_User_needs_to___124355.svg,"Choice FinX Design (6)/More Page - We will not be able to show the user photo Profit and Loss Report - How will the column look if there is loss_ Where is the option to download the P&L Report_ How will the Segment filter can be applied - Equity, Commodity, Currency Recommendat/NEFT page is not easily highlighted Banks Page - Set Autopay button is not provided User needs to click 2 time to see details Ledger Details - Are we going to provided drop down to switch from ledger to P&L Report_ Others Page - The unpledge label.svg",NEFT page is not easily highlighted Banks Page - Set Autopay button is not provided User needs to click 2 time to see details Ledger Details - Are we going to provided drop down to switch from ledger to P&L Report_ Others Page - The unpledge label.svg,1271,2656,0 0 1271 2656,2198687,2
+screens-misc,reference-svg/screens-misc/175_Default.svg,Choice FinX Design (6)/Frame 187/Default.svg,Default.svg,56,24,0 0 56 24,9923,2

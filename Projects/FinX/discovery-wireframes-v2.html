@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FinX Discovery — 3 Selected UX Concepts</title>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: #060E1F;
+  font-family: 'Onest', sans-serif;
+  padding: 40px 24px 80px;
+  min-height: 100vh;
+  color: #F8FAFC;
+}
+
+/* ─── PAGE HEADING ─── */
+.pg-heading {
+  text-align: center;
+  margin-bottom: 48px;
+}
+.pg-heading h1 {
+  font-size: 22px; font-weight: 700; letter-spacing: -0.4px;
+  color: #E2E8F0;
+}
+.pg-heading h1 span { color: #2777F3; }
+
+/* ─── GRID ─── */
+.grid { display: grid; grid-template-columns: repeat(3, 280px); gap: 64px 40px; justify-content: center; max-width: 1040px; margin: 0 auto; }
+
+/* ─── DEVICE CELL ─── */
+.dc { display: flex; flex-direction: column; }
+.dc-num { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.6px; color: #334155; margin-bottom: 5px; }
+.dc-name { font-size: 16px; font-weight: 800; color: #E2E8F0; letter-spacing: -0.3px; margin-bottom: 4px; }
+.dc-idea { font-size: 11px; color: #64748B; line-height: 1.5; margin-bottom: 14px; max-width: 275px; }
+
+/* ─── DEVICE FRAME ─── */
+.df {
+  width: 270px; height: 530px;
+  background: #F7F7F7; border-radius: 28px; overflow: hidden;
+  position: relative; flex-shrink: 0; display: flex; flex-direction: column;
+  box-shadow: 0 32px 80px rgba(0,0,0,0.65), 0 0 0 1px rgba(255,255,255,0.07), inset 0 1px 0 rgba(255,255,255,0.18);
+}
+
+/* ─── LEGEND ─── */
+.lg { width: 270px; margin-top: 16px; background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.065); border-radius: 14px; padding: 14px 16px; }
+.lg-h { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.1px; color: #334155; padding-bottom: 9px; border-bottom: 1px solid rgba(255,255,255,0.055); margin-bottom: 10px; }
+.li { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 8px; }
+.li:last-child { margin-bottom: 0; }
+.ln { width: 15px; height: 15px; background: #4F46E5; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 7.5px; font-weight: 800; color: #fff; flex-shrink: 0; margin-top: 1px; }
+.lt { font-size: 10.5px; color: #64748B; line-height: 1.45; }
+.lt b { color: #94A3B8; font-weight: 600; }
+
+/* ─── WIREFRAME DESIGN LANG ─── */
+.wfsb { height: 18px; background: #E6E6E6; display: flex; align-items: center; justify-content: space-between; padding: 0 11px; font-size: 7.5px; font-weight: 600; color: #AAAAAA; flex-shrink: 0; }
+.dz  { border: 1px dashed #C4C4C4; border-radius: 7px; }
+.dz2 { border: 1.5px dashed #7BA3DC; background: #ECF3FF; border-radius: 7px; }
+.dz3 { border: 1.5px dashed #86EFAC; background: #F0FDF4; border-radius: 7px; }
+.dz4 { border: 1.5px dashed #FCA5A5; background: #FFF5F5; border-radius: 7px; }
+.dz5 { border: 1.5px dashed #C4B5FD; background: #F5F3FF; border-radius: 7px; }
+.sep { height: 1px; background: #E4E4E4; flex-shrink: 0; }
+
+.ch  { display:inline-flex; align-items:center; height:20px; padding:0 8px; border-radius:10px; font-size:8.5px; font-weight:600; border:1px dashed #C4C4C4; background:#EDEDEE; color:#555; white-space:nowrap; }
+.ch.on  { background:#E4ECF7; border:1px solid #7BA3DC; color:#1D6FD9; }
+.ch.gon { background:#DCFCE7; border:1px solid #86EFAC; color:#15803D; }
+.ch.ron { background:#FEE2E2; border:1px solid #FCA5A5; color:#B91C1C; }
+.ch.pon { background:#EDE9FE; border:1px solid #C4B5FD; color:#5B21B6; }
+
+.bg { display:inline-block; padding:2px 6px; border-radius:4px; font-size:7.5px; font-weight:700; }
+.bg.g { background:#DCFCE7; color:#166534; }
+.bg.r { background:#FEE2E2; color:#991B1B; }
+.bg.b { background:#DBEAFE; color:#1E40AF; }
+.bg.p { background:#EDE9FE; color:#5B21B6; }
+.bg.c { background:#CFFAFE; color:#155E75; }
+.bg.o { background:#FFF7ED; color:#9A3412; }
+
+.dots { display:flex; gap:2px; }
+.dot  { width:5px; height:5px; border-radius:50%; background:#DCDCDC; }
+.dot.on { background:#22C55E; }
+
+/* Annotation badges */
+.a {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 14px; height: 14px; background: #4F46E5; border-radius: 50%;
+  font-size: 7.5px; font-weight: 800; color: #fff;
+  flex-shrink: 0; vertical-align: middle; margin-left: 3px;
+  font-family: 'Onest', sans-serif; line-height: 1;
+}
+.aa {
+  position: absolute; width: 16px; height: 16px;
+  background: #4F46E5; border: 1.5px solid #fff; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 7.5px; font-weight: 800; color: #fff; z-index: 50;
+  font-family: 'Onest', sans-serif;
+  box-shadow: 0 2px 8px rgba(79,70,229,0.5);
+}
+</style>
+</head>
+<body>
+
+
+<div class="pg-heading">
+  <h1>FinX <span>Discovery Widget</span></h1>
+</div>
+
+<div class="grid">
+
+<!-- ════════════════════════════
+     W3 — SIGNAL TIMELINE
+════════════════════════════ -->
+<div class="dc">
+  <div class="dc-num">Concept 03</div>
+  <div class="dc-name">Signal Timeline</div>
+  <div class="dc-idea">Trades have context — the market moves in sequence, not all at once. A timeline shows when each signal formed, so the trader reads the market's story. The "why" is built into the format.</div>
+  <div class="df">
+    <div class="wfsb"><span>9:41 AM</span><span>●●●● WiFi 🔋</span></div>
+
+    <div style="padding:8px 10px 6px;flex-shrink:0;border-bottom:1px dashed #D0D0D0;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;">
+        <div>
+          <div style="font-size:11px;font-weight:700;color:#1A1A2E;display:flex;align-items:center;gap:4px;">Today's Market <span class="a">1</span></div>
+          <div style="font-size:8px;color:#999;">6 signals since open · Live</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:3px;"><div style="width:6px;height:6px;border-radius:50%;background:#22C55E;"></div><span style="font-size:8px;font-weight:700;color:#22C55E;">LIVE</span></div>
+      </div>
+      <div style="display:flex;gap:4px;position:relative;">
+        <div class="aa" style="top:-8px;right:-4px;">2</div>
+        <div class="ch on">All (6)</div>
+        <div class="ch gon">Bull (3)</div>
+        <div class="ch ron">Bear (2)</div>
+        <div class="ch">Neutral</div>
+      </div>
+    </div>
+
+    <!-- Timeline: newest at top, oldest at bottom -->
+    <div style="flex:1;overflow:hidden;padding:7px 10px 5px;display:flex;flex-direction:column;gap:0;">
+
+      <!-- LIVE — 11:52 (newest, top) -->
+      <div style="display:flex;gap:8px;align-items:flex-start;position:relative;">
+        <div class="aa" style="top:1px;left:-4px;">3</div>
+        <div style="width:32px;text-align:right;flex-shrink:0;padding-top:2px;">
+          <div style="font-size:7.5px;font-weight:800;color:#4F46E5;">NOW</div>
+          <div style="font-size:7px;color:#818CF8;">11:52</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
+          <div style="width:10px;height:10px;border-radius:50%;background:#4F46E5;border:2px solid #fff;box-shadow:0 0 0 3px rgba(79,70,229,0.22);margin-top:2px;"></div>
+          <div style="width:2px;background:#E0E0E0;flex:1;min-height:14px;"></div>
+        </div>
+        <div class="dz5" style="flex:1;padding:6px;margin-bottom:5px;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:2px;">
+            <span style="font-size:9px;font-weight:700;color:#1A1A2E;">BNF 52000–52500 CE</span>
+            <div class="bg p">IV Skew</div>
+          </div>
+          <div style="font-size:7.5px;color:#555;margin-bottom:4px;">IV spread between 52000 and 52500 CE widening. Bull call spread structure observed.</div>
+          <div class="dz5" style="padding:3px 7px;text-align:center;"><span style="font-size:8px;font-weight:700;color:#5B21B6;">Explore setup →</span></div>
+        </div>
+      </div>
+
+      <!-- 10:41 — no accuracy tag yet (< 2h) -->
+      <div style="display:flex;gap:8px;align-items:flex-start;">
+        <div style="width:32px;text-align:right;flex-shrink:0;padding-top:2px;"><div style="font-size:7.5px;font-weight:700;color:#888;">10:41</div></div>
+        <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
+          <div style="width:10px;height:10px;border-radius:50%;background:#16A34A;border:2px solid #fff;margin-top:2px;"></div>
+          <div style="width:2px;background:#E0E0E0;flex:1;min-height:14px;"></div>
+        </div>
+        <div class="dz" style="flex:1;padding:6px;margin-bottom:5px;border-color:#BBF7D0;background:#F0FDF4;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:2px;">
+            <span style="font-size:9px;font-weight:700;color:#1A1A2E;">RELIANCE CE</span>
+            <div class="bg g">Short Covering</div>
+          </div>
+          <div style="font-size:7.5px;color:#555;">OI declining as price holds. Shorts reducing positions.</div>
+        </div>
+      </div>
+
+      <!-- 10:02 — no accuracy tag yet (< 2h) -->
+      <div style="display:flex;gap:8px;align-items:flex-start;">
+        <div style="width:32px;text-align:right;flex-shrink:0;padding-top:2px;"><div style="font-size:7.5px;font-weight:700;color:#888;">10:02</div></div>
+        <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
+          <div style="width:10px;height:10px;border-radius:50%;background:#0891B2;border:2px solid #fff;margin-top:2px;"></div>
+          <div style="width:2px;background:#E0E0E0;flex:1;min-height:14px;"></div>
+        </div>
+        <div class="dz" style="flex:1;padding:6px;margin-bottom:5px;border-color:#A5F3FC;background:#F0FEFF;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:2px;">
+            <span style="font-size:9px;font-weight:700;color:#1A1A2E;">IT Sector</span>
+            <div class="bg c">Sector OI</div>
+          </div>
+          <div style="font-size:7.5px;color:#555;">3 of 5 IT majors showing CE OI addition. Broad-based accumulation in the sector.</div>
+        </div>
+      </div>
+
+      <!-- 9:34 — accuracy tag shown (> 2h) — signal did NOT confirm -->
+      <div style="display:flex;gap:8px;align-items:flex-start;position:relative;">
+        <div class="aa" style="top:0;right:-4px;">4</div>
+        <div style="width:32px;text-align:right;flex-shrink:0;padding-top:2px;"><div style="font-size:7.5px;font-weight:700;color:#888;">9:34</div></div>
+        <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
+          <div style="width:10px;height:10px;border-radius:50%;background:#DC2626;border:2px solid #fff;margin-top:2px;"></div>
+          <div style="width:2px;background:#E0E0E0;flex:1;min-height:14px;"></div>
+        </div>
+        <div style="flex:1;margin-bottom:5px;">
+          <div class="dz4" style="padding:6px;margin-bottom:3px;">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:2px;">
+              <span style="font-size:9px;font-weight:700;color:#1A1A2E;">HDFCBANK 1780 PE</span>
+              <div class="bg r">Short Buildup</div>
+            </div>
+            <div style="font-size:7.5px;color:#555;">Large PE OI addition with price below 1800 zone. Resistance holding.</div>
+          </div>
+          <!-- Accuracy tag — 2h later, NOT confirmed -->
+          <div style="display:flex;align-items:center;gap:4px;padding:4px 6px;background:#FFF5F5;border:1px solid #FCA5A5;border-radius:5px;">
+            <span style="font-size:8px;">✗</span>
+            <span style="font-size:7.5px;font-weight:700;color:#991B1B;">Direction not confirmed</span>
+            <span style="font-size:7px;color:#AAA;margin-left:auto;">2h outcome</span>
+          </div>
+          <div style="font-size:7px;color:#AAA;padding:2px 2px 0;line-height:1.4;">Price +0.4% in 2h. Pattern observed but price did not move as indicated.</div>
+        </div>
+      </div>
+
+      <!-- 9:17 — accuracy tag shown (> 2h) — signal DID confirm -->
+      <div style="display:flex;gap:8px;align-items:flex-start;">
+        <div style="width:32px;text-align:right;flex-shrink:0;padding-top:2px;"><div style="font-size:7.5px;font-weight:700;color:#888;">9:17</div><div style="font-size:7px;color:#BBB;">AM</div></div>
+        <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
+          <div style="width:10px;height:10px;border-radius:50%;background:#16A34A;border:2px solid #fff;margin-top:2px;"></div>
+        </div>
+        <div style="flex:1;margin-bottom:3px;">
+          <div class="dz3" style="padding:6px;margin-bottom:3px;">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:2px;">
+              <span style="font-size:9px;font-weight:700;color:#1A1A2E;">NIFTY 24500 CE</span>
+              <div class="bg g">Long Buildup</div>
+            </div>
+            <div style="font-size:7.5px;color:#555;margin-bottom:3px;">OI +11.4% at open with price holding above support. Strong accumulation observed.</div>
+            <div style="display:flex;gap:8px;"><span style="font-size:7.5px;color:#888;">VOL/OI <b style="color:#16A34A;">0.73×</b></span><span style="font-size:7.5px;color:#888;">LTP <b style="color:#333;">₹142</b></span></div>
+          </div>
+          <!-- Accuracy tag — 2h later, confirmed -->
+          <div style="display:flex;align-items:center;gap:4px;padding:4px 6px;background:#F0FDF4;border:1px solid #86EFAC;border-radius:5px;">
+            <span style="font-size:8px;">✓</span>
+            <span style="font-size:7.5px;font-weight:700;color:#166534;">Direction confirmed</span>
+            <span style="font-size:7px;color:#AAA;margin-left:auto;">2h outcome</span>
+          </div>
+          <div style="font-size:7px;color:#AAA;padding:2px 2px 0;line-height:1.4;">Price moved +1.2% in 2h, in line with signal indication.</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Compliance disclaimer -->
+    <div style="border-top:1px dashed #D0D0D0;padding:6px 10px;flex-shrink:0;position:relative;">
+      <div class="aa" style="top:-8px;right:8px;">5</div>
+      <div style="font-size:6.5px;color:#BBBBBB;line-height:1.5;text-align:center;">Patterns are for informational purposes only · Not investment advice · Past outcomes are not indicative of future results</div>
+    </div>
+  </div>
+  <div class="lg">
+    <div class="lg-h">Annotations</div>
+    <div class="li"><div class="ln">1</div><div class="lt"><b>Session header</b> — signal count, live indicator. Newest event always at top; scroll down for earlier signals.</div></div>
+    <div class="li"><div class="ln">2</div><div class="lt"><b>Direction filter chips</b> — All / Bull / Bear / Neutral. Filters in-place without breaking time order.</div></div>
+    <div class="li"><div class="ln">3</div><div class="lt"><b>Live pulse (top)</b> — most recent signal always pinned at top with glowing indigo dot. Widget opens here.</div></div>
+    <div class="li"><div class="ln">4</div><div class="lt"><b>2-hour Accuracy Tag</b> — unlocks automatically 2h after signal time. Shows whether price moved in the indicated direction. Framed as a factual outcome, not a promise — compliant with advisory norms.</div></div>
+    <div class="li"><div class="ln">5</div><div class="lt"><b>Compliance footer</b> — mandatory disclaimer. Patterns are informational only; not investment advice.</div></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════
+     W4 — DECISION BOARD
+════════════════════════════ -->
+<div class="dc">
+  <div class="dc-num">Concept 04</div>
+  <div class="dc-name">Decision Board</div>
+  <div class="dc-idea">Flip the UX: ask the trader's view first. "Are you bullish, neutral, or bearish?" — then serve only what matches. Reduces cognitive load dramatically. The widget organises around the trader, not the data.</div>
+  <div class="df">
+    <div class="wfsb"><span>9:41 AM</span><span>●●●● WiFi 🔋</span></div>
+
+    <div style="padding:8px 10px 6px;flex-shrink:0;border-bottom:1px dashed #D0D0D0;">
+      <div style="font-size:9px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:6px;display:flex;align-items:center;gap:4px;">What's your view today? <span class="a">1</span></div>
+      <div style="display:flex;gap:4px;">
+        <div class="ch gon" style="flex:1;justify-content:center;height:26px;font-size:9px;">▲ Bullish</div>
+        <div class="ch" style="flex:1;justify-content:center;height:26px;font-size:9px;">◆ Neutral</div>
+        <div class="ch ron" style="flex:1;justify-content:center;height:26px;font-size:9px;">▼ Bearish</div>
+      </div>
+    </div>
+
+    <div style="flex:1;overflow:hidden;padding:6px;display:flex;flex-direction:column;gap:5px;">
+
+      <!-- Column header row -->
+      <div style="display:flex;gap:5px;flex-shrink:0;position:relative;">
+        <div class="aa" style="top:-8px;right:0px;">2</div>
+        <div style="flex:1;background:#DCFCE7;border:1px solid #86EFAC;border-radius:6px;padding:5px 6px;text-align:center;">
+          <div style="font-size:8.5px;font-weight:800;color:#166534;">▲ BULL</div>
+          <div style="font-size:7.5px;color:#16A34A;font-weight:600;">4 signals</div>
+        </div>
+        <div style="flex:1;background:#F1F5F9;border:1px dashed #CBD5E1;border-radius:6px;padding:5px 6px;text-align:center;">
+          <div style="font-size:8.5px;font-weight:800;color:#475569;">◆ NEUTRAL</div>
+          <div style="font-size:7.5px;color:#64748B;font-weight:600;">2 signals</div>
+        </div>
+        <div style="flex:1;background:#FEE2E2;border:1px solid #FCA5A5;border-radius:6px;padding:5px 6px;text-align:center;">
+          <div style="font-size:8.5px;font-weight:800;color:#991B1B;">▼ BEAR</div>
+          <div style="font-size:7.5px;color:#DC2626;font-weight:600;">3 signals</div>
+        </div>
+      </div>
+
+      <!-- 3-column board -->
+      <div style="flex:1;display:flex;gap:5px;overflow:hidden;">
+
+        <!-- Bull column -->
+        <div style="flex:1;display:flex;flex-direction:column;gap:4px;overflow:hidden;">
+          <div class="dz3" style="padding:5px;position:relative;">
+            <div class="aa" style="top:-5px;right:-5px;width:13px;height:13px;font-size:6.5px;">3</div>
+            <div style="font-size:8.5px;font-weight:700;color:#1A1A2E;margin-bottom:2px;">NIFTY 24500 CE</div>
+            <div class="bg g" style="font-size:7px;margin-bottom:3px;">Long Buildup</div>
+            <div style="font-size:7px;color:#555;margin-bottom:3px;">VOL/OI 0.73×</div>
+            <div style="display:flex;align-items:center;gap:2px;margin-bottom:3px;"><span style="font-size:7px;color:#AAA;">Conv</span><div class="dots" style="margin-left:2px;"><div class="dot on"></div><div class="dot on"></div><div class="dot on"></div><div class="dot on"></div><div class="dot"></div></div></div>
+            <div style="height:3px;background:#D1FAE5;border-radius:2px;position:relative;">
+              <div class="aa" style="top:-6px;right:-4px;width:12px;height:12px;font-size:6px;">4</div>
+              <div style="width:82%;height:100%;background:#16A34A;border-radius:2px;"></div>
+            </div>
+          </div>
+          <div class="dz3" style="padding:5px;">
+            <div style="font-size:8px;font-weight:700;color:#1A1A2E;margin-bottom:2px;">BNF 52000 CE</div>
+            <div class="bg g" style="font-size:7px;margin-bottom:3px;">Long Buildup</div>
+            <div style="font-size:7px;color:#555;margin-bottom:3px;">VOL/OI 0.38×</div>
+            <div style="height:3px;background:#D1FAE5;border-radius:2px;"><div style="width:68%;height:100%;background:#16A34A;border-radius:2px;"></div></div>
+          </div>
+          <div class="dz" style="padding:5px;border-color:#BBF7D0;">
+            <div style="font-size:8px;font-weight:700;color:#1A1A2E;margin-bottom:2px;">RELIANCE CE</div>
+            <div class="bg g" style="font-size:7px;margin-bottom:2px;">Short Covering</div>
+            <div style="font-size:7px;color:#555;">VOL/OI 0.91×</div>
+          </div>
+          <div style="text-align:center;"><span style="font-size:7.5px;color:#AAA;">+1 more ↓</span></div>
+        </div>
+
+        <!-- Neutral column -->
+        <div style="flex:1;display:flex;flex-direction:column;gap:4px;overflow:hidden;">
+          <div class="dz" style="padding:5px;border-color:#CBD5E1;background:#F8FAFC;">
+            <div style="font-size:8px;font-weight:700;color:#1A1A2E;margin-bottom:2px;">BNF Spread</div>
+            <div class="bg p" style="font-size:7px;margin-bottom:3px;">Spread Oppty</div>
+            <div style="font-size:7px;color:#555;margin-bottom:3px;">IV skew gap</div>
+            <div style="height:3px;background:#E9D5FF;border-radius:2px;"><div style="width:55%;height:100%;background:#7C3AED;border-radius:2px;"></div></div>
+          </div>
+          <div class="dz" style="padding:5px;border-color:#CBD5E1;background:#F8FAFC;">
+            <div style="font-size:8px;font-weight:700;color:#1A1A2E;margin-bottom:2px;">IT Sector</div>
+            <div class="bg c" style="font-size:7px;margin-bottom:3px;">Sector Signal</div>
+            <div style="font-size:7px;color:#555;">3/5 IT CE buildup</div>
+          </div>
+        </div>
+
+        <!-- Bear column -->
+        <div style="flex:1;display:flex;flex-direction:column;gap:4px;overflow:hidden;">
+          <div class="dz4" style="padding:5px;">
+            <div style="font-size:8px;font-weight:700;color:#1A1A2E;margin-bottom:2px;">HDFCBANK PE</div>
+            <div class="bg r" style="font-size:7px;margin-bottom:3px;">Short Buildup</div>
+            <div style="font-size:7px;color:#555;margin-bottom:3px;">VOL/OI 0.44×</div>
+            <div style="height:3px;background:#FEE2E2;border-radius:2px;"><div style="width:62%;height:100%;background:#DC2626;border-radius:2px;"></div></div>
+          </div>
+          <div class="dz" style="padding:5px;border-color:#FCA5A5;">
+            <div style="font-size:8px;font-weight:700;color:#1A1A2E;margin-bottom:2px;">TATASTEEL PE</div>
+            <div class="bg r" style="font-size:7px;margin-bottom:2px;">Short Buildup</div>
+            <div style="font-size:7px;color:#555;">VOL/OI 0.91×</div>
+          </div>
+          <div class="dz" style="padding:5px;border-color:#FCA5A5;">
+            <div style="font-size:8px;font-weight:700;color:#1A1A2E;margin-bottom:2px;">NIFTY 24400 PE</div>
+            <div class="bg r" style="font-size:7px;">Long Unwinding</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div style="border-top:1px dashed #D0D0D0;padding:7px;flex-shrink:0;position:relative;">
+      <div class="aa" style="top:-8px;left:50%;transform:translateX(-50%);">5</div>
+      <div class="dz3" style="padding:5px;text-align:center;"><span style="font-size:8.5px;font-weight:700;color:#166534;">▲ Bullish selected · 4 aligned signals shown</span></div>
+    </div>
+  </div>
+  <div class="lg">
+    <div class="lg-h">Annotations</div>
+    <div class="li"><div class="ln">1</div><div class="lt"><b>View selector</b> — trader declares market view before seeing signals. Sets intent, pre-filters noise, reduces second-guessing.</div></div>
+    <div class="li"><div class="ln">2</div><div class="lt"><b>Column headers with counts</b> — all 3 directions always visible. Signal count per column tells trader what options exist if they change their view.</div></div>
+    <div class="li"><div class="ln">3</div><div class="lt"><b>Signal mini-card</b> — compact: symbol + type badge + key metric + conviction score bar. Tap to expand to full detail.</div></div>
+    <div class="li"><div class="ln">4</div><div class="lt"><b>Conviction score bar</b> — horizontal fill (0–100%) from OI quality + VOL/OI + price confirmation. Green for bull, red for bear signals.</div></div>
+    <div class="li"><div class="ln">5</div><div class="lt"><b>Active view confirmation strip</b> — tells trader which view is active and how many matched signals are loaded. Updates when view changes.</div></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════
+     W6 — MARKET STATE PULSE
+════════════════════════════ -->
+<div class="dc">
+  <div class="dc-num">Concept 06</div>
+  <div class="dc-name">Market State Pulse</div>
+  <div class="dc-idea">Don't just show signals — show why they're relevant right now. Read the live market state (PCR, VIX, OI flow, sector rotation), derive a condition, then serve only signals that match that condition. Context before action.</div>
+  <div class="df">
+    <div class="wfsb"><span>9:41 AM</span><span>●●●● WiFi 🔋</span></div>
+
+    <div style="padding:7px 10px 5px;flex-shrink:0;border-bottom:1px dashed #D0D0D0;display:flex;align-items:center;justify-content:space-between;">
+      <div style="font-size:9px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:0.8px;display:flex;align-items:center;gap:4px;">Market Pulse <span class="a">1</span></div>
+      <div style="display:flex;align-items:center;gap:3px;"><div style="width:6px;height:6px;border-radius:50%;background:#22C55E;"></div><span style="font-size:8px;font-weight:700;color:#22C55E;">Live</span></div>
+    </div>
+
+    <!-- 4 gauge bars -->
+    <div style="padding:8px 10px;flex-shrink:0;display:flex;flex-direction:column;gap:8px;background:#F0F2F5;border-bottom:1px dashed #D0D0D0;position:relative;">
+      <div class="aa" style="top:4px;right:6px;">2</div>
+
+      <!-- PCR -->
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;">
+          <span style="font-size:8.5px;font-weight:600;color:#444;">Put-Call Ratio</span>
+          <span style="font-size:9px;font-weight:800;color:#F59E0B;">0.82 ◆</span>
+        </div>
+        <div style="position:relative;height:8px;background:#E0E0E0;border-radius:4px;overflow:hidden;">
+          <div style="position:absolute;left:0;top:0;width:25%;height:100%;background:#FEE2E2;border-right:1px dashed #FCA5A5;"></div>
+          <div style="position:absolute;left:25%;top:0;width:25%;height:100%;background:#FEF9C3;border-right:1px dashed #FDE047;"></div>
+          <div style="position:absolute;left:50%;top:0;width:35%;height:100%;background:#D1FAE5;border-right:1px dashed #86EFAC;"></div>
+          <div style="position:absolute;left:85%;top:0;width:15%;height:100%;background:#FEE2E2;"></div>
+          <div style="position:absolute;top:0;left:56%;width:3px;height:100%;background:#F59E0B;border-radius:2px;"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:1px;"><span style="font-size:6.5px;color:#DC2626;">Bear &lt;0.5</span><span style="font-size:6.5px;color:#16A34A;">Neutral 0.8–1.0</span><span style="font-size:6.5px;color:#DC2626;">&gt;1.5</span></div>
+      </div>
+
+      <!-- VIX -->
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;">
+          <span style="font-size:8.5px;font-weight:600;color:#444;">India VIX</span>
+          <span style="font-size:9px;font-weight:800;color:#22C55E;">14.3 ↓</span>
+        </div>
+        <div style="position:relative;height:8px;background:#E0E0E0;border-radius:4px;overflow:hidden;">
+          <div style="position:absolute;left:0;top:0;width:35%;height:100%;background:#D1FAE5;border-right:1px dashed #86EFAC;"></div>
+          <div style="position:absolute;left:35%;top:0;width:35%;height:100%;background:#FEF9C3;border-right:1px dashed #FDE047;"></div>
+          <div style="position:absolute;left:70%;top:0;width:30%;height:100%;background:#FEE2E2;"></div>
+          <div style="position:absolute;top:0;left:19%;width:3px;height:100%;background:#22C55E;border-radius:2px;"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:1px;"><span style="font-size:6.5px;color:#16A34A;">Low &lt;15</span><span style="font-size:6.5px;color:#F59E0B;">Elevated 20–25</span><span style="font-size:6.5px;color:#DC2626;">&gt;25</span></div>
+      </div>
+
+      <!-- OI Flow -->
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;">
+          <span style="font-size:8.5px;font-weight:600;color:#444;display:flex;align-items:center;gap:3px;">OI Flow Direction <span class="a" style="background:#999;width:12px;height:12px;font-size:6px;">3</span></span>
+          <span style="font-size:9px;font-weight:800;color:#16A34A;">+CE Heavy</span>
+        </div>
+        <div style="height:8px;background:#E8E8E8;border-radius:4px;overflow:hidden;position:relative;">
+          <div style="position:absolute;left:0;top:0;height:100%;width:72%;background:linear-gradient(to right,#86EFAC,#22C55E);border-radius:4px 0 0 4px;"></div>
+          <div style="position:absolute;right:0;top:0;height:100%;width:28%;background:#FEE2E2;border-radius:0 4px 4px 0;"></div>
+          <div style="position:absolute;top:0;left:50%;width:2px;height:100%;background:rgba(0,0,0,0.15);"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:1px;"><span style="font-size:6.5px;color:#16A34A;">← CE (Bull) 72%</span><span style="font-size:6.5px;color:#DC2626;">28% PE (Bear) →</span></div>
+      </div>
+
+      <!-- Sector Flow -->
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;">
+          <span style="font-size:8.5px;font-weight:600;color:#444;">Sector Flow</span>
+          <span style="font-size:9px;font-weight:800;color:#0891B2;">IT &amp; Banks ▲</span>
+        </div>
+        <div style="display:flex;gap:3px;">
+          <div style="flex:1;text-align:center;padding:3px;background:#D1FAE5;border-radius:4px;font-size:7px;font-weight:700;color:#166534;">IT ▲</div>
+          <div style="flex:1;text-align:center;padding:3px;background:#D1FAE5;border-radius:4px;font-size:7px;font-weight:700;color:#166534;">Bank ▲</div>
+          <div style="flex:1;text-align:center;padding:3px;background:#F0F0F0;border-radius:4px;font-size:7px;color:#888;">Auto ◆</div>
+          <div style="flex:1;text-align:center;padding:3px;background:#FEE2E2;border-radius:4px;font-size:7px;font-weight:700;color:#991B1B;">Metal ▼</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- State label -->
+    <div style="padding:7px 10px;flex-shrink:0;border-bottom:1px dashed #D0D0D0;display:flex;align-items:center;justify-content:space-between;background:#FAFBFC;position:relative;">
+      <div class="aa" style="top:-8px;left:50%;transform:translateX(-50%);">4</div>
+      <div>
+        <div style="font-size:7.5px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:0.6px;">Derived Market State</div>
+        <div style="font-size:13px;font-weight:800;color:#166534;letter-spacing:-0.3px;">CAUTIOUSLY BULLISH</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:7px;color:#AAA;">Confidence</div>
+        <div style="font-size:12px;font-weight:800;color:#22C55E;">74%</div>
+        <div style="width:48px;height:4px;background:#E0E0E0;border-radius:2px;overflow:hidden;margin-top:2px;"><div style="width:74%;height:100%;background:#22C55E;border-radius:2px;"></div></div>
+      </div>
+    </div>
+
+    <!-- Matched signals -->
+    <div style="flex:1;overflow:hidden;padding:6px 8px;display:flex;flex-direction:column;gap:4px;position:relative;">
+      <div class="aa" style="top:0;right:4px;">5</div>
+      <div style="font-size:8px;font-weight:700;color:#888;margin-bottom:2px;">Signals for Cautiously Bullish</div>
+
+      <div class="dz3" style="padding:7px;display:flex;gap:7px;align-items:center;">
+        <div style="width:3px;height:34px;background:#16A34A;border-radius:2px;flex-shrink:0;"></div>
+        <div style="flex:1;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:2px;"><div style="font-size:9px;font-weight:700;color:#1A1A2E;">NIFTY 24500 CE</div><div class="bg g">Long Buildup</div></div>
+          <div style="font-size:7.5px;color:#555;">Aligned with CE accumulation + low VIX. VOL/OI 0.73×</div>
+        </div>
+      </div>
+
+      <div class="dz" style="padding:7px;display:flex;gap:7px;align-items:center;border-color:#BBF7D0;">
+        <div style="width:3px;height:34px;background:#22C55E;border-radius:2px;flex-shrink:0;"></div>
+        <div style="flex:1;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:2px;"><div style="font-size:9px;font-weight:700;color:#1A1A2E;">TATASTEEL CE</div><div class="bg g">Short Covering</div></div>
+          <div style="font-size:7.5px;color:#555;">Metal sector weak but stock diverging. Partial match.</div>
+        </div>
+      </div>
+
+      <div class="dz" style="padding:7px;display:flex;gap:7px;align-items:center;opacity:0.6;">
+        <div style="width:3px;height:30px;background:#D0D0D0;border-radius:2px;flex-shrink:0;"></div>
+        <div style="flex:1;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:2px;"><div style="font-size:9px;font-weight:600;color:#888;">BNF Spread</div><div class="bg p" style="opacity:0.8;">Spread Oppty</div></div>
+          <div style="font-size:7.5px;color:#AAA;">Low priority for current state. Wait for confirmation.</div>
+        </div>
+      </div>
+
+      <div style="text-align:center;"><span style="font-size:8px;color:#AAA;">3 of 12 signals matched this state</span></div>
+    </div>
+
+    <!-- State alert -->
+    <div style="border-top:1px dashed #D0D0D0;padding:6px 8px;flex-shrink:0;">
+      <div class="dz" style="padding:5px 8px;background:#FFFBEB;border-color:#FDE68A;display:flex;align-items:center;gap:5px;">
+        <span style="font-size:10px;">⚠</span>
+        <span style="font-size:7.5px;color:#92400E;font-weight:600;">State shifts if PCR drops below 0.7</span>
+      </div>
+    </div>
+  </div>
+  <div class="lg">
+    <div class="lg-h">Annotations</div>
+    <div class="li"><div class="ln">1</div><div class="lt"><b>Market Pulse section</b> — top half shows live market health indicators before any individual signals are presented. Context first.</div></div>
+    <div class="li"><div class="ln">2</div><div class="lt"><b>4 gauge bars</b> — PCR (put-call ratio), India VIX, OI Flow direction (CE vs PE net addition), and Sector rotation. Each has a visual scale with zones.</div></div>
+    <div class="li"><div class="ln">3</div><div class="lt"><b>OI Flow bar</b> — split bar showing net directional bias. CE-heavy = bullish accumulation; PE-heavy = bearish. Updates live throughout session.</div></div>
+    <div class="li"><div class="ln">4</div><div class="lt"><b>Derived state label</b> — named market condition computed from all 4 indicators: Cautiously Bullish / Trending Bearish / High Fear / Rangebound. Confidence % shown.</div></div>
+    <div class="li"><div class="ln">5</div><div class="lt"><b>State-matched signals</b> — only signals that fit the current state are shown prominently. Mismatched signals are dimmed. State change alert warns before conditions shift.</div></div>
+  </div>
+</div>
+
+</div><!-- /grid -->
+
+<!-- Comparison table -->
+<div style="max-width:1040px;margin:80px auto 0;background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.07);border-radius:20px;padding:32px 36px;">
+  <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:#334155;margin-bottom:20px;">Concept Comparison — Choosing the Right Direction</div>
+  <table style="width:100%;border-collapse:collapse;font-size:11px;">
+    <thead>
+      <tr>
+        <th style="text-align:left;padding:8px 12px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:#334155;border-bottom:1px solid rgba(255,255,255,0.07);">Concept</th>
+        <th style="text-align:left;padding:8px 12px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:#334155;border-bottom:1px solid rgba(255,255,255,0.07);">Mental model</th>
+        <th style="text-align:left;padding:8px 12px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:#334155;border-bottom:1px solid rgba(255,255,255,0.07);">Interaction verb</th>
+        <th style="text-align:left;padding:8px 12px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:#334155;border-bottom:1px solid rgba(255,255,255,0.07);">Best for</th>
+        <th style="text-align:left;padding:8px 12px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:#334155;border-bottom:1px solid rgba(255,255,255,0.07);">Watch out for</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td style="padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.04);"><span style="font-weight:700;color:#E2E8F0;">03 Signal Timeline</span></td><td style="padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.04);color:#64748B;">News feed · chronological story</td><td style="padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.04);color:#64748B;">Read → Understand → Act</td><td style="padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.04);color:#64748B;">Context-driven traders · mid-session check-ins</td><td style="padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.04);color:#64748B;">Old signals get buried quickly in active sessions</td></tr>
+      <tr><td style="padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.04);"><span style="font-weight:700;color:#E2E8F0;">04 Decision Board</span></td><td style="padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.04);color:#64748B;">Declare intent · organise by view</td><td style="padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.04);color:#64748B;">Choose view → Match signals</td><td style="padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.04);color:#64748B;">Directional traders · high conviction setups</td><td style="padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.04);color:#64748B;">Confirmation bias risk if view locks in prematurely</td></tr>
+      <tr><td style="padding:10px 12px;"><span style="font-weight:700;color:#E2E8F0;">06 Market State Pulse</span></td><td style="padding:10px 12px;color:#64748B;">Market-first · diagnose then act</td><td style="padding:10px 12px;color:#64748B;">Read market → See matched signals</td><td style="padding:10px 12px;color:#64748B;">Macro-aware traders · day traders who read OI</td><td style="padding:10px 12px;color:#64748B;">State logic must be accurate or trust breaks fast</td></tr>
+    </tbody>
+  </table>
+</div>
+
+</body>
+</html>

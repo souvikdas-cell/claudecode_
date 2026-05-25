@@ -1,0 +1,335 @@
+{
+  "meta": {
+    "product": "Choice FinX App",
+    "version": "V2 SVG-enhanced knowledge pack",
+    "source": "Figma export SVG ZIPs plus prior Markdown audit",
+    "evidence": {
+      "svg_files_audited": 175,
+      "design_system_svgs": 44,
+      "product_screen_svgs": 131,
+      "note": "Color values are extracted from SVG source. Semantic token naming is based on visible design-system boards and repeated product usage."
+    }
+  },
+  "color": {
+    "brand": {
+      "navy": {
+        "value": "#1B1464",
+        "usage": "Brand anchor, major identity surfaces, high emphasis"
+      },
+      "primaryBlue": {
+        "value": "#2777F3",
+        "usage": "Primary CTA, selected state, link, active icon, information action"
+      }
+    },
+    "semantic": {
+      "success": {
+        "value": "#45B644",
+        "usage": "Profit, gains, positive movement, success"
+      },
+      "error": {
+        "value": "#DE493B",
+        "usage": "Loss, sell/destructive, error, negative movement"
+      },
+      "warning": {
+        "value": "#F9EB21",
+        "usage": "Warning, attention, pending/closed indicator"
+      },
+      "info": {
+        "value": "#5D99F6",
+        "usage": "Info state, secondary blue emphasis"
+      }
+    },
+    "neutral": {
+      "900": {
+        "value": "#0F0E16"
+      },
+      "800": {
+        "value": "#27262D"
+      },
+      "700": {
+        "value": "#4B4A50"
+      },
+      "600": {
+        "value": "#6F6E73"
+      },
+      "500": {
+        "value": "#87868A"
+      },
+      "400": {
+        "value": "#B7B7B9"
+      },
+      "300": {
+        "value": "#CFCFD0"
+      },
+      "200": {
+        "value": "#E7E7E8"
+      },
+      "100": {
+        "value": "#E8E8F0"
+      },
+      "50": {
+        "value": "#FCFCFE"
+      }
+    },
+    "surface": {
+      "appBg": {
+        "value": "#FCFCFE"
+      },
+      "softBg": {
+        "value": "#F4F8FE"
+      },
+      "blueSubtle": {
+        "value": "#E9F1FE"
+      },
+      "greenSubtle": {
+        "value": "#ECF8EC"
+      },
+      "redSubtle": {
+        "value": "#F6CDCA"
+      },
+      "blueBorderSoft": {
+        "value": "#C9DDFC"
+      },
+      "darkBg": {
+        "value": "#070519"
+      },
+      "darkSurface": {
+        "value": "#27262D"
+      }
+    },
+    "observedMostFrequent": [
+      {
+        "value": "#0F0E16",
+        "count": 2437
+      },
+      {
+        "value": "#6F6E73",
+        "count": 2253
+      },
+      {
+        "value": "#87868A",
+        "count": 1987
+      },
+      {
+        "value": "#2777F3",
+        "count": 1701
+      },
+      {
+        "value": "#45B644",
+        "count": 1284
+      },
+      {
+        "value": "#E7E7E8",
+        "count": 1032
+      },
+      {
+        "value": "#4B4A50",
+        "count": 1030
+      },
+      {
+        "value": "#1B1464",
+        "count": 694
+      },
+      {
+        "value": "#E9F1FE",
+        "count": 676
+      },
+      {
+        "value": "#DE493B",
+        "count": 444
+      },
+      {
+        "value": "#C6C4D8",
+        "count": 396
+      },
+      {
+        "value": "#5D99F6",
+        "count": 354
+      },
+      {
+        "value": "#E8E8F0",
+        "count": 267
+      },
+      {
+        "value": "#9747FF",
+        "count": 218
+      },
+      {
+        "value": "#696A6A",
+        "count": 192
+      },
+      {
+        "value": "#B7B7B9",
+        "count": 190
+      },
+      {
+        "value": "#3F8CF4",
+        "count": 183
+      },
+      {
+        "value": "#F4F8FE",
+        "count": 176
+      },
+      {
+        "value": "#CFCFD0",
+        "count": 164
+      },
+      {
+        "value": "#F9685F",
+        "count": 149
+      },
+      {
+        "value": "#27262D",
+        "count": 146
+      },
+      {
+        "value": "#FCFCFE",
+        "count": 110
+      },
+      {
+        "value": "#ECF8EC",
+        "count": 107
+      },
+      {
+        "value": "#B8DAFF",
+        "count": 92
+      },
+      {
+        "value": "#C9DDFC",
+        "count": 86
+      },
+      {
+        "value": "#070519",
+        "count": 84
+      },
+      {
+        "value": "#F9EB21",
+        "count": 64
+      },
+      {
+        "value": "#FEFDFE",
+        "count": 57
+      },
+      {
+        "value": "#93BBF9",
+        "count": 54
+      },
+      {
+        "value": "#F6CDCA",
+        "count": 43
+      }
+    ]
+  },
+  "typography": {
+    "fontFamily": "\"Onest\", Inter, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+    "compactScale": {
+      "displayLarge": {
+        "fontSize": 32,
+        "lineHeight": 36,
+        "weights": [
+          "600"
+        ]
+      },
+      "headingLarge": {
+        "fontSize": 18,
+        "lineHeight": 21,
+        "weights": [
+          "400",
+          "600",
+          "700"
+        ]
+      },
+      "headingMedium": {
+        "fontSize": 16,
+        "lineHeight": 20,
+        "weights": [
+          "400",
+          "600",
+          "700"
+        ]
+      },
+      "bodyLarge": {
+        "fontSize": 16,
+        "lineHeight": 20,
+        "weights": [
+          "400",
+          "600",
+          "700"
+        ]
+      },
+      "bodyMedium": {
+        "fontSize": 14,
+        "lineHeight": 18,
+        "weights": [
+          "400",
+          "600",
+          "700"
+        ]
+      },
+      "bodySmall": {
+        "fontSize": 12,
+        "lineHeight": 16,
+        "weights": [
+          "400",
+          "600",
+          "700"
+        ]
+      }
+    },
+    "extendedScale": {
+      "headingXL": {
+        "fontSize": 36,
+        "lineHeight": 40
+      },
+      "headingLarge": {
+        "fontSize": 32,
+        "lineHeight": 36
+      },
+      "headingMedium": {
+        "fontSize": 26,
+        "lineHeight": 30
+      },
+      "headingSmall": {
+        "fontSize": 21,
+        "lineHeight": 24
+      }
+    }
+  },
+  "radius": {
+    "xsmall": 4,
+    "small": 8,
+    "medium": 10,
+    "large": 12,
+    "xlarge": 16,
+    "sheet": 18,
+    "pill": 999
+  },
+  "spacing": {
+    "scale": [
+      2,
+      4,
+      6,
+      8,
+      10,
+      12,
+      14,
+      16,
+      18,
+      20,
+      24,
+      28,
+      32
+    ],
+    "mobileScreenGutter": 16,
+    "cardPaddingCompact": 12,
+    "cardPaddingComfortable": 16,
+    "sectionGap": 16
+  },
+  "componentRules": {
+    "primaryCTA": "Use one dominant CTA in each decision zone.",
+    "buySell": "Buy and sell actions must be visually distinct and cannot rely only on text.",
+    "marketColor": "Positive movement uses success green, negative movement uses error red, neutral uses neutral text.",
+    "denseRows": "Keep numeric columns right-aligned and labels scannable.",
+    "bottomSheet": "Use clear top radius, header, content body, and fixed CTA area for decision-heavy flows."
+  }
+}

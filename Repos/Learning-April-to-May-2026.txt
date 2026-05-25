@@ -1,0 +1,531 @@
+([Past chat][1])([Past chat][2])([Past chat][3])([Past chat][4])([Past chat][5])([Past chat][6])([Past chat][7])([Past chat][8])([Past chat][9])([Past chat][10])([Files][11])([Files][12])([Files][13])([Files][14])([Files][15])([Files][16])
+
+# StrikX Project LLM — Last 1 Month Learning Report
+
+## 1. Executive Summary
+
+This report covers the last 30 days of Project LLM interactions around StrikX / StrikeX / Trader Mode. The scope is based on the user’s instruction to focus only on last-1-month conversations, not the full historical memory. The uploaded prompt explicitly defines last-1-month chats as the primary source of truth and asks not to let old project memory dominate the report. 
+
+The last month was not about building one clean PRD. It was about converting scattered StrikeX work into usable product, campaign, UI, analytics, and LLM-training assets.
+
+The strongest learning is this:
+
+**StrikeX is no longer being treated as a standalone feature name. It is being shaped into Trader Mode, a clearer F&O workspace inside FinX.**
+
+The main work in the last month happened across seven clusters:
+
+1. AMJ operating clarity for StrikeX.
+2. Trader Mode positioning and naming.
+3. Plotline-safe HTML widgets and walkthroughs.
+4. Weekly Analysis strategy and card redesign.
+5. Pick Your View strategy-entry campaign.
+6. Web redirection and Mixpanel/MoEngage event planning.
+7. Prompt-building and Project LLM training workflows.
+
+The biggest correction was around design and delivery quality. Static visuals, unreadable mobile cards, clipped layouts, broken CTA behavior, wrong naming, expired Sensex/Nifty dates, and overdesigned outputs were repeatedly rejected and corrected.
+
+The Project LLM learned that this project needs high constraint-following. It must preserve exact dimensions, exact flows, exact CTA behavior, exact brand rules, and exact data logic. Generic PM summaries are not enough.
+
+## 2. Source Coverage
+
+| Item                | Coverage                                                                                                   |
+| ------------------- | ---------------------------------------------------------------------------------------------------------- |
+| Date range covered  | 7 April 2026 to 7 May 2026                                                                                 |
+| Chats reviewed      | 17 visible chat clusters from last 30 days                                                                 |
+| Primary source      | Visible Project LLM conversation history and retrieved last-30-day interaction context                     |
+| Secondary source    | Project memory files only where the last-month chats referenced or updated them                            |
+| Missing data        | Full verbatim transcripts are not fully visible for every chat. Some conversation histories are truncated. |
+| Constraint followed | Last-1-month chat history used as primary source. Older memory treated as background only.                 |
+
+### Key conversation clusters found
+
+| Cluster | Main Topic                                                         |
+| ------- | ------------------------------------------------------------------ |
+| 13 Apr  | AMJ StrikeX memory update and operating targets                    |
+| 13 Apr  | Strategy Builder vs Strategy Finder A/B test and Plotline variants |
+| 22 Apr  | Canvas-first HTML workflow and Trader Mode What’s New modal        |
+| 27 Apr  | Pick Your View campaign and Nifty/Sensex strategy URLs             |
+| 27 Apr  | Option Chart / Rolling Chart / Trader Mode HTML edits              |
+| 28 Apr  | Trader Mode entry modal video concept                              |
+| 28 Apr  | Weekly Summary 7-card HTML edits                                   |
+| 29 Apr  | Weekly Analysis strategy rethink for mobile                        |
+| 29 Apr  | iOS tab design and scroll discoverability                          |
+| 30 Apr  | Weekly Summary mobile card simplification                          |
+| 30 Apr  | Web redirection insights summary                                   |
+| 4 May   | Mixpanel / MoEngage event tracking sheet                           |
+| 5 May   | Website experiment document                                        |
+| 6 May   | FinX Trader Mode walkthrough iteration                             |
+| 7 May   | Claude prompt for walkthrough                                      |
+| 7 May   | Prompt-building process instruction                                |
+| 7 May   | Project LLM learning-report prompt                                 |
+
+## 3. Conversation Timeline
+
+| Date / Period | Chat Topic                   | What Happened                                                                                                                                       | Output Created                                         | Key Learning                                                                                            |
+| ------------- | ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------- |
+| 13 Apr        | StrikeX AMJ planning         | AMJ target frame was locked. Web adoption, web conversion, and retention became the operating lens.                                                 | StrikeX Memory Sheet v3 AMJ 2026                       | Web adoption and web conversion became the main AMJ product focus.                                      |
+| 13 Apr        | Builder vs Finder            | Strategy Builder and Strategy Finder were compared. Builder had stronger pull. Finder helped reduce confusion.                                      | Plotline Variant B and Trader Mode workflow cards      | Builder is better for pull. Finder is better for first-time clarity.                                    |
+| 22 Apr        | Canvas workflow              | User corrected workflow. HTML/UI builds should open in canvas by default.                                                                           | Canvas-first execution rule                            | For HTML/widget work, preview and code matter more than plain chat output.                              |
+| 22 Apr        | Trader Mode modal            | A What’s New modal was created with Plotline-safe handling, animations, and CTA logic.                                                              | Trader Mode HTML modal                                 | Motion must support comprehension, not decoration.                                                      |
+| 27 Apr        | Pick Your View               | Nifty/Sensex strategy redirection logic was explored. Later Gold and Crude were added.                                                              | Strategy URL logic and reference URL request           | Dynamic strategy links need instrument, expiry, and underlying correctness.                             |
+| 27 Apr        | Expiry logic issue           | Sensex expiry from 30 April was still showing after expiry.                                                                                         | Correction request                                     | Expiry dates cannot be static. They need time-aware logic.                                              |
+| 27 Apr        | Option Chart / Rolling Chart | Rolling Chart animation overlapped with text. April label was outdated.                                                                             | Revised feature HTML direction                         | HTML widgets need date hygiene and layout QA before launch.                                             |
+| 28 Apr        | Entry modal video concept    | A 10-12s modal concept was built for FinX to Trader Mode redirection.                                                                               | 720×720 Plotline-safe animated HTML modal              | Short video-style HTML is preferred when deterministic export is needed.                                |
+| 28 Apr        | Weekly Summary edits         | 7-card PNG design flow was iterated. Light/dark theme flexibility was attempted, then rolled back.                                                  | Updated Weekly Summary HTML versions                   | Theme switching is useful only if reliable in Plotline. Rollback is valid when reliability is weak.     |
+| 29 Apr        | Weekly Analysis strategy     | Current Weekly Analysis was judged too guilt-heavy and not mobile-friendly. Strategy changed to “risk leak” framing.                                | 7-card revised structure                               | Weekly Analysis should sympathise, diagnose, and route to Trader Mode. Not shame users.                 |
+| 29 Apr        | Mobile readability           | User said 70% of content may need removal. Old scrapped font sizes were used as visibility benchmark.                                               | Cleaner mobile-first card direction                    | Mobile readability beats visual density.                                                                |
+| 29 Apr        | iOS tabs                     | Scroll behavior failed on iOS 16. Auto-scroll worked on Android but not iOS.                                                                        | Rejected bottom sheet and new scroll-nudge exploration | iOS limitations require visible scroll affordance, not hidden overflow.                                 |
+| 30 Apr        | Weekly Summary card updates  | “Trader Mode by StrikeX” was removed. Avg Loss vs Avg Win card was suggested.                                                                       | Updated card direction                                 | Naming must avoid heavy StrikeX branding when the communication is risk-analysis led.                   |
+| 30 Apr        | Web redirection insights     | Web redirection buttons went live. User needed VP/SVP-ready summary.                                                                                | Slack-ready executive update                           | Executive updates need campaign status, numbers, and clear next step.                                   |
+| 4 May         | Mixpanel tracking            | User wanted only filled columns added to tracking plan. Extra information was rejected.                                                             | Event tracking structure                               | Analytics sheets must stay clean. No unnecessary columns.                                               |
+| 5 May         | Website experiment doc       | A project document was requested using an existing structure. Context: campaign for users dropped from StrikeX, with VP Research YouTube video CTA. | Experiment document                                    | Reactivation experiment needs Assumption, Hypothesis, Validation, Results, Final Conclusion structure.  |
+| 6 May         | Trader Mode walkthrough      | Walkthrough needed instructions, mouse hover animation, screen delays, and visible text.                                                            | Animated walkthrough HTML iterations                   | Walkthrough must explain flow, not only show screens.                                                   |
+| 7 May         | Claude prompt                | User requested conversion of walkthrough requirement into a Claude prompt.                                                                          | Claude prompt for 5-screen walkthrough                 | Prompt must hardcode flow, animation, text, dimensions, brand, output format, and no extra explanation. |
+| 7 May         | Prompt-building rule         | User asked that every chat start by asking whether prompt is for Claude or GPT.                                                                     | Rephrased instruction prompt                           | Prompt workflows must branch by target model first.                                                     |
+| 7 May         | Learning report prompt       | User requested last-1-month Project LLM learning report.                                                                                            | Current reporting task                                 | LLM training artifact must be conversation-led, not memory-led.                                         |
+
+## 4. Major Learning Themes
+
+### Product learnings
+
+1. StrikeX is being reframed as Trader Mode.
+2. Trader Mode works better as a workspace label.
+3. StrikeX still matters as backend or legacy recognition.
+4. Web adoption is a major priority.
+5. Strategy Builder has stronger pull.
+6. Strategy Finder helps reduce first-time confusion.
+7. Price Ladder and Multiple Charts need guided education.
+8. Weekly Analysis should not only show losses.
+9. Weekly Analysis should explain what went wrong and route users to Trader Mode.
+10. Product education is now part of the product, not only campaign copy.
+
+### Prompt-engineering learnings
+
+1. Generic prompts fail for this project.
+2. Prompts must include screen sequence, dimension, brand tokens, motion behavior, CTA behavior, and output format.
+3. Claude prompts need explicit code-generation rules.
+4. GPT image prompts need hard constraints to avoid collage outputs.
+5. Prompt-building should first ask whether output is for Claude or GPT.
+6. When creating prompts for HTML, the model must include Plotline/WebView constraints.
+7. Reusable prompts should include “no extra explanation” when user wants direct output.
+
+### LLM-training learnings
+
+1. Project LLM must learn from corrections, not only final answers.
+2. User rejection language is valuable training data.
+3. Repeated corrections reveal durable rules.
+4. LLM must not add unnecessary columns, suggestions, or design variants when user asks for narrow edits.
+5. Project memory should be updated only after durable decisions.
+6. Last-1-month chat learning should be separated from full project memory.
+
+### Data and analytics learnings
+
+1. Event tracking must be clean and minimal.
+2. Only filled columns should be added to tracking sheets.
+3. Redirection analytics must be summarized for executives, not dumped.
+4. Dynamic action IDs and source fields matter for campaign attribution.
+5. Expiry-based URLs must be checked before sharing.
+6. Static expired values create product credibility risk.
+7. “Not set” or incomplete tracking remains a risk from memory-only context, not verified in all last-month chats.
+
+### UX/UI learnings
+
+1. Mobile readability is the top constraint for Weekly Analysis.
+2. 870×555 cards cannot carry dense information.
+3. Old large-font cards were more readable than new dense cards.
+4. Horizontal card flow must preserve each card as standalone.
+5. HTML widgets need deterministic layout.
+6. iOS behavior must be tested separately from Android.
+7. Animation must not overlap text.
+8. Mouse hover animations improve walkthrough comprehension.
+9. Screen transitions need delay so users can read instructions.
+10. Text color must be high contrast against white UI screenshots.
+
+### Business logic learnings
+
+1. Nifty and Sensex expiries cannot be hardcoded loosely.
+2. Gold and Crude need separate underlying and expiry handling.
+3. Strategy links must load based on correct underlying, expiry, and strategy key.
+4. “Pick Your View” is a decision-entry concept, not only a campaign banner.
+5. Weekly Analysis must connect trader losses to usable tools.
+6. A VP Research YouTube walkthrough can be used for dropped-off users, but success depends on CTA placement inside Trader Mode.
+
+### Workflow/process learnings
+
+1. Canvas should be default for HTML/UI builds.
+2. User prefers edits over redesign when in editing mode.
+3. User rejects unnecessary reinvention.
+4. For executive comms, shorten and sharpen.
+5. For tracking sheets, do not add explanatory columns.
+6. For images, generate one standalone asset at a time.
+7. For HTML, test CTA, clipping, animation, scroll, and date logic before declaring completion.
+
+## 5. Workstream Progress in Last 1 Month
+
+| Workstream                 | Progress Made in Last 1 Month                                             | Evidence from Chats                  | Current Status            | Remaining Gap                                                           |
+| -------------------------- | ------------------------------------------------------------------------- | ------------------------------------ | ------------------------- | ----------------------------------------------------------------------- |
+| Product positioning        | StrikeX moved toward Trader Mode framing.                                 | Apr 13, Apr 22, Apr 27, Apr 28 chats | Active direction          | Final naming system still needs locking across all surfaces.            |
+| Web adoption               | Web entry and redirection surfaces went live or were prepared.            | Apr 30 web redirection insights chat | Live or near-live         | Final post-launch dashboard not available in last 1 month chat context. |
+| Strategy entry             | Pick Your View concept developed with Down/Neutral/Up and strategy links. | Apr 27 Pick Your View chat           | In active iteration       | Broken URLs and expiry logic needed dev reference.                      |
+| Instrument logic           | Gold and Crude were added to Nifty/Sensex logic.                          | Apr 27 Pick Your View follow-up      | Requirement identified    | Final working URLs not available in last 1 month chat context.          |
+| Walkthrough                | FinX to Trader Mode walkthrough was built and iterated.                   | May 6 and May 7 walkthrough chats    | Improved                  | Final approved HTML not available in last 1 month chat context.         |
+| Weekly Analysis            | Strategy moved from dense loss report to risk-leak story.                 | Apr 29 and Apr 30 chats              | Direction improved        | Final mobile-safe 7 cards not fully confirmed.                          |
+| Weekly Summary HTML        | 7-card gallery and theme handling were iterated.                          | Apr 28 Approved Weekly chat          | Partially stable          | Light/dark behavior uncertain. Rollback remained valid.                 |
+| Plotline HTML              | Multiple modal/widget HTMLs were created or edited.                       | Apr 22, Apr 27, Apr 28, May 6 chats  | Strong progress           | iOS CTA, scroll, and clipping QA still needed.                          |
+| Analytics tracking         | Mixpanel/MoEngage event list was structured.                              | May 4 chat                           | Sheet direction clarified | Final tracking plan file not available in last 1 month chat context.    |
+| Executive reporting        | Web redirection insights were converted into Slack-ready summary.         | Apr 30 chat                          | Improved                  | Final data table not visible in last 1 month chat context.              |
+| Experiment documentation   | Website campaign experiment doc requested.                                | May 5 chat                           | Structured                | Results and conclusion pending.                                         |
+| Prompt workflow            | Claude/GPT branching rule added.                                          | May 7 prompt-building chat           | New durable rule          | Needs to be added as formal Project LLM instruction.                    |
+| LLM training documentation | Last-1-month learning report requested.                                   | May 7 current prompt                 | In progress               | Needs conversion into reusable training examples.                       |
+
+## 6. Prompt Evolution
+
+### Earlier prompt weaknesses
+
+1. Prompts were often outcome-led but not constraint-led.
+2. HTML prompts did not always hardcode Plotline restrictions.
+3. Image prompts allowed models to create collages or multiple designs in one canvas.
+4. UI prompts lacked enough hard rules for mobile readability.
+5. Walkthrough prompts did not always define screen timing, hover behavior, and text instructions.
+6. Analytics prompts allowed extra columns and unwanted explanatory fields.
+
+### Better prompt structures discovered
+
+1. Start with target model: Claude or GPT.
+2. State exact role.
+3. State exact artifact.
+4. State exact dimensions.
+5. State exact flow.
+6. State exact brand tokens.
+7. State exact animation behavior.
+8. State exact CTA behavior.
+9. State hard exclusions.
+10. State output format.
+
+### Reusable prompt patterns
+
+#### For Claude HTML
+
+Use when generating Plotline-safe HTML.
+
+```text
+You are building a single self-contained HTML file for Plotline/WebView.
+Use Onest font.
+Use Choice colors.
+No DOCTYPE.
+No inline handlers.
+Use addEventListener only.
+No external assets unless already embedded.
+Keep layout mobile-safe.
+Preserve exact dimensions.
+Return only final HTML code.
+```
+
+#### For walkthrough
+
+```text
+Build a screen-by-screen walkthrough.
+Use animated mouse hover and click.
+Show instruction text on every screen.
+Add delay between screens.
+Do not zoom in a way that clips UI.
+Keep text visible over white screenshots.
+Use #2777F3 for instruction highlights.
+```
+
+#### For image generation
+
+```text
+Do not create a collage.
+Generate one standalone design.
+No labels like Variant A or Design B.
+No extra white space outside the banner.
+Same dimensions for every output.
+```
+
+#### For analytics sheet
+
+```text
+Only add the columns that are already filled.
+Do not add extra explanatory columns.
+Preserve the existing sheet structure.
+```
+
+### Failed prompt patterns
+
+1. “Make it better” without dimensions.
+2. “Use all screenshots” without hierarchy.
+3. “Create multiple designs” without anti-collage rules.
+4. “Make mobile-friendly” without font-size constraints.
+5. “Create walkthrough” without mouse animation and screen delay.
+6. “Add event tracking” without sheet-column limits.
+
+### Final recommended prompt style for this project
+
+```text
+Target model: Claude / GPT
+
+Task:
+Create [artifact] for [surface].
+
+Context:
+[Product context]
+[User segment]
+[Business objective]
+
+Hard constraints:
+1. [Dimension]
+2. [Brand]
+3. [Platform]
+4. [CTA behavior]
+5. [No extra columns / no collage / no redesign / etc.]
+
+Exact flow:
+Screen 1:
+Screen 2:
+Screen 3:
+
+Output:
+Return only [final HTML / final prompt / final table].
+Do not add explanation.
+Do not change the structure.
+```
+
+## 7. Decisions Made in Last 1 Month
+
+| Decision                                                          | Chat Context                  | Reason                                                                        | Impact                                         | Status                    |
+| ----------------------------------------------------------------- | ----------------------------- | ----------------------------------------------------------------------------- | ---------------------------------------------- | ------------------------- |
+| Use Trader Mode as workspace framing                              | Apr 13 and Apr 22 chats       | StrikeX alone feels like a feature label. Trader Mode feels like a workspace. | Improves comprehension and web positioning.    | Active                    |
+| Keep Strategy Builder as core pull lever                          | Apr 13 Builder vs Finder chat | Builder had stronger historical pull.                                         | Use Builder in entry campaigns and web nudges. | Active                    |
+| Use Finder for first-time clarity                                 | Apr 13 Builder vs Finder chat | Finder reduces confusion for new users.                                       | Supports guided onboarding.                    | Active                    |
+| Default HTML/UI builds to canvas                                  | Apr 22 chat                   | User needs preview and code side-by-side.                                     | Reduces rework.                                | Active                    |
+| Use Plotline-safe HTML constraints                                | Apr 22 onward                 | Widgets must run in app/webview environments.                                 | Prevents CTA and rendering issues.             | Active                    |
+| Remove “Trader Mode by StrikeX” from some Weekly Summary surfaces | Apr 30 chat                   | It made the communication feel less fresh and too branded.                    | Shifted focus to risk check and F&O behavior.  | Active for Weekly Summary |
+| Reframe Weekly Analysis as risk leak, not guilt report            | Apr 29 chat                   | Loss-heavy design felt negative and unreadable.                               | More user-empathy led communication.           | Active                    |
+| Preserve 7 standalone PNG/card flow                               | Apr 29 chat                   | Infra depends on 7 URLs per client inside horizontal HTML widget.             | Prevents infra rebuild.                        | Fixed constraint          |
+| Roll back unreliable light/dark theme version                     | Apr 28 chat                   | Theme switching reliability was uncertain.                                    | Stability prioritized over flexibility.        | Active fallback           |
+| Add delays between walkthrough screens                            | May 6 chat                    | Users could not read instructions.                                            | Better comprehension.                          | Active                    |
+| Use blue Onest instruction text in walkthrough                    | May 6 chat                    | Text camouflaged on white screenshots.                                        | Better visibility.                             | Active                    |
+| Only add filled columns in tracking plan                          | May 4 chat                    | Extra fields cluttered the sheet.                                             | Cleaner analytics handoff.                     | Active                    |
+| Ask Claude or GPT first for prompt work                           | May 7 chat                    | Different models need different prompt constraints.                           | Better prompt quality.                         | Active                    |
+
+## 8. Mistakes, Corrections, and Iterations
+
+### 1. Mistake: Generic memory summary
+
+**What happened:** First report risk was summarizing full project memory.
+**Correction:** User clarified that the report must use last-1-month chats only.
+**What changed:** This report separates recent chat evidence from memory-only context.
+**Should not repeat:** Do not default to full project memory when user asks for last-month learning.
+
+### 2. Mistake: Overdesigned Weekly Analysis cards
+
+**What happened:** Cards became unreadable on mobile.
+**Correction:** User asked to cut short content, remove 70% if needed, and use older visible font sizes.
+**What changed:** Mobile readability became the top design constraint.
+**Should not repeat:** Do not compress many insights into 870×555 cards.
+
+### 3. Mistake: Static walkthrough flow
+
+**What happened:** Walkthrough looked static and flowless.
+**Correction:** User asked for mouse hover, click animation, instruction text, and screen delays.
+**What changed:** Walkthrough became a guided product education asset.
+**Should not repeat:** Do not show screenshots without explanatory motion.
+
+### 4. Mistake: Screen zoom causing clipping
+
+**What happened:** Screen 1 and 2 were zoomed and clipped.
+**Correction:** User asked not to zoom in that way.
+**What changed:** Full-screen context had to be preserved.
+**Should not repeat:** Avoid zoom effects that break product understanding.
+
+### 5. Mistake: CTA animation broke after layout got fixed
+
+**What happened:** Visual layout improved but CTA animation ruptured.
+**Correction:** User asked to cross-check after changes.
+**What changed:** QA must include animation behavior, not just static layout.
+**Should not repeat:** Do not validate only the screenshot state.
+
+### 6. Mistake: Expired Sensex expiry shown
+
+**What happened:** 30 April expiry still appeared after date passed.
+**Correction:** User flagged date logic issue.
+**What changed:** Expiry logic must be dynamic and time-aware.
+**Should not repeat:** Do not use stale expiry dates in trading widgets.
+
+### 7. Mistake: Broken Gold/Crude URLs
+
+**What happened:** Generated URLs did not work.
+**Correction:** User asked for reference Nifty URL to share with developers.
+**What changed:** URL structure should be validated against existing working reference.
+**Should not repeat:** Do not invent deep-link patterns without reference validation.
+
+### 8. Mistake: Extra information in tracking sheet
+
+**What happened:** Assistant added unnecessary tracking-plan columns.
+**Correction:** User said only add filled columns.
+**What changed:** Analytics sheet output must preserve exact input structure.
+**Should not repeat:** Do not enrich tracking plans unless asked.
+
+### 9. Mistake: Collage-style image outputs
+
+**What happened:** GPT generated multiple designs in one image despite instructions.
+**Correction:** User required hardcoded anti-collage prompt rules.
+**What changed:** Image prompts now need explicit one-output-at-a-time constraints.
+**Should not repeat:** Do not ask for multiple variants in one canvas unless user explicitly wants a board.
+
+### 10. Mistake: Assuming auto-scroll works across platforms
+
+**What happened:** Auto-scroll worked on Android but not iOS 16.
+**Correction:** User rejected bottom sheet and asked for scroll affordance inside tabs.
+**What changed:** iOS-safe design needs visible partial pills or affordance.
+**Should not repeat:** Do not rely on platform behavior without iOS validation.
+
+## 9. LLM Training Value
+
+### Convert into training examples
+
+| Training Example                  | Why                                                     |
+| --------------------------------- | ------------------------------------------------------- |
+| Weekly Analysis risk-leak rewrite | Teaches product empathy and loss-framing without guilt. |
+| 7-card mobile redesign correction | Teaches mobile readability and information reduction.   |
+| Claude walkthrough prompt         | Teaches model-specific prompt construction.             |
+| Plotline-safe HTML prompt         | Teaches technical constraints.                          |
+| Mixpanel event sheet correction   | Teaches exact structure preservation.                   |
+| Web redirection Slack summary     | Teaches executive communication.                        |
+| Pick Your View expiry correction  | Teaches dynamic trading-date logic.                     |
+| Image anti-collage prompt         | Teaches hard output constraints.                        |
+| Canvas-first correction           | Teaches workflow preference.                            |
+| iOS scroll issue                  | Teaches platform-specific UX validation.                |
+
+### Convert into system instructions
+
+1. Ask whether a prompt is for Claude or GPT before drafting.
+2. Use canvas by default for HTML/UI builds.
+3. For Plotline HTML, enforce WebView-safe rules.
+4. Do not add columns or fields unless asked.
+5. Preserve existing structures in editing mode.
+6. Prioritize mobile readability for campaign cards.
+7. Validate expiry dates in trading widgets.
+8. Use one standalone image per image-generation request.
+9. Treat user corrections as durable project rules when repeated.
+10. Do not summarize old memory when the task asks for recent chats.
+
+### Convert into evaluation questions
+
+| Evaluation Question                                      | Expected Model Behavior                                                         |
+| -------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| User asks for Claude prompt for Trader Mode walkthrough. | Model asks or identifies Claude target, then writes strict Claude-ready prompt. |
+| User says card is unreadable on mobile.                  | Model reduces content and increases hierarchy.                                  |
+| User asks to edit existing 7 cards.                      | Model edits separately and does not redesign from scratch.                      |
+| User asks for event tracking sheet.                      | Model preserves columns and avoids extra metadata.                              |
+| User asks for Nifty/Sensex expiry links.                 | Model checks date logic and flags expiry dependencies.                          |
+| CTA works on Android but not iOS.                        | Model checks iOS WebView behavior and sticky/fixed positioning.                 |
+| User asks for last-month report.                         | Model uses last-month chats only and marks missing context.                     |
+
+### Convert into project memory
+
+1. Trader Mode is the preferred workspace framing in many web/education contexts.
+2. Weekly Analysis should use risk-leak framing.
+3. Weekly Analysis infra uses 7 PNG URLs per client inside horizontal HTML.
+4. Canvas-first is required for HTML/UI builds.
+5. Prompt-building starts with Claude vs GPT.
+6. Mixpanel sheets should not include unnecessary columns.
+7. iOS 16 has scroll/CTA limitations that need separate handling.
+8. Expiry-based strategy widgets need dynamic validation.
+
+### Convert into reusable workflows
+
+1. HTML widget QA checklist.
+2. Prompt-building checklist.
+3. Weekly Analysis card design checklist.
+4. Trader Mode walkthrough flow template.
+5. Web redirection executive summary template.
+6. Event tracking sheet update workflow.
+7. Dynamic expiry validation workflow.
+8. Image prompt anti-collage workflow.
+
+### Convert into guardrails
+
+1. No stale expiries.
+2. No unreadable mobile cards.
+3. No collage outputs.
+4. No extra tracking columns.
+5. No untested iOS CTA behavior.
+6. No generic StrikeX summaries when user asks for recent chat learning.
+7. No visual changes that break CTA animation.
+8. No hidden scroll without affordance.
+9. No overbranding when the communication is about user risk behavior.
+10. No old memory claims unless marked as memory-only.
+
+## 10. Progress Score Based on Last 1 Month
+
+| Area                     | Score / 100 | Reason Based on Last 1 Month Chats                                                                                                                  |
+| ------------------------ | ----------: | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Product clarity          |          78 | Trader Mode framing, Strategy Builder role, Finder clarity role, and Weekly Analysis purpose became clearer. Final naming rules still need cleanup. |
+| Prompt maturity          |          84 | Prompt patterns became much stronger. Claude/GPT branching was added. Anti-collage and Plotline rules became explicit.                              |
+| LLM training readiness   |          68 | Many corrections and workflows are now training-worthy. But examples are not yet labeled into a dataset.                                            |
+| Documentation quality    |          64 | Strong outputs were created across chats. But many are scattered across HTML files, prompts, and chat corrections.                                  |
+| Workflow maturity        |          76 | Canvas-first, editing mode, and narrow-output rules are clearer. QA workflow still needs formal checklist.                                          |
+| Data readiness           |          52 | Event names and analytics summaries progressed. But raw result files, final tracking sheet, and post-launch numbers are not fully visible.          |
+| UX/UI maturity           |          72 | Mobile readability, iOS behavior, CTA animation, and walkthrough flow improved. Final approved designs are not all confirmed.                       |
+| Overall project progress |          70 | Last month moved from scattered execution to clearer product, prompt, and workflow rules. Training dataset preparation remains pending.             |
+
+## 11. Missing Context / Gaps
+
+1. Full verbatim transcripts for every last-month chat are not available.
+2. Final approved HTML files are not fully available in last 1 month chat context.
+3. Final working Gold and Crude URLs are not available in last 1 month chat context.
+4. Final Pick Your View production logic is not available in last 1 month chat context.
+5. Final Weekly Analysis 7-card redesign is not fully confirmed.
+6. Weekly Summary campaign performance after redesign is not available in last 1 month chat context.
+7. Final Mixpanel tracking sheet is not available in last 1 month chat context.
+8. Web redirection dashboard data is not fully visible.
+9. VP/SVP final Slack message version is not fully visible.
+10. Final Website Experiment document output is not fully visible.
+11. Final Trader Mode walkthrough HTML approval is not available.
+12. CTA issue resolution for iOS is not fully confirmed.
+13. Plotline production behavior after all HTML fixes is not fully confirmed.
+14. Full event taxonomy across Trader Mode modules is not available.
+15. Final naming map for StrikeX vs Trader Mode is not available.
+16. Final Project LLM training dataset schema is not available.
+17. Evaluation tests have not yet been formalized.
+18. No confirmed dataset of accepted vs rejected outputs exists yet.
+19. No single artifact archive exists for prompts, HTMLs, screenshots, and decisions.
+20. Not available in last 1 month chat context: final AMJ performance after interventions.
+
+## 12. Recommended Next Steps
+
+| Priority | Action                                  | Output                                                                    |
+| -------: | --------------------------------------- | ------------------------------------------------------------------------- |
+|        1 | Create a last-30-day artifact index.    | Table of chat, date, artifact, status, final file link.                   |
+|        2 | Build accepted/rejected output dataset. | Training examples from corrections and final accepted versions.           |
+|        3 | Lock naming rules.                      | StrikeX vs Trader Mode usage map.                                         |
+|        4 | Create Plotline HTML QA checklist.      | CTA, iOS, Android, WebView, scroll, clipping, animation, expiry.          |
+|        5 | Create Weekly Analysis design rules.    | 7-card structure, font sizes, max content, CTA logic.                     |
+|        6 | Finalize Claude/GPT prompt templates.   | Separate prompt kits for HTML, image, analytics, executive update.        |
+|        7 | Clean event tracking plan.              | Filled-column-only event sheet with source and CTA fields.                |
+|        8 | Validate dynamic expiry links.          | Working URL library for Nifty, Sensex, Gold, Crude.                       |
+|        9 | Package Project LLM memory update.      | Durable rules learned from last 30 days.                                  |
+|       10 | Build evaluation set.                   | 15 test prompts covering design, analytics, prompt, and product judgment. |
+
+## 13. Final Training Snapshot
+
+In the last 30 days, the StrikX / StrikeX project moved from broad product memory into execution-heavy learning. The main product shift was toward **Trader Mode** as a clearer workspace framing for F&O users. Strategy Builder remained the strongest pull lever. Strategy Finder remained useful for reducing first-time confusion. Pick Your View evolved as a strategy-entry campaign, but dynamic expiry and deep-link correctness became critical. Weekly Analysis shifted from a dense, guilt-heavy loss report to a cleaner risk-leak narrative that should sympathise, diagnose, and redirect users to Trader Mode. The 7-card PNG infra remained fixed, so design had to adapt within that system. Mobile readability became a hard rule. Old large-font cards became the benchmark. Plotline HTML work improved through repeated corrections around CTA behavior, iOS issues, animation overlap, clipping, hover states, screen delay, and visible instructional text. Canvas-first became the default workflow for HTML/UI builds. Prompting matured into model-specific execution. Every prompt-building flow should first identify Claude or GPT. Claude prompts need strict HTML and output constraints. GPT image prompts need hard anti-collage rules. Analytics work clarified that event sheets must stay clean and only include filled columns. Executive summaries must be short, data-led, and VP/SVP-ready. The strongest LLM training value comes from corrections: do not overdesign, do not add unasked columns, do not rely on old memory, do not ignore iOS behavior, do not use stale expiries, do not create static walkthroughs, and do not summarize generically when the user asks for last-month learning.
+
+[1]: https://chatgpt.com/c/69f1cabf-ee08-83a4-a598-1732df63a640 "Weekly Analysis Strategy"
+[2]: https://chatgpt.com/c/69f09b37-0c50-83ab-a9ed-0b039ff02c5e "StrikeX Modal Video Concept"
+[3]: https://chatgpt.com/c/69fb4d03-4b78-83aa-987d-24bb9eeb5cfb "Document Content Reduction"
+[4]: https://chatgpt.com/c/69fc34c3-db44-83a6-ba92-9ecb34436f9a "FinX Trader Mode Walkthrough"
+[5]: https://chatgpt.com/c/69fc6a96-0df8-83a4-97b6-71efe23aa410 "Memory Export Request"
+[6]: https://chatgpt.com/c/69f343b8-085c-83aa-a67b-6d82a31522b8 "Mobile-Friendly Design Fix"
+[7]: https://chatgpt.com/c/69dccd10-98ac-83a3-b869-96b7dcdc72b6 "StrikeX Web Adoption Analysis"
+[8]: https://chatgpt.com/c/69dc9fce-b51c-83a2-b490-5806eb223400 "Plotline Trader Mode"
+[9]: https://chatgpt.com/c/69f03d79-f4d8-83a5-8f8f-3d254d998279 "Approved _Weekly"
+[10]: https://chatgpt.com/c/69e71b21-4d40-83a2-93bf-a1a1cbcc94f0 "Fintech App UI Design"
+[11]: file://my_files/file_00000000371c720bbd85f430f00696f4 "Pasted text.txt"
+[12]: file://my_files/file_0000000068bc71fa822a15482c534c30 "Q4_FY2026_Unified_Product_Update_aligned.pptx"
+[13]: file://my_files/file_000000000800720b8c62437aaecd043d "satin_ncd_plotline_v2 (2).html"
+[14]: file://my_files/file_00000000f850720b817c72b8e7f37425 "satin_ncd_plotline_v2 (2).html"
+[15]: file://my_files/file_00000000795872069de4f62cebf8f176 "Pasted text.txt"
+[16]: file://my_files/file_00000000784c720b9aa2a86586bde218 "all_clicked_users_combined.csv"

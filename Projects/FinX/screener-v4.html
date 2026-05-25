@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FinX Discovery — Workspace</title>
+<style>
+* { box-sizing:border-box; margin:0; padding:0; }
+
+:root {
+  /* Canvas */
+  --canvas:   #0B1422;
+
+  /* Widget shells */
+  --w:        #141E2F;
+  --w-head:   #0F1926;
+  --w-border: #1D2E46;
+  --w-row-h:  #192840;
+
+  /* Text */
+  --tx:  #C9DCF2;
+  --tx2: #5E7A9C;
+  --tx3: #2E4466;
+
+  /* Signal palette — softer, distinct */
+  --bull:   #3ECFA2;  --bull-bg:   rgba(62,207,162,0.10);
+  --bear:   #E06B6B;  --bear-bg:   rgba(224,107,107,0.10);
+  --cover:  #E8A83C;  --cover-bg:  rgba(232,168,60,0.10);
+  --unwind: #7090B8;  --unwind-bg: rgba(112,144,184,0.10);
+
+  /* Conviction levels */
+  --high:   #5B9CF6;  --high-bg:   rgba(91,156,246,0.12);
+  --strong: #3ECFA2;  --strong-bg: rgba(62,207,162,0.10);
+  --watch:  #E8A83C;  --watch-bg:  rgba(232,168,60,0.10);
+
+  /* IV Screener specific */
+  --yield-col: rgba(91,156,246,0.07);
+  --yield-tx:  #5B9CF6;
+
+  /* Accent */
+  --accent: #3B7DDD;
+
+  --font: -apple-system,'Inter','Segoe UI',sans-serif;
+}
+
+html, body { height: 100%; }
+body {
+  font-family: var(--font);
+  background: var(--canvas);
+  color: var(--tx);
+  font-size: 12.5px;
+  min-height: 100vh;
+}
+
+/* ─── TOP BAR ─── */
+.topbar {
+  background: #090F1C;
+  border-bottom: 1px solid var(--w-border);
+  height: 44px;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: sticky; top: 0; z-index: 300;
+}
+.tb-logo { display:flex; align-items:center; gap:8px; flex-shrink:0; }
+.tb-mark {
+  width:24px; height:24px; background:var(--accent);
+  border-radius:5px; display:flex; align-items:center;
+  justify-content:center; font-size:11px; font-weight:900; color:#fff;
+}
+.tb-name { font-size:13px; font-weight:800; color:var(--tx); }
+.tb-name span { color:var(--accent); }
+.tb-sep { width:1px; height:20px; background:var(--w-border); }
+
+.tb-chips { display:flex; gap:4px; flex:1; }
+.tc-chip {
+  display:flex; align-items:center; gap:4px;
+  padding:3px 9px; background:var(--w); border:1px solid var(--w-border);
+  border-radius:4px; font-size:11px; font-variant-numeric:tabular-nums;
+}
+.tcc-n { color:var(--tx2); font-weight:600; }
+.tcc-v { color:var(--tx); font-weight:700; }
+.tcc-c { font-weight:700; }
+.tcc-c.up { color:var(--bull); }
+.tcc-c.dn { color:var(--bear); }
+
+/* ─── CANVAS ─── */
+.canvas {
+  padding: 14px;
+  display: grid;
+  grid-template-columns: 420px 1fr;
+  grid-template-rows: auto auto;
+  gap: 10px;
+  align-items: start;
+}
+.w-fast  { grid-column: 1; grid-row: 1 / 3; }
+.w-stock { grid-column: 2; grid-row: 1; }
+.w-iv    { grid-column: 2; grid-row: 2; }
+
+/* ─── WIDGET SHELL ─── */
+.widget {
+  background: var(--w);
+  border: 1px solid var(--w-border);
+  border-radius: 9px;
+  overflow: hidden;
+}
+
+/* Title bar */
+.w-title {
+  background: var(--w-head);
+  padding: 9px 13px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid var(--w-border);
+  user-select: none;
+}
+.wt-label { font-size: 12px; font-weight: 800; color: var(--tx); flex: 1; display:flex; align-items:center; gap:7px; }
+
+.live-dot-wrap { display:inline-flex; align-items:center; gap:3px; padding:1px 6px; background:rgba(224,107,107,0.12); border-radius:3px; font-size:9px; font-weight:800; color:var(--bear); letter-spacing:.4px; }
+.ld { width:4px; height:4px; background:var(--bear); border-radius:50%; animation:blink 1.4s infinite; }
+@keyframes blink { 0%,100%{opacity:1}50%{opacity:.2} }
+
+/* Window controls */
+.wt-ctrl { display:flex; gap:5px; flex-shrink:0; }
+.wc {
+  width:11px; height:11px; border-radius:50%; cursor:pointer; opacity:.8;
+  transition: opacity .15s;
+}
+.wc:hover { opacity: 1; }
+.wc.close    { background:#E06B6B; }
+.wc.minimize { background:#E8A83C; }
+.wc.expand   { background:#3ECFA2; }
+
+/* Widget body */
+.w-body { overflow: auto; max-height: 420px; }
+.w-body-tall { overflow: auto; max-height: 560px; }
+
+/* ─── FILTER ROW (inside widget) ─── */
+.w-frow {
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--w-border);
+  background: rgba(255,255,255,0.015);
+}
+.wf-lbl { font-size:10px; font-weight:800; color:var(--tx3); text-transform:uppercase; letter-spacing:.6px; }
+.wpill {
+  padding:4px 10px; border-radius:4px;
+  border:1px solid var(--w-border);
+  background:transparent; font-size:10.5px; font-weight:700; color:var(--tx2);
+  cursor:pointer; transition:all .14s;
+}
+.wpill:hover { border-color:var(--accent); color:var(--accent); }
+.wpill.active { background:rgba(59,125,221,0.12); border-color:var(--accent); color:var(--accent); }
+
+.wf-right { margin-left:auto; display:flex; align-items:center; gap:7px; }
+.wf-count { font-size:10px; font-weight:700; color:var(--bull); display:flex; align-items:center; gap:3px; }
+.wf-count .gd { width:5px; height:5px; background:var(--bull); border-radius:50%; }
+
+.guide-toggle { padding:3px 8px; border-radius:4px; border:1px solid var(--w-border); background:transparent; font-size:10px; font-weight:700; color:var(--tx2); cursor:pointer; transition:all .14s; }
+.guide-toggle:hover { border-color:var(--accent); color:var(--accent); }
+
+/* Signal guide panel */
+.sig-guide {
+  display: none;
+  grid-template-columns: repeat(4,1fr);
+  gap: 0;
+  padding: 10px 12px;
+  background: rgba(255,255,255,0.02);
+  border-bottom: 1px solid var(--w-border);
+}
+.sig-guide.open { display: grid; }
+.sg-item { padding: 0 12px; border-right: 1px solid var(--w-border); }
+.sg-item:first-child { padding-left: 0; }
+.sg-item:last-child { border-right: none; }
+.sg-n { font-size:10px; font-weight:800; margin-bottom:3px; }
+.sg-r { font-size:9.5px; color:var(--tx2); line-height:1.5; }
+.sg-r strong { color:var(--tx); }
+
+/* ─── TABLE ─── */
+.dt { width:100%; border-collapse:collapse; }
+.dt thead tr {
+  background: var(--w-head);
+  border-bottom: 1px solid var(--w-border);
+  position: sticky; top: 0; z-index: 10;
+}
+.dt th {
+  padding: 7px 10px;
+  font-size: 9.5px; font-weight: 700; color: var(--tx3);
+  text-transform: uppercase; letter-spacing: .6px;
+  text-align: right; white-space: nowrap; user-select: none;
+}
+.dt th:first-child { text-align: left; }
+.dt th.c { text-align: center; }
+.dt th.hl { background: var(--yield-col); }
+
+.dt tbody tr.dr {
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  cursor: pointer; transition: background .1s;
+}
+.dt tbody tr.dr:last-child { border-bottom: none; }
+.dt tbody tr.dr:hover { background: var(--w-row-h); }
+.dt tbody tr.dr.open { background: var(--w-row-h); }
+
+.dt td {
+  padding: 9px 10px;
+  font-size: 12px; font-weight: 600;
+  text-align: right; white-space: nowrap;
+  font-variant-numeric: tabular-nums; color: var(--tx);
+}
+.dt td:first-child { text-align: left; }
+.dt td.c { text-align: center; }
+.dt td.dim { color: var(--tx2); }
+.dt td.up  { color: var(--bull); }
+.dt td.dn  { color: var(--bear); }
+.dt td.amb { color: var(--cover); }
+.dt td.yl  { background: var(--yield-col); color: var(--yield-tx); font-weight: 800; }
+
+/* Index/Stock name cells */
+.nc { display:flex; flex-direction:column; gap:2px; }
+.n1 { font-size:12.5px; font-weight:800; color:var(--tx); line-height:1; }
+.n2 { font-size:9.5px; color:var(--tx3); font-weight:500; }
+
+/* CE/PE tag */
+.ot { display:inline-block; padding:2px 6px; border-radius:3px; font-size:9.5px; font-weight:800; letter-spacing:.3px; }
+.ot.ce { background:rgba(91,156,246,0.12); color:#7AAEFF; }
+.ot.pe { background:rgba(224,107,107,0.12); color:#F08080; }
+
+/* ─── CONVICTION CELL ─── */
+.conv-cell {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: flex-end;
+}
+.conv-sig {
+  display: flex; flex-direction: column; align-items: flex-end; gap: 1px;
+}
+.cs-name { font-size: 10px; font-weight: 800; white-space: nowrap; }
+.cs-score {
+  display: inline-flex; align-items: center; gap: 3px;
+  font-size: 9.5px; font-weight: 700;
+}
+.conv-bar {
+  width: 3px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+.conv-bar.high   { background: var(--high); }
+.conv-bar.strong { background: var(--strong); }
+.conv-bar.watch  { background: var(--watch); }
+
+/* Signal badges (standalone) */
+.sb { display:inline-block; padding:2px 7px; border-radius:3px; font-size:10px; font-weight:800; letter-spacing:.2px; white-space:nowrap; }
+.sb.bull   { background:var(--bull-bg);   color:var(--bull); }
+.sb.bear   { background:var(--bear-bg);   color:var(--bear); }
+.sb.cover  { background:var(--cover-bg);  color:var(--cover); }
+.sb.unwind { background:var(--unwind-bg); color:var(--unwind); }
+.sb.ive    { background:var(--cover-bg);  color:var(--cover); }
+
+/* Conviction pill */
+.cvp { display:inline-block; padding:2px 7px; border-radius:3px; font-size:9.5px; font-weight:800; }
+.cvp.high   { background:var(--high-bg);   color:var(--high); }
+.cvp.strong { background:var(--strong-bg); color:var(--strong); }
+.cvp.watch  { background:var(--watch-bg);  color:var(--watch); }
+
+/* OI mini bar */
+.oib { display:flex; align-items:center; gap:5px; justify-content:flex-end; }
+.oib-v { min-width:36px; text-align:right; }
+.oib-bar { width:28px; height:3px; background:var(--w-border); border-radius:2px; overflow:hidden; flex-shrink:0; }
+.oib-fill { height:100%; border-radius:2px; }
+
+/* ─── EXPAND ROW ─── */
+.er td { padding:0 !important; }
+.ep {
+  padding:10px 14px;
+  background: #0C1623;
+  border-top: 1px solid var(--w-border);
+  display: flex; gap: 0; align-items: center;
+}
+.em { display:flex; flex-direction:column; gap:2px; padding:0 16px; border-right:1px solid var(--w-border); flex-shrink:0; }
+.em:first-child { padding-left:0; }
+.em:last-of-type { border-right:none; }
+.emv { font-size:13px; font-weight:800; font-variant-numeric:tabular-nums; }
+.emv.up  { color:var(--bull); }
+.emv.dn  { color:var(--bear); }
+.emv.amb { color:var(--cover); }
+.eml { font-size:9px; font-weight:700; color:var(--tx3); text-transform:uppercase; letter-spacing:.5px; margin-top:1px; }
+.ep-cta { margin-left:auto; padding:7px 16px; background:var(--accent); color:#fff; border:none; border-radius:5px; font-size:11px; font-weight:800; cursor:pointer; flex-shrink:0; }
+.ep-cta:hover { background:#2b6ae8; }
+
+/* ─── IV SCREENER: sub-tabs + threshold ─── */
+.iv-ctrl {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--w-border);
+  display: flex; align-items: center; gap: 8px;
+  background: rgba(255,255,255,0.015);
+  flex-wrap: wrap;
+}
+.iv-subtabs { display:flex; gap:0; }
+.iv-stab {
+  padding:5px 14px; font-size:11px; font-weight:700; color:var(--tx2);
+  cursor:pointer; border-bottom:2px solid transparent;
+  transition:all .14s; user-select:none;
+}
+.iv-stab:hover { color:var(--tx); }
+.iv-stab.active { color:var(--accent); border-bottom-color:var(--accent); }
+.iv-ctrl-sep { width:1px; height:20px; background:var(--w-border); }
+.iv-flbl { font-size:9.5px; font-weight:700; color:var(--tx3); text-transform:uppercase; letter-spacing:.5px; }
+.iv-thresh { display:flex; gap:4px; }
+.iv-tp {
+  padding:3px 9px; border-radius:4px; border:1px solid var(--w-border);
+  background:transparent; font-size:10px; font-weight:700; color:var(--tx2);
+  cursor:pointer; transition:all .14s;
+}
+.iv-tp:hover { border-color:var(--accent); color:var(--accent); }
+.iv-tp.active { background:rgba(59,125,221,0.12); border-color:var(--accent); color:var(--accent); }
+
+.iv-ctrl-right { margin-left:auto; font-size:9.5px; color:var(--tx3); font-weight:600; }
+
+/* Yield% column highlight note */
+.yield-note {
+  padding: 6px 12px;
+  font-size: 9.5px; color: var(--tx3);
+  border-bottom: 1px solid var(--w-border);
+  display: flex; align-items: center; gap: 6px;
+}
+.yn-dot { width:6px; height:6px; background:var(--yield-tx); border-radius:50%; }
+
+/* ─── RESIZE HINT (wireframe only) ─── */
+.resize-hint {
+  display: flex; align-items: center; justify-content: flex-end;
+  padding: 4px 8px;
+  border-top: 1px solid var(--w-border);
+}
+.resize-icon {
+  width: 10px; height: 10px; opacity: .25;
+  background: linear-gradient(135deg, transparent 40%, var(--tx2) 40%, var(--tx2) 55%, transparent 55%, transparent 70%, var(--tx2) 70%);
+}
+
+/* ─── DISCLAIMER ─── */
+.disc {
+  padding: 12px 14px 16px;
+  font-size: 9.5px; color: var(--tx3); text-align: center; line-height:1.7;
+  border-top: 1px solid var(--w-border); margin: 0 14px 14px;
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ TOP BAR ═══ -->
+<div class="topbar">
+  <div class="tb-logo">
+    <div class="tb-mark">FX</div>
+    <div class="tb-name">Fin<span>X</span> Discovery</div>
+  </div>
+  <div class="tb-sep"></div>
+  <div class="tb-chips">
+    <div class="tc-chip"><span class="tcc-n">NIFTY</span><span class="tcc-v">24,850</span><span class="tcc-c up">▲0.81%</span></div>
+    <div class="tc-chip"><span class="tcc-n">BANKNIFTY</span><span class="tcc-v">53,240</span><span class="tcc-c up">▲1.14%</span></div>
+    <div class="tc-chip"><span class="tcc-n">SENSEX</span><span class="tcc-v">82,150</span><span class="tcc-c up">▲0.72%</span></div>
+    <div class="tc-chip"><span class="tcc-n">VIX</span><span class="tcc-v">13.4</span><span class="tcc-c dn">▼4.2%</span></div>
+  </div>
+</div>
+
+<!-- ═══ CANVAS ═══ -->
+<div class="canvas">
+
+  <!-- ══ WIDGET 1: OPTION SCREENER ══ -->
+  <div class="widget w-fast">
+    <div class="w-title">
+      <span class="wt-label">
+        Option Screener &nbsp;<span class="live-dot-wrap"><span class="ld"></span>LIVE</span>
+      </span>
+      <div class="wt-ctrl">
+        <div class="wc minimize"></div>
+        <div class="wc expand"></div>
+        <div class="wc close"></div>
+      </div>
+    </div>
+
+    <div class="w-frow">
+      <span class="wf-lbl">Window</span>
+      <div class="wpill active" onclick="setTime('15m',this)">15 MIN</div>
+      <div class="wpill" onclick="setTime('30m',this)">30 MIN</div>
+      <div class="wpill" onclick="setTime('1d',this)">TODAY</div>
+      <div class="wf-right">
+        <span class="wf-count"><span class="gd"></span>6 active</span>
+        <button class="guide-toggle" onclick="toggleGuide()">Guide</button>
+      </div>
+    </div>
+
+    <!-- Signal guide -->
+    <div class="sig-guide" id="sig-guide">
+      <div class="sg-item"><div class="sg-n" style="color:var(--bull)">▲ Long Buildup</div><div class="sg-r"><strong>OI↑ Price↑</strong> — Longs being added. Bullish momentum.</div></div>
+      <div class="sg-item"><div class="sg-n" style="color:var(--bear)">▼ Short Buildup</div><div class="sg-r"><strong>OI↑ Price↓</strong> — Shorts being added. Bearish momentum.</div></div>
+      <div class="sg-item"><div class="sg-n" style="color:var(--cover)">▲ Short Covering</div><div class="sg-r"><strong>OI↓ Price↑</strong> — Shorts exiting. Upward squeeze.</div></div>
+      <div class="sg-item"><div class="sg-n" style="color:var(--unwind)">▼ Unwinding</div><div class="sg-r"><strong>OI↓ Price↓</strong> — Longs exiting. Bearish pressure.</div></div>
+    </div>
+
+    <div class="w-body-tall">
+      <table class="dt">
+        <thead>
+          <tr>
+            <th>Strike</th>
+            <th class="c">Type</th>
+            <th>Chg%</th>
+            <th>OI Chg</th>
+            <th>OI%</th>
+            <th class="c">Conviction</th>
+          </tr>
+        </thead>
+        <tbody id="opt-body"></tbody>
+      </table>
+    </div>
+    <div class="resize-hint"><div class="resize-icon"></div></div>
+  </div>
+
+  <!-- ══ WIDGET 2: STOCK OI SCREENER ══ -->
+  <div class="widget w-stock">
+    <div class="w-title">
+      <span class="wt-label">Stock OI Screener</span>
+      <div class="wt-ctrl">
+        <div class="wc minimize"></div>
+        <div class="wc expand"></div>
+        <div class="wc close"></div>
+      </div>
+    </div>
+
+    <div class="w-body">
+      <table class="dt">
+        <thead>
+          <tr>
+            <th>Stock</th>
+            <th>LTP</th>
+            <th>Chg%</th>
+            <th>OI (L)</th>
+            <th>OI Chg</th>
+            <th>OI%</th>
+            <th>Vol/Avg</th>
+            <th class="c">Signal · Conviction</th>
+          </tr>
+        </thead>
+        <tbody>
+
+          <!-- RELIANCE — Long Buildup HIGH -->
+          <tr class="dr" onclick="toggleRow(this)">
+            <td><div class="nc"><span class="n1">RELIANCE</span><span class="n2">Reliance Industries</span></div></td>
+            <td>₹1,452</td>
+            <td class="up">+1.4%</td>
+            <td class="dim">284</td>
+            <td><div class="oib"><span class="oib-v up">+38L</span><div class="oib-bar"><div class="oib-fill" style="width:78%;background:var(--bull)"></div></div></div></td>
+            <td class="up">+13.4%</td>
+            <td class="dim">5.2×</td>
+            <td>
+              <div class="conv-cell">
+                <div class="conv-bar high" style="height:28px"></div>
+                <div class="conv-sig">
+                  <span class="cs-name" style="color:var(--bull)">▲ Long Buildup</span>
+                  <span class="cs-score"><span class="cvp high">84 HIGH</span></span>
+                </div>
+              </div>
+            </td>
+          </tr>
+          <tr class="er" style="display:none"><td colspan="8"><div class="ep">
+            <div class="em"><div class="emv">284L</div><div class="eml">Total OI</div></div>
+            <div class="em"><div class="emv up">+38L</div><div class="eml">OI Added</div></div>
+            <div class="em"><div class="emv up">+13.4%</div><div class="eml">OI Chg%</div></div>
+            <div class="em"><div class="emv">246L</div><div class="eml">Prev OI</div></div>
+            <div class="em"><div class="emv">5.2×</div><div class="eml">Vol / Avg</div></div>
+            <button class="ep-cta" onclick="event.stopPropagation()">Explore →</button>
+          </div></td></tr>
+
+          <!-- INFY — Short Covering HIGH -->
+          <tr class="dr" onclick="toggleRow(this)">
+            <td><div class="nc"><span class="n1">INFY</span><span class="n2">Infosys Ltd</span></div></td>
+            <td>₹1,822</td>
+            <td class="up">+2.1%</td>
+            <td class="dim">178</td>
+            <td><div class="oib"><span class="oib-v dn">−24L</span><div class="oib-bar"><div class="oib-fill" style="width:55%;background:var(--cover)"></div></div></div></td>
+            <td class="dn">−13.5%</td>
+            <td class="dim">7.1×</td>
+            <td>
+              <div class="conv-cell">
+                <div class="conv-bar high" style="height:28px"></div>
+                <div class="conv-sig">
+                  <span class="cs-name" style="color:var(--cover)">▲ Short Covering</span>
+                  <span class="cs-score"><span class="cvp high">81 HIGH</span></span>
+                </div>
+              </div>
+            </td>
+          </tr>
+          <tr class="er" style="display:none"><td colspan="8"><div class="ep">
+            <div class="em"><div class="emv">178L</div><div class="eml">Total OI</div></div>
+            <div class="em"><div class="emv dn">−24L</div><div class="eml">OI Exit</div></div>
+            <div class="em"><div class="emv dn">−13.5%</div><div class="eml">OI Chg%</div></div>
+            <div class="em"><div class="emv">202L</div><div class="eml">Prev OI</div></div>
+            <div class="em"><div class="emv">7.1×</div><div class="eml">Vol / Avg</div></div>
+            <button class="ep-cta" onclick="event.stopPropagation()">Explore →</button>
+          </div></td></tr>
+
+          <!-- HCLTECH — Long Buildup STRONG -->
+          <tr class="dr" onclick="toggleRow(this)">
+            <td><div class="nc"><span class="n1">HCLTECH</span><span class="n2">HCL Technologies</span></div></td>
+            <td>₹1,641</td>
+            <td class="up">+1.8%</td>
+            <td class="dim">224</td>
+            <td><div class="oib"><span class="oib-v up">+28L</span><div class="oib-bar"><div class="oib-fill" style="width:62%;background:var(--bull)"></div></div></div></td>
+            <td class="up">+12.5%</td>
+            <td class="dim">3.9×</td>
+            <td>
+              <div class="conv-cell">
+                <div class="conv-bar strong" style="height:28px"></div>
+                <div class="conv-sig">
+                  <span class="cs-name" style="color:var(--bull)">▲ Long Buildup</span>
+                  <span class="cs-score"><span class="cvp strong">76 STRONG</span></span>
+                </div>
+              </div>
+            </td>
+          </tr>
+          <tr class="er" style="display:none"><td colspan="8"><div class="ep">
+            <div class="em"><div class="emv">224L</div><div class="eml">Total OI</div></div>
+            <div class="em"><div class="emv up">+28L</div><div class="eml">OI Added</div></div>
+            <div class="em"><div class="emv up">+12.5%</div><div class="eml">OI Chg%</div></div>
+            <div class="em"><div class="emv">196L</div><div class="eml">Prev OI</div></div>
+            <div class="em"><div class="emv">3.9×</div><div class="eml">Vol / Avg</div></div>
+            <button class="ep-cta" onclick="event.stopPropagation()">Explore →</button>
+          </div></td></tr>
+
+          <!-- TATASTEEL — Short Buildup STRONG -->
+          <tr class="dr" onclick="toggleRow(this)">
+            <td><div class="nc"><span class="n1">TATASTEEL</span><span class="n2">Tata Steel</span></div></td>
+            <td>₹163</td>
+            <td class="dn">−0.8%</td>
+            <td class="dim">312</td>
+            <td><div class="oib"><span class="oib-v up">+31L</span><div class="oib-bar"><div class="oib-fill" style="width:68%;background:var(--bear)"></div></div></div></td>
+            <td class="up">+9.9%</td>
+            <td class="dim">4.8×</td>
+            <td>
+              <div class="conv-cell">
+                <div class="conv-bar strong" style="height:28px"></div>
+                <div class="conv-sig">
+                  <span class="cs-name" style="color:var(--bear)">▼ Short Buildup</span>
+                  <span class="cs-score"><span class="cvp strong">74 STRONG</span></span>
+                </div>
+              </div>
+            </td>
+          </tr>
+          <tr class="er" style="display:none"><td colspan="8"><div class="ep">
+            <div class="em"><div class="emv">312L</div><div class="eml">Total OI</div></div>
+            <div class="em"><div class="emv up">+31L</div><div class="eml">Short OI Add</div></div>
+            <div class="em"><div class="emv up">+9.9%</div><div class="eml">OI Chg%</div></div>
+            <div class="em"><div class="emv">281L</div><div class="eml">Prev OI</div></div>
+            <div class="em"><div class="emv">4.8×</div><div class="eml">Vol / Avg</div></div>
+            <button class="ep-cta" onclick="event.stopPropagation()">Explore →</button>
+          </div></td></tr>
+
+          <!-- WIPRO — Short Buildup STRONG -->
+          <tr class="dr" onclick="toggleRow(this)">
+            <td><div class="nc"><span class="n1">WIPRO</span><span class="n2">Wipro Ltd</span></div></td>
+            <td>₹298</td>
+            <td class="dn">−6.3%</td>
+            <td class="dim">412</td>
+            <td><div class="oib"><span class="oib-v up">+18L</span><div class="oib-bar"><div class="oib-fill" style="width:40%;background:var(--bear)"></div></div></div></td>
+            <td class="up">+4.6%</td>
+            <td class="dim">8.4×</td>
+            <td>
+              <div class="conv-cell">
+                <div class="conv-bar strong" style="height:28px"></div>
+                <div class="conv-sig">
+                  <span class="cs-name" style="color:var(--bear)">▼ Short Buildup</span>
+                  <span class="cs-score"><span class="cvp strong">71 STRONG</span></span>
+                </div>
+              </div>
+            </td>
+          </tr>
+          <tr class="er" style="display:none"><td colspan="8"><div class="ep">
+            <div class="em"><div class="emv">412L</div><div class="eml">Total OI</div></div>
+            <div class="em"><div class="emv up">+18L</div><div class="eml">Short OI Add</div></div>
+            <div class="em"><div class="emv up">+4.6%</div><div class="eml">OI Chg%</div></div>
+            <div class="em"><div class="emv">394L</div><div class="eml">Prev OI</div></div>
+            <div class="em"><div class="emv">8.4×</div><div class="eml">Vol / Avg</div></div>
+            <button class="ep-cta" onclick="event.stopPropagation()">Explore →</button>
+          </div></td></tr>
+
+          <!-- BAJFINANCE — Unwinding WATCH -->
+          <tr class="dr" onclick="toggleRow(this)">
+            <td><div class="nc"><span class="n1">BAJFINANCE</span><span class="n2">Bajaj Finance</span></div></td>
+            <td>₹6,844</td>
+            <td class="dn">−5.2%</td>
+            <td class="dim">94</td>
+            <td><div class="oib"><span class="oib-v dn">−12L</span><div class="oib-bar"><div class="oib-fill" style="width:28%;background:var(--unwind)"></div></div></div></td>
+            <td class="dn">−11.3%</td>
+            <td class="dim">6.2×</td>
+            <td>
+              <div class="conv-cell">
+                <div class="conv-bar watch" style="height:28px"></div>
+                <div class="conv-sig">
+                  <span class="cs-name" style="color:var(--unwind)">▼ Unwinding</span>
+                  <span class="cs-score"><span class="cvp watch">58 WATCH</span></span>
+                </div>
+              </div>
+            </td>
+          </tr>
+          <tr class="er" style="display:none"><td colspan="8"><div class="ep">
+            <div class="em"><div class="emv">94L</div><div class="eml">Total OI</div></div>
+            <div class="em"><div class="emv dn">−12L</div><div class="eml">OI Reduction</div></div>
+            <div class="em"><div class="emv dn">−11.3%</div><div class="eml">OI Chg%</div></div>
+            <div class="em"><div class="emv">106L</div><div class="eml">Prev OI</div></div>
+            <div class="em"><div class="emv">6.2×</div><div class="eml">Vol / Avg</div></div>
+            <button class="ep-cta" onclick="event.stopPropagation()">Explore →</button>
+          </div></td></tr>
+
+        </tbody>
+      </table>
+    </div>
+    <div class="resize-hint"><div class="resize-icon"></div></div>
+  </div>
+
+  <!-- ══ WIDGET 3: IV SCREENER ══ -->
+  <div class="widget w-iv">
+    <div class="w-title">
+      <span class="wt-label">IV Screener</span>
+      <div class="wt-ctrl">
+        <div class="wc minimize"></div>
+        <div class="wc expand"></div>
+        <div class="wc close"></div>
+      </div>
+    </div>
+
+    <!-- IV controls: direction sub-tab + threshold filter -->
+    <div class="iv-ctrl">
+      <div class="iv-subtabs">
+        <div class="iv-stab active" onclick="setIVDir('drops',this)">▼ Top Drops</div>
+        <div class="iv-stab" onclick="setIVDir('rises',this)">▲ Top Rises</div>
+      </div>
+      <div class="iv-ctrl-sep"></div>
+      <span class="iv-flbl">Move &gt;</span>
+      <div class="iv-thresh">
+        <div class="iv-tp" onclick="setThresh('2',this)">2%</div>
+        <div class="iv-tp active" onclick="setThresh('4',this)">4%</div>
+        <div class="iv-tp" onclick="setThresh('6',this)">6%</div>
+      </div>
+      <div class="iv-ctrl-right" id="iv-count">4 stocks found</div>
+    </div>
+
+    <!-- Yield% context note -->
+    <div class="yield-note">
+      <div class="yn-dot"></div>
+      <span><strong style="color:var(--yield-tx)">Yield%</strong> = (Premium × Lot Size) ÷ Margin Required — return per rupee of capital for option writers</span>
+    </div>
+
+    <div class="w-body" id="iv-body-wrap">
+      <table class="dt" id="iv-tbl">
+        <thead id="iv-head">
+          <tr>
+            <th>Stock</th>
+            <th>LTP</th>
+            <th>Chg%</th>
+            <th>IV</th>
+            <th>IV 30d Avg</th>
+            <th>IV Spike</th>
+            <th>Best Strike</th>
+            <th>Premium</th>
+            <th>Margin (₹)</th>
+            <th class="hl">Yield%</th>
+          </tr>
+        </thead>
+        <tbody id="iv-body"></tbody>
+      </table>
+    </div>
+    <div class="resize-hint"><div class="resize-icon"></div></div>
+  </div>
+
+</div><!-- canvas -->
+
+<div class="disc">
+  For informational purposes only · Not investment advice · Options trading involves substantial risk<br>
+  Yield% is illustrative based on typical SPAN margins · Actual margins may vary · Past OI patterns do not guarantee future results
+</div>
+
+<script>
+// ═══ OPTION SCREENER DATA ═══
+var OD = {
+  '15m': [
+    { idx:'BANKNIFTY', stk:'53500', t:'ce', chg:'+38%', cc:'up', oc:'+18L', occ:'up', opct:'+7.1%', bpct:72, sig:'bull', sn:'▲ Long Buildup', cv:'high', cs:88 },
+    { idx:'BANKNIFTY', stk:'53000', t:'pe', chg:'−41%', cc:'dn', oc:'−22L', occ:'dn', opct:'−6.6%', bpct:60, sig:'cover', sn:'▲ Short Covering', cv:'high', cs:83 },
+    { idx:'NIFTY',     stk:'25000', t:'ce', chg:'+22%', cc:'up', oc:'+9L',  occ:'up', opct:'+4.7%', bpct:45, sig:'bull',  sn:'▲ Long Buildup',    cv:'strong', cs:76 },
+    { idx:'SENSEX',    stk:'82500', t:'ce', chg:'+29%', cc:'up', oc:'+7L',  occ:'up', opct:'+8.3%', bpct:40, sig:'bull',  sn:'▲ Long Buildup',    cv:'strong', cs:74 },
+    { idx:'BANKNIFTY', stk:'52500', t:'ce', chg:'+31%', cc:'up', oc:'+12L', occ:'up', opct:'+26.1%',bpct:58, sig:'bull',  sn:'▲ Long Buildup',    cv:'strong', cs:79 },
+    { idx:'NIFTY',     stk:'24800', t:'pe', chg:'+18%', cc:'up', oc:'+4L',  occ:'up', opct:'+2.6%', bpct:25, sig:'bear',  sn:'▼ Short Buildup',   cv:'watch',  cs:61 }
+  ],
+  '30m': [
+    { idx:'BANKNIFTY', stk:'53500', t:'ce', chg:'+62%', cc:'up', oc:'+24L', occ:'up', opct:'+9.7%', bpct:88, sig:'bull',  sn:'▲ Long Buildup',    cv:'high',   cs:92 },
+    { idx:'NIFTY',     stk:'25000', t:'ce', chg:'+45%', cc:'up', oc:'+16L', occ:'up', opct:'+8.7%', bpct:78, sig:'bull',  sn:'▲ Long Buildup',    cv:'high',   cs:87 },
+    { idx:'BANKNIFTY', stk:'53000', t:'pe', chg:'−55%', cc:'dn', oc:'−31L', occ:'dn', opct:'−9.0%', bpct:82, sig:'cover', sn:'▲ Short Covering',  cv:'high',   cs:89 },
+    { idx:'SENSEX',    stk:'82500', t:'ce', chg:'+38%', cc:'up', oc:'+10L', occ:'up', opct:'+12.3%',bpct:62, sig:'bull',  sn:'▲ Long Buildup',    cv:'strong', cs:81 },
+    { idx:'BANKNIFTY', stk:'54000', t:'ce', chg:'+41%', cc:'up', oc:'+8L',  occ:'up', opct:'+22.2%',bpct:52, sig:'bull',  sn:'▲ Long Buildup',    cv:'strong', cs:77 },
+    { idx:'NIFTY',     stk:'24800', t:'pe', chg:'+28%', cc:'up', oc:'+7L',  occ:'up', opct:'+4.7%', bpct:38, sig:'bear',  sn:'▼ Short Buildup',   cv:'watch',  cs:64 }
+  ],
+  '1d': [
+    { idx:'BANKNIFTY', stk:'53500', t:'ce', chg:'+148%',cc:'up', oc:'+42L', occ:'up', opct:'+18.3%',bpct:96, sig:'bull',  sn:'▲ Long Buildup',    cv:'high',   cs:94 },
+    { idx:'NIFTY',     stk:'25000', t:'ce', chg:'+89%', cc:'up', oc:'+28L', occ:'up', opct:'+16.4%',bpct:88, sig:'bull',  sn:'▲ Long Buildup',    cv:'high',   cs:91 },
+    { idx:'SENSEX',    stk:'82500', t:'ce', chg:'+72%', cc:'up', oc:'+18L', occ:'up', opct:'+24.7%',bpct:76, sig:'bull',  sn:'▲ Long Buildup',    cv:'strong', cs:83 },
+    { idx:'NIFTY',     stk:'25500', t:'ce', chg:'+61%', cc:'up', oc:'+14L', occ:'up', opct:'+41.2%',bpct:68, sig:'bull',  sn:'▲ Long Buildup',    cv:'strong', cs:79 },
+    { idx:'BANKNIFTY', stk:'52000', t:'pe', chg:'−78%', cc:'dn', oc:'−38L', occ:'dn', opct:'−31.7%',bpct:84, sig:'unwind',sn:'▼ Unwinding',       cv:'high',   cs:86 },
+    { idx:'NIFTY',     stk:'24500', t:'pe', chg:'−65%', cc:'dn', oc:'−22L', occ:'dn', opct:'−19.0%',bpct:72, sig:'unwind',sn:'▼ Unwinding',       cv:'strong', cs:82 }
+  ]
+};
+
+function renderOpt(key) {
+  var rows = OD[key];
+  var html = '';
+  rows.forEach(function(r) {
+    var cvColor = r.cv === 'high' ? 'var(--high)' : r.cv === 'strong' ? 'var(--strong)' : 'var(--watch)';
+    var sigColor = r.sig === 'bull' ? 'var(--bull)' : r.sig === 'bear' ? 'var(--bear)' : r.sig === 'cover' ? 'var(--cover)' : 'var(--unwind)';
+    html +=
+      '<tr class="dr" onclick="toggleRow(this)">'
+        + '<td><div class="nc"><span class="n1">' + r.idx + '</span><span class="n2">' + r.stk + '</span></div></td>'
+        + '<td class="c"><span class="ot ' + r.t + '">' + r.t.toUpperCase() + '</span></td>'
+        + '<td class="' + r.cc + '">' + r.chg + '</td>'
+        + '<td><div class="oib"><span class="oib-v ' + r.occ + '">' + r.oc + '</span><div class="oib-bar"><div class="oib-fill" style="width:' + r.bpct + '%;background:' + sigColor + '"></div></div></div></td>'
+        + '<td class="' + r.occ + '">' + r.opct + '</td>'
+        + '<td><div class="conv-cell"><div class="conv-bar ' + r.cv + '" style="height:26px"></div><div class="conv-sig"><span class="cs-name" style="color:' + sigColor + '">' + r.sn + '</span><span class="cs-score"><span class="cvp ' + r.cv + '">' + r.cs + ' ' + r.cv.toUpperCase() + '</span></span></div></div></td>'
+      + '</tr>'
+      + '<tr class="er" style="display:none"><td colspan="6"><div class="ep">'
+        + '<div class="em"><div class="emv">' + r.oc + '</div><div class="eml">OI Change</div></div>'
+        + '<div class="em"><div class="emv ' + r.occ + '">' + r.opct + '</div><div class="eml">OI Chg %</div></div>'
+        + '<div class="em"><div class="emv">' + r.cs + '</div><div class="eml">Conviction</div></div>'
+        + '<button class="ep-cta" onclick="event.stopPropagation()">Explore →</button>'
+      + '</div></td></tr>';
+  });
+  document.getElementById('opt-body').innerHTML = html;
+}
+
+// ═══ IV SCREENER DATA ═══
+var IVD = {
+  drops: {
+    '2': [
+      { n:'BAJFINANCE', sub:'Bajaj Finance', ltp:'₹6,844', chg:'−5.2%', cc:'dn', iv:'58%', iva:'34%', spike:'+71%', strike:'6800 PE', prem:'₹182', margin:'₹84,200', yield:'21.7%' },
+      { n:'WIPRO',      sub:'Wipro Ltd',     ltp:'₹298',   chg:'−6.3%', cc:'dn', iv:'45%', iva:'31%', spike:'+45%', strike:'295 PE',  prem:'₹14',  margin:'₹36,400', yield:'14.6%' },
+      { n:'HDFCBANK',   sub:'HDFC Bank',     ltp:'₹1,581', chg:'−4.8%', cc:'dn', iv:'42%', iva:'28%', spike:'+50%', strike:'1575 PE', prem:'₹38',  margin:'₹62,100', yield:'18.5%' },
+      { n:'AXISBANK',   sub:'Axis Bank',     ltp:'₹1,212', chg:'−4.1%', cc:'dn', iv:'38%', iva:'24%', spike:'+58%', strike:'1200 PE', prem:'₹28',  margin:'₹48,800', yield:'17.5%' },
+      { n:'MUTHOOTFIN', sub:'Muthoot Finance',ltp:'₹2,148',chg:'−3.6%', cc:'dn', iv:'34%', iva:'22%', spike:'+55%', strike:'2100 PE', prem:'₹46',  margin:'₹38,600', yield:'14.2%' },
+      { n:'LTIM',       sub:'LTI Mindtree',  ltp:'₹5,210', chg:'−2.8%', cc:'dn', iv:'52%', iva:'38%', spike:'+37%', strike:'5200 PE', prem:'₹112', margin:'₹72,400', yield:'12.8%' }
+    ],
+    '4': [
+      { n:'BAJFINANCE', sub:'Bajaj Finance', ltp:'₹6,844', chg:'−5.2%', cc:'dn', iv:'58%', iva:'34%', spike:'+71%', strike:'6800 PE', prem:'₹182', margin:'₹84,200', yield:'21.7%' },
+      { n:'WIPRO',      sub:'Wipro Ltd',     ltp:'₹298',   chg:'−6.3%', cc:'dn', iv:'45%', iva:'31%', spike:'+45%', strike:'295 PE',  prem:'₹14',  margin:'₹36,400', yield:'14.6%' },
+      { n:'HDFCBANK',   sub:'HDFC Bank',     ltp:'₹1,581', chg:'−4.8%', cc:'dn', iv:'42%', iva:'28%', spike:'+50%', strike:'1575 PE', prem:'₹38',  margin:'₹62,100', yield:'18.5%' },
+      { n:'AXISBANK',   sub:'Axis Bank',     ltp:'₹1,212', chg:'−4.1%', cc:'dn', iv:'38%', iva:'24%', spike:'+58%', strike:'1200 PE', prem:'₹28',  margin:'₹48,800', yield:'17.5%' }
+    ],
+    '6': [
+      { n:'WIPRO',    sub:'Wipro Ltd',  ltp:'₹298',   chg:'−6.3%', cc:'dn', iv:'45%', iva:'31%', spike:'+45%', strike:'295 PE',  prem:'₹14',  margin:'₹36,400', yield:'14.6%' },
+      { n:'BAJFINANCE',sub:'Bajaj Finance',ltp:'₹6,844',chg:'−5.2%',cc:'dn', iv:'58%', iva:'34%', spike:'+71%', strike:'6800 PE', prem:'₹182', margin:'₹84,200', yield:'21.7%' }
+    ]
+  },
+  rises: {
+    '2': [
+      { n:'ONGC',       sub:'ONGC',          ltp:'₹284',   chg:'+3.8%', cc:'up', iv:'38%', iva:'21%', spike:'+81%', strike:'285 CE',  prem:'₹9',   margin:'₹28,200', yield:'19.4%' },
+      { n:'TATAMOTORS', sub:'Tata Motors',   ltp:'₹812',   chg:'+3.4%', cc:'up', iv:'44%', iva:'28%', spike:'+57%', strike:'815 CE',  prem:'₹22',  margin:'₹46,800', yield:'18.2%' },
+      { n:'RELIANCE',   sub:'Reliance Ind.', ltp:'₹1,452', chg:'+2.8%', cc:'up', iv:'32%', iva:'22%', spike:'+45%', strike:'1450 CE', prem:'₹28',  margin:'₹68,400', yield:'12.3%' },
+      { n:'SUNPHARMA',  sub:'Sun Pharma',    ltp:'₹1,682', chg:'+2.1%', cc:'up', iv:'35%', iva:'24%', spike:'+46%', strike:'1680 CE', prem:'₹38',  margin:'₹52,600', yield:'17.1%' },
+      { n:'ADANIPORTS', sub:'Adani Ports',   ltp:'₹1,292', chg:'+2.4%', cc:'up', iv:'41%', iva:'27%', spike:'+52%', strike:'1290 CE', prem:'₹32',  margin:'₹48,200', yield:'16.6%' },
+      { n:'NTPC',       sub:'NTPC Ltd',      ltp:'₹384',   chg:'+2.2%', cc:'up', iv:'30%', iva:'19%', spike:'+58%', strike:'385 CE',  prem:'₹7',   margin:'₹24,800', yield:'17.3%' }
+    ],
+    '4': [
+      { n:'ONGC',       sub:'ONGC',          ltp:'₹284',   chg:'+3.8%', cc:'up', iv:'38%', iva:'21%', spike:'+81%', strike:'285 CE',  prem:'₹9',   margin:'₹28,200', yield:'19.4%' },
+      { n:'TATAMOTORS', sub:'Tata Motors',   ltp:'₹812',   chg:'+3.4%', cc:'up', iv:'44%', iva:'28%', spike:'+57%', strike:'815 CE',  prem:'₹22',  margin:'₹46,800', yield:'18.2%' }
+    ],
+    '6': []
+  }
+};
+
+var ivDir = 'drops';
+var ivThresh = '4';
+
+function renderIV() {
+  var rows = (IVD[ivDir] && IVD[ivDir][ivThresh]) ? IVD[ivDir][ivThresh] : [];
+  var dirLabel = ivDir === 'drops' ? 'PE' : 'CE';
+  var dirColor = ivDir === 'drops' ? 'var(--bear)' : 'var(--bull)';
+  var sigTxt = ivDir === 'drops' ? 'Sell PE' : 'Sell CE';
+
+  document.getElementById('iv-count').textContent = rows.length + ' stock' + (rows.length !== 1 ? 's' : '') + ' found';
+
+  var html = '';
+  if (rows.length === 0) {
+    html = '<tr><td colspan="10" style="padding:24px;text-align:center;color:var(--tx3);">No stocks above ' + ivThresh + '% move threshold</td></tr>';
+  } else {
+    rows.forEach(function(r) {
+      html +=
+        '<tr class="dr" onclick="toggleRow(this)">'
+          + '<td><div class="nc"><span class="n1">' + r.n + '</span><span class="n2">' + r.sub + '</span></div></td>'
+          + '<td>' + r.ltp + '</td>'
+          + '<td class="' + r.cc + '">' + r.chg + '</td>'
+          + '<td class="amb">' + r.iv + '</td>'
+          + '<td class="dim">' + r.iva + '</td>'
+          + '<td class="amb">' + r.spike + '</td>'
+          + '<td class="dim">' + r.strike + '</td>'
+          + '<td>' + r.prem + '</td>'
+          + '<td class="dim">' + r.margin + '</td>'
+          + '<td class="yl">' + r.yield + '</td>'
+        + '</tr>'
+        + '<tr class="er" style="display:none"><td colspan="10"><div class="ep">'
+          + '<div class="em"><div class="emv amb">' + r.iv + '</div><div class="eml">Current IV</div></div>'
+          + '<div class="em"><div class="emv">' + r.iva + '</div><div class="eml">30d Avg IV</div></div>'
+          + '<div class="em"><div class="emv amb">' + r.spike + '</div><div class="eml">IV Spike</div></div>'
+          + '<div class="em"><div class="emv">' + r.prem + '</div><div class="eml">Premium</div></div>'
+          + '<div class="em"><div class="emv">' + r.margin + '</div><div class="eml">Margin Req.</div></div>'
+          + '<div class="em"><div class="emv" style="color:var(--yield-tx)">' + r.yield + '</div><div class="eml">Yield %</div></div>'
+          + '<button class="ep-cta" onclick="event.stopPropagation()">View ' + sigTxt + ' Setup →</button>'
+        + '</div></td></tr>';
+    });
+  }
+  document.getElementById('iv-body').innerHTML = html;
+}
+
+// ═══ INTERACTIONS ═══
+function setTime(key, el) {
+  document.querySelectorAll('.wpill').forEach(function(p){ p.classList.remove('active'); });
+  el.classList.add('active');
+  renderOpt(key);
+}
+
+function setIVDir(dir, btn) {
+  document.querySelectorAll('.iv-stab').forEach(function(t){ t.classList.remove('active'); });
+  btn.classList.add('active');
+  ivDir = dir;
+  renderIV();
+}
+
+function setThresh(t, el) {
+  document.querySelectorAll('.iv-tp').forEach(function(p){ p.classList.remove('active'); });
+  el.classList.add('active');
+  ivThresh = t;
+  renderIV();
+}
+
+function toggleRow(tr) {
+  if (!tr.classList.contains('dr')) return;
+  var next = tr.nextElementSibling;
+  if (!next || !next.classList.contains('er')) return;
+  var isOpen = tr.classList.contains('open');
+  document.querySelectorAll('tr.open').forEach(function(r) {
+    r.classList.remove('open');
+    var n = r.nextElementSibling;
+    if (n && n.classList.contains('er')) n.style.display = 'none';
+  });
+  if (!isOpen) { tr.classList.add('open'); next.style.display = 'table-row'; }
+}
+
+function toggleGuide() {
+  document.getElementById('sig-guide').classList.toggle('open');
+}
+
+// ═══ INIT ═══
+renderOpt('15m');
+renderIV();
+</script>
+</body>
+</html>
