@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FinX NPS — Interactive Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&display=swap" rel="stylesheet"></noscript>
+<style>
+  :root{
+    --navy:#1B1464; --blue:#2777F3; --green:#45B644; --red:#DE493B;
+    --ink:#0F1222; --muted:#6B7185; --line:#ECEEF3; --bg:#F4F6FA; --card:#FFFFFF;
+    --grey:#AEB4C4; --greybg:#EEF0F5;
+    --shadow:0 1px 2px rgba(16,18,34,.04), 0 6px 20px rgba(16,18,34,.05);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Onest',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--ink);line-height:1.4;-webkit-font-smoothing:antialiased;padding:20px 18px 60px}
+  .wrap{max-width:1240px;margin:0 auto}
+  a{color:inherit}
+
+  header{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:16px}
+  h1{font-size:22px;font-weight:800;letter-spacing:-.02em}
+  header p{color:var(--muted);font-size:13.5px;margin-top:2px}
+  .badges{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+  .badge{font-size:11.5px;font-weight:600;color:var(--navy);background:#EEF1FE;border:1px solid #DEE5FD;padding:5px 10px;border-radius:999px}
+  .badge.live{color:var(--green);background:#EAF7EC;border-color:#D6EFDB;display:inline-flex;align-items:center;gap:6px}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--green)}
+
+  /* Filter bar */
+  .filterbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-height:34px;margin-bottom:14px;padding:8px 12px;background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow)}
+  .filterbar .lbl{font-size:12px;color:var(--muted);font-weight:600}
+  .chip{font-size:12px;font-weight:600;color:#fff;background:var(--navy);padding:4px 9px 4px 11px;border-radius:8px;display:inline-flex;align-items:center;gap:7px;cursor:pointer;transition:transform .12s}
+  .chip:hover{transform:translateY(-1px)}
+  .chip b{opacity:.7;font-weight:700}
+  .chip .x{font-size:14px;line-height:1;opacity:.8}
+  .clearall{font-size:12px;font-weight:600;color:var(--blue);cursor:pointer;margin-left:auto;border:0;background:none}
+  .filterbar.none .lbl.empty{display:inline}
+  .lbl.empty{color:var(--muted)}
+
+  /* KPI row */
+  .kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:14px}
+  @media(max-width:880px){.kpis{grid-template-columns:repeat(3,1fr)}}
+  @media(max-width:520px){.kpis{grid-template-columns:repeat(2,1fr)}}
+  .kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 15px;box-shadow:var(--shadow)}
+  .kpi .v{font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.1}
+  .kpi .k{font-size:11.5px;color:var(--muted);font-weight:600;margin-top:3px;text-transform:uppercase;letter-spacing:.04em}
+  .kpi.hero .v{color:var(--navy);font-size:30px}
+  .kpi .v.green{color:var(--green)} .kpi .v.red{color:var(--red)} .kpi .v.grey{color:var(--grey)}
+
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+  .grid.three{grid-template-columns:1.1fr 1fr 1fr}
+  @media(max-width:880px){.grid,.grid.three{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;box-shadow:var(--shadow)}
+  .card h2{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center}
+  .card h2 .hint{font-weight:500;text-transform:none;letter-spacing:0;font-size:11px;color:var(--grey)}
+
+  /* horizontal bar rows (cohorts, reasons) */
+  .row{display:flex;align-items:center;gap:10px;padding:7px 0;cursor:pointer;border-radius:8px;transition:background .12s}
+  .row:hover{background:#FAFBFD}
+  .row.sel{background:#EEF1FE}
+  .row.dim{opacity:.42}
+  .row .nm{flex:0 0 40%;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .row .nm small{display:block;font-weight:500;color:var(--muted);font-size:11px}
+  .row .bar{flex:1;height:8px;background:var(--greybg);border-radius:5px;overflow:hidden}
+  .row .bar i{display:block;height:100%;width:0;border-radius:5px;transition:width .6s cubic-bezier(.22,1,.36,1)}
+  .row .vv{flex:0 0 64px;text-align:right;font-size:13.5px;font-weight:700}
+  .row .vv small{font-weight:500;color:var(--muted);font-size:11px}
+
+  /* score histogram */
+  .hist{display:flex;align-items:flex-end;gap:5px;height:150px;padding-top:8px}
+  .hbar{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;height:100%;justify-content:flex-end}
+  .hbar .col{width:100%;border-radius:5px 5px 0 0;min-height:2px;transition:height .6s cubic-bezier(.22,1,.36,1),opacity .12s}
+  .hbar .n{font-size:10.5px;font-weight:700}
+  .hbar .lab{font-size:11px;color:var(--muted);font-weight:600}
+  .hbar.dim .col{opacity:.32}
+  .hbar.sel .lab{color:var(--ink)}
+
+  /* donut */
+  .donut-wrap{display:flex;align-items:center;gap:18px}
+  .donut{flex:0 0 132px}
+  .dleg{flex:1;display:flex;flex-direction:column;gap:9px}
+  .dleg .li{display:flex;align-items:center;gap:9px;font-size:13px;cursor:pointer;padding:4px 6px;border-radius:8px;transition:background .12s}
+  .dleg .li:hover{background:#FAFBFD}
+  .dleg .li.sel{background:#EEF1FE}
+  .dleg .li.dim{opacity:.42}
+  .dleg i{width:11px;height:11px;border-radius:3px}
+  .dleg .li b{margin-left:auto;font-weight:700}
+  .dleg .li span.p{color:var(--muted);font-size:12px;margin-left:4px}
+
+  /* verbatims */
+  .verb{max-height:230px;overflow-y:auto;display:flex;flex-direction:column;gap:8px}
+  .verb .q{font-size:13px;background:#FAFBFD;border:1px solid var(--line);border-left:3px solid var(--blue);border-radius:8px;padding:9px 11px;color:#2A2E3F}
+  .verb .q .meta{font-size:11px;color:var(--muted);margin-top:4px}
+  .empty{color:var(--grey);font-size:13px;padding:14px 0}
+
+  /* table */
+  .tbl{width:100%;border-collapse:collapse;font-size:13px}
+  .tbl th{text-align:left;color:var(--muted);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.04em;padding:6px 8px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--card)}
+  .tbl td{padding:7px 8px;border-bottom:1px solid var(--line)}
+  .tbl .pill{font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px}
+  .pill.promoter{color:var(--green);background:#EAF7EC} .pill.passive{color:#6B7185;background:#EEF0F5} .pill.detractor{color:var(--red);background:#FCEBE9}
+  .tblbox{max-height:300px;overflow-y:auto}
+  .tcount{font-weight:500;text-transform:none;letter-spacing:0;font-size:11px;color:var(--grey)}
+
+  footer{color:var(--muted);font-size:12px;text-align:center;margin-top:24px;line-height:1.7}
+  footer b{color:var(--ink)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>FinX Net Promoter Score</h1>
+      <p id="sub">Loading…</p>
+    </div>
+    <div class="badges">
+      <span class="badge live"><span class="dot"></span> Live</span>
+      <span class="badge" id="bMonth">—</span>
+      <span class="badge" id="bMethod">Deduped · standard NPS</span>
+    </div>
+  </header>
+
+  <div class="filterbar none" id="filterbar">
+    <span class="lbl">Filters</span>
+    <span class="lbl empty" id="fEmpty">none — click any chart to filter</span>
+    <button class="clearall" id="clearAll" style="display:none">Clear all</button>
+  </div>
+
+  <div class="kpis" id="kpis"></div>
+
+  <div class="grid three">
+    <div class="card">
+      <h2>NPS by Cohort <span class="hint">click to filter</span></h2>
+      <div id="cohorts"></div>
+    </div>
+    <div class="card">
+      <h2>Sentiment Split <span class="hint">click to filter</span></h2>
+      <div class="donut-wrap">
+        <div class="donut"><svg id="donut" viewBox="0 0 120 120"></svg></div>
+        <div class="dleg" id="dleg"></div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Score Distribution <span class="hint">click a score</span></h2>
+      <div class="hist" id="hist"></div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h2>Top Detractor Reasons <span class="hint">click to drill</span></h2>
+      <div id="reasons"></div>
+    </div>
+    <div class="card">
+      <h2 id="drillTitle">Deeper Issue Breakdown <span class="hint">follow-up answers</span></h2>
+      <div id="drill"></div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h2>Verbatims <span class="hint" id="verbCount"></span></h2>
+      <div class="verb" id="verb"></div>
+    </div>
+    <div class="card">
+      <h2>Respondents <span class="tcount" id="tblCount"></span></h2>
+      <div class="tblbox"><table class="tbl"><thead><tr><th>User</th><th>Cohort</th><th>Score</th><th>Bucket</th><th>Primary reason</th></tr></thead><tbody id="tbody"></tbody></table></div>
+    </div>
+  </div>
+
+  <footer>
+    Source: Plotline cohort NPS surveys, <b>deduped</b> (last answer per user per question). <span id="fLine"></span><br>
+    NPS = (Promoters − Detractors) / Total × 100. Promoter 9-10 · Passive 7-8 · Detractor 0-6.
+  </footer>
+</div>
+
+<script src="nps-real.js"></script>
+<script>
+(function(){
+  var D = window.NPS_REAL;
+  if(!D){ document.getElementById('sub').textContent='nps-real.js not found'; return; }
+  var USERS = D.users;
+  var COH = D.cohorts;
+  var cohName = {}; COH.forEach(function(c){cohName[c.key]=c.name});
+  var BUCKETS = [['promoter','Promoters','var(--green)'],['passive','Passives','var(--grey)'],['detractor','Detractors','var(--red)']];
+  var PRIMARY_Q = 'Reason for Low Rating';
+
+  document.getElementById('sub').textContent = D.meta.month + ' · ' + D.overall.responses.toLocaleString('en-IN') + ' responses · ' + COH.length + ' cohorts';
+  document.getElementById('bMonth').textContent = D.meta.month;
+  document.getElementById('fLine').textContent = 'Real responses, not the legacy report numbers.';
+
+  var state = { cohort:null, bucket:null, score:null, reason:null };
+
+  function pass(u, except){
+    if(except!=='cohort' && state.cohort && u.c!==state.cohort) return false;
+    if(except!=='bucket' && state.bucket && u.b!==state.bucket) return false;
+    if(except!=='score' && state.score!==null && u.s!==state.score) return false;
+    if(except!=='reason' && state.reason && !u.r.some(function(r){return r.q===PRIMARY_Q && r.a===state.reason})) return false;
+    return true;
+  }
+  function subset(except){ return USERS.filter(function(u){return pass(u,except)}); }
+  function nps(set){ if(!set.length) return 0; var p=0,d=0; set.forEach(function(u){if(u.b==='promoter')p++;else if(u.b==='detractor')d++}); return Math.round((p-d)/set.length*1000)/10; }
+  function cnt(set,b){ return set.filter(function(u){return u.b===b}).length; }
+  function pct(n,t){ return t? Math.round(n/t*1000)/10 : 0; }
+
+  function toggle(dim,val){ state[dim] = (state[dim]===val? (dim==='score'?null:null) : val); if(dim==='score'&&state[dim]===val){} render(); }
+  function setF(dim,val){ state[dim] = (state[dim]===val ? null : val); render(); }
+
+  // ---- renderers ----
+  function renderKPIs(){
+    var f = subset(null);
+    var t=f.length, p=cnt(f,'promoter'), pa=cnt(f,'passive'), d=cnt(f,'detractor');
+    var rate = '';
+    if(state.cohort){ var cm=COH.find(function(c){return c.key===state.cohort}); if(cm) rate = cm.responseRate+'%'; }
+    var items = [
+      {k:'NPS Score', v:(t?nps(f):0)+'%', cls:'hero'},
+      {k:'Responses', v:t.toLocaleString('en-IN')},
+      {k:'Promoters', v:pct(p,t)+'%', sub:p, cls:'green'},
+      {k:'Passives', v:pct(pa,t)+'%', sub:pa, cls:'grey'},
+      {k:'Detractors', v:pct(d,t)+'%', sub:d, cls:'red'},
+      {k: state.cohort?'Response Rate':'Cohorts', v: state.cohort? rate : COH.length}
+    ];
+    document.getElementById('kpis').innerHTML = items.map(function(i){
+      return '<div class="kpi '+(i.cls==='hero'?'hero':'')+'"><div class="v '+(i.cls&&i.cls!=='hero'?i.cls:'')+'">'+i.v+'</div><div class="k">'+i.k+'</div></div>';
+    }).join('');
+  }
+
+  function renderCohorts(){
+    var sub = subset('cohort');
+    var rows = COH.map(function(c){
+      var set = sub.filter(function(u){return u.c===c.key});
+      return {key:c.key, name:c.name, nps:set.length?nps(set):0, n:set.length};
+    });
+    var max = Math.max.apply(null, rows.map(function(r){return Math.abs(r.nps)})) || 1;
+    document.getElementById('cohorts').innerHTML = rows.sort(function(a,b){return b.nps-a.nps}).map(function(r){
+      var sel = state.cohort===r.key, dim = state.cohort && !sel;
+      var col = r.nps<=0?'var(--red)': r.key==='new_not_traded'?'var(--green)':'var(--blue)';
+      return '<div class="row '+(sel?'sel':'')+' '+(dim?'dim':'')+'" data-dim="cohort" data-val="'+r.key+'">'+
+        '<div class="nm">'+r.name+'<small>'+r.n.toLocaleString('en-IN')+' responses</small></div>'+
+        '<div class="bar"><i style="background:'+col+';width:'+(Math.abs(r.nps)/max*100)+'%"></i></div>'+
+        '<div class="vv">'+r.nps+'%</div></div>';
+    }).join('');
+  }
+
+  function renderDonut(){
+    var sub = subset('bucket');
+    var t=sub.length;
+    var data = BUCKETS.map(function(b){return {key:b[0],label:b[1],color:b[2],n:cnt(sub,b[0])}});
+    // svg donut
+    var R=54, C=2*Math.PI*R, off=0, seg='';
+    data.forEach(function(d){
+      var frac = t? d.n/t : 0, len = frac*C;
+      var dim = state.bucket && state.bucket!==d.key;
+      seg += '<circle cx="60" cy="60" r="'+R+'" fill="none" stroke="'+d.color+'" stroke-width="13" '+
+             'stroke-dasharray="'+len+' '+(C-len)+'" stroke-dashoffset="'+(-off)+'" opacity="'+(dim?0.3:1)+'" transform="rotate(-90 60 60)"/>';
+      off += len;
+    });
+    document.getElementById('donut').innerHTML = seg +
+      '<text x="60" y="56" text-anchor="middle" font-size="20" font-weight="800" fill="var(--navy)">'+(t?nps(sub):0)+'</text>'+
+      '<text x="60" y="72" text-anchor="middle" font-size="9" font-weight="600" fill="var(--muted)">NPS</text>';
+    document.getElementById('dleg').innerHTML = data.map(function(d){
+      var sel=state.bucket===d.key, dim=state.bucket&&!sel;
+      return '<div class="li '+(sel?'sel':'')+' '+(dim?'dim':'')+'" data-dim="bucket" data-val="'+d.key+'">'+
+        '<i style="background:'+d.color+'"></i> '+d.label+' <b>'+d.n.toLocaleString('en-IN')+'</b><span class="p">'+pct(d.n,t)+'%</span></div>';
+    }).join('');
+  }
+
+  function renderHist(){
+    var sub = subset('score');
+    var counts=[]; for(var i=0;i<=10;i++) counts[i]=0;
+    sub.forEach(function(u){counts[u.s]++});
+    var max=Math.max.apply(null,counts)||1;
+    var html='';
+    for(var s=0;s<=10;s++){
+      var col = s>=9?'var(--green)': s>=7?'var(--grey)':'var(--red)';
+      var sel=state.score===s, dim=state.score!==null&&!sel;
+      html += '<div class="hbar '+(sel?'sel':'')+' '+(dim?'dim':'')+'" data-dim="score" data-val="'+s+'">'+
+        '<div class="n">'+counts[s]+'</div>'+
+        '<div class="col" style="background:'+col+';height:'+(counts[s]/max*100)+'%"></div>'+
+        '<div class="lab">'+s+'</div></div>';
+    }
+    document.getElementById('hist').innerHTML = html;
+  }
+
+  function renderReasons(){
+    var sub = subset('reason');
+    var map={};
+    sub.forEach(function(u){ u.r.forEach(function(r){ if(r.q===PRIMARY_Q){ map[r.a]=(map[r.a]||0)+1; } }); });
+    var arr=Object.keys(map).map(function(k){return {a:k,n:map[k]}}).sort(function(a,b){return b.n-a.n}).slice(0,8);
+    var max=arr.length?arr[0].n:1;
+    var box=document.getElementById('reasons');
+    if(!arr.length){ box.innerHTML='<div class="empty">No low-rating reasons in this selection.</div>'; return; }
+    box.innerHTML = arr.map(function(r){
+      var sel=state.reason===r.a, dim=state.reason&&!sel;
+      return '<div class="row '+(sel?'sel':'')+' '+(dim?'dim':'')+'" data-dim="reason" data-val="'+esc(r.a)+'">'+
+        '<div class="nm" title="'+esc(r.a)+'">'+r.a+'</div>'+
+        '<div class="bar"><i style="background:linear-gradient(90deg,#F0857B,var(--red));width:'+(r.n/max*100)+'%"></i></div>'+
+        '<div class="vv">'+r.n+'</div></div>';
+    }).join('');
+  }
+
+  function renderDrill(){
+    var f = subset(null);
+    var map={};
+    f.forEach(function(u){ u.r.forEach(function(r){ if(r.q!==PRIMARY_Q){ var key=r.a; map[key]=map[key]||{n:0,q:r.q}; map[key].n++; } }); });
+    var arr=Object.keys(map).map(function(k){return {a:k,n:map[k].n,q:map[k].q}}).sort(function(a,b){return b.n-a.n}).slice(0,8);
+    var max=arr.length?arr[0].n:1;
+    var box=document.getElementById('drill');
+    document.getElementById('drillTitle').innerHTML = (state.reason? 'Within “'+state.reason+'”' : 'Deeper Issue Breakdown') + ' <span class="hint">follow-up answers</span>';
+    if(!arr.length){ box.innerHTML='<div class="empty">No follow-up answers in this selection.</div>'; return; }
+    box.innerHTML = arr.map(function(r){
+      return '<div class="row" style="cursor:default">'+
+        '<div class="nm" title="'+esc(r.a)+'">'+r.a+'<small>'+r.q+'</small></div>'+
+        '<div class="bar"><i style="background:var(--blue);width:'+(r.n/max*100)+'%"></i></div>'+
+        '<div class="vv">'+r.n+'</div></div>';
+    }).join('');
+  }
+
+  function renderVerb(){
+    var f=subset(null);
+    var list=[];
+    f.forEach(function(u){ u.t.forEach(function(txt){ list.push({txt:txt,c:u.c,s:u.s}); }); });
+    document.getElementById('verbCount').textContent = list.length+' free-text';
+    var box=document.getElementById('verb');
+    if(!list.length){ box.innerHTML='<div class="empty">No verbatims in this selection.</div>'; return; }
+    box.innerHTML = list.slice(0,60).map(function(v){
+      return '<div class="q">'+esc(v.txt)+'<div class="meta">'+cohName[v.c]+' · score '+v.s+'</div></div>';
+    }).join('');
+  }
+
+  function renderTable(){
+    var f=subset(null);
+    document.getElementById('tblCount').textContent = f.length.toLocaleString('en-IN')+' respondents';
+    var rows=f.slice(0,80).map(function(u){
+      var pr=''; for(var i=0;i<u.r.length;i++){ if(u.r[i].q===PRIMARY_Q){pr=u.r[i].a;break;} }
+      return '<tr><td>'+esc(u.u)+'</td><td>'+cohName[u.c]+'</td><td><b>'+u.s+'</b></td>'+
+        '<td><span class="pill '+u.b+'">'+u.b+'</span></td><td>'+(pr?esc(pr):'<span style="color:var(--grey)">—</span>')+'</td></tr>';
+    }).join('');
+    document.getElementById('tbody').innerHTML = rows;
+  }
+
+  function renderFilters(){
+    var bar=document.getElementById('filterbar');
+    var chips=[];
+    if(state.cohort) chips.push(['cohort','Cohort',cohName[state.cohort]]);
+    if(state.bucket) chips.push(['bucket','Sentiment',state.bucket]);
+    if(state.score!==null) chips.push(['score','Score',state.score]);
+    if(state.reason) chips.push(['reason','Reason',state.reason]);
+    document.getElementById('fEmpty').style.display = chips.length?'none':'inline';
+    document.getElementById('clearAll').style.display = chips.length?'inline':'none';
+    bar.classList.toggle('none', chips.length===0);
+    // remove old chips
+    [].slice.call(bar.querySelectorAll('.chip')).forEach(function(c){c.remove()});
+    var anchor=document.getElementById('clearAll');
+    chips.forEach(function(c){
+      var el=document.createElement('span'); el.className='chip';
+      el.innerHTML='<b>'+c[1]+':</b> '+c[2]+' <span class="x">×</span>';
+      el.addEventListener('click',function(){ state[c[0]]= (c[0]==='score'?null:null); state[c[0]]=null; render(); });
+      bar.insertBefore(el, anchor);
+    });
+  }
+
+  function esc(s){ return (''+s).replace(/[&<>"]/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]}); }
+
+  function render(){
+    renderKPIs(); renderCohorts(); renderDonut(); renderHist();
+    renderReasons(); renderDrill(); renderVerb(); renderTable(); renderFilters();
+  }
+
+  // delegated clicks for cross-filter
+  document.addEventListener('click',function(e){
+    var el=e.target.closest('[data-dim]'); if(!el) return;
+    var dim=el.getAttribute('data-dim'), val=el.getAttribute('data-val');
+    if(dim==='score') val=parseInt(val,10);
+    state[dim] = (state[dim]===val ? null : val);
+    render();
+  });
+  document.getElementById('clearAll').addEventListener('click',function(){
+    state={cohort:null,bucket:null,score:null,reason:null}; render();
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
