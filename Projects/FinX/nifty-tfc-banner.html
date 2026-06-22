@@ -316,7 +316,7 @@
        4. DEFAULT_LTP   — last resort so the tokens are always valid
      ----------------------------------------------------------------------- */
   var INJECTED_LTP = "{{NIFTY_LTP}}";   // Plotline replaces this at render; ignored if not a number
-  var LTP_ENDPOINT = "";                // e.g. "https://nifty-ltp.<you>.workers.dev"  -> {"ltp":24138.5}
+  var LTP_ENDPOINT = "https://niftyprice.souvik-das.workers.dev/";   // FinX Cloudflare Worker -> {"ltp":24102.9}
 
   function parseNum(x){ var n=Number(x); return (isFinite(n)&&n>0)?n:null; }
   function sameFrameGlobal(){ try{ return parseNum(window.__NIFTY_LTP__); }catch(e){ return null; } }
