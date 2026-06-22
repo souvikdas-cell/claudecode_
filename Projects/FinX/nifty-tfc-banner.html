@@ -1,0 +1,381 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<style>
+  :root{
+    /* Choice FinX brand tokens (02-color-system.md) */
+    --navy:#1B1464; --blue:#2777F3; --info:#5D99F6; --green:#45B644; --red:#DE493B; --amber:#E2A33A;
+    --ink:#0F0E16; --muted:#6F6E73; --line:#E7E7E8;
+    --cbg:#070519; --cgrid:rgba(255,255,255,.05); --cborder:#27262D;
+    --upwk:#2f7a31; --dnwk:#8a2f27;
+    --font:Onest, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, system-ui, sans-serif;
+  }
+  *{ margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html,body{ width:100%; background:transparent; font-family:var(--font); }
+  body{ padding:10px; overflow:hidden; }
+  ::-webkit-scrollbar{ display:none; }
+
+  .banner{ display:flex; align-items:stretch; width:100%; max-width:980px; min-height:160px; margin:0 auto;
+           background:#FCFCFE; border:1px solid var(--line); border-radius:16px; overflow:hidden;
+           box-shadow:0 12px 32px rgba(20,20,40,.11); opacity:0; transform:translateY(6px);
+           -webkit-transition:opacity .4s ease,-webkit-transform .4s ease; transition:opacity .4s ease,transform .4s ease; }
+  .banner.in{ opacity:1; transform:translateY(0); }
+
+  /* ---- left: live Nifty chart ---- */
+  .stage{ flex:none; position:relative; width:clamp(300px,42vw,430px); background:var(--cbg); overflow:hidden; border-right:1px solid var(--cborder); }
+  .grid{ position:absolute; inset:0; background-image:linear-gradient(var(--cgrid) 1px,transparent 1px),linear-gradient(90deg,var(--cgrid) 1px,transparent 1px); background-size:30px 24px; }
+
+  .tbar{ position:absolute; top:0; left:0; right:0; height:22px; display:flex; align-items:center; gap:5px; padding:0 7px; border-bottom:1px solid #14151C; background:#0B0917; z-index:7; }
+  .tm{ font-size:8px; color:#8a8ba0; margin-right:1px; }
+  .tbtn{ font-size:8px; font-weight:600; border-radius:4px; padding:2px 6px; line-height:1; }
+  .tbtn.buy{ background:var(--green); color:#06210d; } .tbtn.sell{ background:var(--red); color:#2a0708; }
+  .tbtn.can{ background:#1B1D27; color:#9298a6; } .tbtn.oc{ background:var(--amber); color:#1f1505; }
+  .tbtn.oc.flash{ -webkit-animation:ocf .9s ease-in-out 2; animation:ocf .9s ease-in-out 2; }
+  @-webkit-keyframes ocf{0%,100%{box-shadow:0 0 0 0 rgba(226,163,58,0)}50%{box-shadow:0 0 0 3px rgba(226,163,58,.5)}}
+  @keyframes ocf{0%,100%{box-shadow:0 0 0 0 rgba(226,163,58,0)}50%{box-shadow:0 0 0 3px rgba(226,163,58,.5)}}
+
+  .instr{ position:absolute; top:26px; left:8px; z-index:6; font-size:8px; color:#9298a6; }
+  .instr b{ color:#e7e9f1; font-weight:600; } .instr .o{ color:#7a808f; }
+
+  .axis{ position:absolute; top:22px; right:0; bottom:0; width:44px; border-left:1px solid #14151C; background:#0A0817; z-index:5; }
+  .ax{ position:absolute; right:5px; font-size:7px; color:#6b7080; }
+  .axnow{ position:absolute; right:3px; z-index:7; font-size:7px; font-weight:600; color:#fff; background:#2A2937; border-radius:3px; padding:1px 4px; }
+
+  .plot{ position:absolute; left:8px; right:44px; top:40px; bottom:10px; z-index:2; }
+  .cn{ position:absolute; top:0; bottom:0; }
+  .cn .wk{ position:absolute; left:50%; transform:translateX(-50%); width:1.4px; }
+  .cn .bd{ position:absolute; left:0; right:0; border-radius:.5px; min-height:1.5px; }
+  .up .bd{ background:var(--green); } .up .wk{ background:var(--upwk); }
+  .dn .bd{ background:var(--red); } .dn .wk{ background:var(--dnwk); }
+
+  .pline{ position:absolute; left:0; right:44px; height:0; z-index:4; opacity:0; }
+  .np{ border-top:1.4px dashed var(--info); }
+  .tp{ border-top:1.3px dashed var(--green); } .sl{ border-top:1.3px dashed var(--red); }
+  .badge{ position:absolute; top:-8px; font-size:7px; font-weight:600; border-radius:3px; padding:1px 5px; height:15px; display:flex; align-items:center; white-space:nowrap; }
+  .np .badge{ left:6px; background:#0E1426; border:1px solid #28406b; color:#bcd6ff; }
+  .tp .badge{ right:0; background:rgba(69,182,68,.16); border:1px solid #2c6f2c; color:#8fe08f; }
+  .sl .badge{ right:0; background:rgba(222,73,59,.16); border:1px solid #7a2f2a; color:#ff9a9d; }
+
+  .exitx{ position:absolute; z-index:9; width:15px; height:15px; display:flex; align-items:center; justify-content:center; font-size:12px; line-height:1; color:#ffb4b4; background:#1a0e12; border:1px solid #6e2a2f; border-radius:4px; opacity:0; }
+  .buyring{ position:absolute; z-index:8; border:1.6px solid var(--green); border-radius:4px; opacity:0; }
+  .exitring{ position:absolute; z-index:10; width:17px; height:17px; border:1.6px solid #ff9a9d; border-radius:5px; opacity:0; }
+  .pnl{ position:absolute; left:8px; z-index:8; font-size:8.5px; font-weight:700; color:#06210d; background:var(--green); border-radius:4px; padding:2px 7px; opacity:0; }
+  .toast{ position:absolute; left:50%; transform:translateX(-50%); bottom:9px; z-index:11; font-size:8px; font-weight:600; color:#cfead6; background:#0B1A12; border:1px solid #1f5a37; border-radius:6px; padding:3px 9px; opacity:0; white-space:nowrap; }
+  .cur{ position:absolute; left:0; top:0; z-index:12; opacity:0; filter:drop-shadow(0 1px 1px rgba(0,0,0,.6)); }
+
+  /* ---- right: copy + CTA ---- */
+  .right{ flex:1 1 auto; min-width:0; display:flex; flex-direction:column; justify-content:center; gap:11px; padding:clamp(16px,2.2vw,26px); }
+  .ttl{ font-size:clamp(17px,2.2vw,22px); font-weight:600; color:var(--navy); line-height:1.2; letter-spacing:-.1px; }
+  .ttl b{ color:var(--blue); font-weight:600; }
+  .sub{ font-size:clamp(12px,1.4vw,13.5px); line-height:1.5; color:var(--muted); margin-top:-3px; }
+  .meta{ font-size:11px; font-weight:600; color:#3A3F4C; letter-spacing:.1px; }
+  .meta .dot{ color:#C6C4D8; font-weight:400; } .meta .live{ color:var(--green); } .meta .atm{ color:var(--navy); }
+  .ctarow{ display:flex; gap:10px; flex-wrap:wrap; }
+  .cta{ flex:0 1 auto; display:inline-flex; align-items:center; justify-content:center; gap:7px; height:46px; padding:0 20px; border:none; border-radius:11px; color:#fff; font-family:var(--font); font-size:14px; font-weight:600; cursor:pointer; white-space:nowrap; -webkit-transition:filter .18s ease, transform .18s ease; transition:filter .18s ease, transform .18s ease; }
+  .cta .opt{ font-size:11px; font-weight:600; opacity:.85; }
+  .cta.buy{ background:var(--green); color:#06210d; } .cta.buy .opt{ color:#06210d; }
+  .cta.sell{ background:var(--red); }
+  .cta:hover{ filter:brightness(1.06); } .cta:active{ transform:scale(.98); }
+
+  @media (max-width:640px){
+    .banner{ flex-direction:column; min-height:0; }
+    .stage{ width:100%; height:158px; border-right:none; border-bottom:1px solid var(--cborder); }
+    .right{ padding:16px; gap:10px; }
+    .cta{ align-self:stretch; justify-content:center; }
+  }
+</style>
+</head>
+<body>
+  <div class="banner" id="banner">
+    <div class="stage" id="stage">
+      <div class="grid"></div>
+      <div class="tbar">
+        <span class="tm">1m</span>
+        <span class="tbtn buy" id="buybtn">Buy</span>
+        <span class="tbtn sell">Sell</span>
+        <span class="tbtn can">Cancel</span>
+        <span class="tbtn oc" id="oc">1-Click: ON</span>
+      </div>
+      <div class="instr"><b>NIFTY 50</b> &middot; NSE &nbsp; <span class="o">O</span>23,571 <span class="o">H</span>23,596 <span class="o">L</span>23,565 <span class="o">C</span>23,592</div>
+      <div class="axis">
+        <span class="ax" style="top:16%">23,596</span>
+        <span class="ax" style="top:66%">23,575</span>
+        <span class="ax" style="top:86%">23,566</span>
+      </div>
+      <span class="axnow" id="axnow">23,592</span>
+      <div class="plot" id="plot"></div>
+
+      <div class="pline np" id="np"><span class="badge">Net Pos +65 &middot; +&#8377;949</span></div>
+      <div class="pline tp" id="tp"><span class="badge">TP &middot; BRACKET &middot; 65</span></div>
+      <div class="pline sl" id="sl"><span class="badge">SL &middot; BRACKET &middot; 65</span></div>
+      <div class="exitx" id="exitx">&times;</div>
+      <div class="buyring" id="buyring"></div>
+      <div class="exitring" id="exitring"></div>
+      <div class="pnl" id="pnl">+&#8377;1,274</div>
+      <div class="toast" id="toast">Exited &middot; all 3 legs closed</div>
+      <div class="cur" id="cur">
+        <svg width="15" height="15" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M1 1 L1 12.5 L4.2 9.4 L6.6 14.4 L8.7 13.4 L6.3 8.5 L10.6 8.5 Z" fill="#fff" stroke="#14151c" stroke-width="1"/></svg>
+      </div>
+    </div>
+
+    <div class="right">
+      <div class="ttl">You can now trade Nifty <b>directly from Charts</b></div>
+      <div class="sub">One-click buy, drag your target and stop-loss on the candle, exit all legs in a single tap.</div>
+      <div class="ctarow">
+        <button class="cta buy" id="buyBtn" type="button">Buy Nifty</button>
+        <button class="cta sell" id="sellBtn" type="button">Sell Nifty</button>
+      </div>
+    </div>
+  </div>
+<script>
+(function(){
+  "use strict";
+
+  /* =====================================================================
+     STRIKEX DEEP LINK + DYNAMIC ATM OPTION TOKEN
+     Opens StrikeX with two chart widgets: the Nifty 50 spot, and the
+     nearest-ATM option (CE for Buy, PE for Sell).
+       https://finx.choiceindia.com?productType=strikex&widgets=
+         name:chart,internalToken:Nifty 50|name:chart,internalToken:<OPTION>
+
+     Token grammar (decoded from your samples):
+       Weekly  (mid-month Tuesday) : NIFTY{YY}{Mdigit}{DD}{strike}{CE|PE}-NFO   e.g. NIFTY2662324150CE-NFO
+       Monthly (last Tuesday)      : NIFTY{YY}{MMM}{strike}{CE|PE}-NFO          e.g. NIFTY26JUN24100CE-NFO
+       Mdigit: 1..9 for Jan..Sep, O=Oct, N=Nov, D=Dec
+     Weekly expiry weekday = Tuesday (your 23-Jun & 07-Jul 2026 samples are Tuesdays).
+     NOTE: this client-side expiry math does NOT know trading holidays. For
+     production, source the LTP + exact CE/PE token from FinX's option master
+     (Plotline Content API or window.__NIFTY_LTP__) — see resolveLtp() below.
+     ===================================================================== */
+  var BASE = "https://finx.choiceindia.com?productType=strikex&widgets=";
+  var SPOT = "name:chart,internalToken:Nifty 50";
+  var STRIKE_STEP = 50;            // ATM rounding
+  var EXPIRY_WEEKDAY = 2;          // 0=Sun ... 2=Tue
+  var DEFAULT_LTP = 24138;         // fallback only (rounds to ATM 24150) — overridden by live data
+  var MMM = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
+
+  function pad2(n){ return (n<10?"0":"")+n; }
+  function monthDigit(m){ return m<=9 ? String(m) : {10:"O",11:"N",12:"D"}[m]; } // m = 1..12
+  function atmStrike(ltp){ return Math.round(ltp/STRIKE_STEP)*STRIKE_STEP; }
+  function nearestExpiry(now){
+    var d=new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    d.setDate(d.getDate() + ((EXPIRY_WEEKDAY - d.getDay() + 7) % 7)); // this/next Tuesday
+    return d;
+  }
+  function isLastWeekdayOfMonth(d){ var p=new Date(d.getFullYear(), d.getMonth(), d.getDate()+7); return p.getMonth()!==d.getMonth(); }
+  function optionToken(strike, type, exp){
+    var yy = exp.getFullYear()%100;
+    if(isLastWeekdayOfMonth(exp)){ return "NIFTY"+yy+MMM[exp.getMonth()]+strike+type+"-NFO"; }   // monthly
+    return "NIFTY"+yy+monthDigit(exp.getMonth()+1)+pad2(exp.getDate())+strike+type+"-NFO";        // weekly
+  }
+  function widgetsLink(optToken){
+    var raw = BASE + SPOT + "|name:chart,internalToken:" + optToken;
+    return raw.split(" ").join("%20"); // encode spaces only; keep | : , raw (matches the sample link)
+  }
+  function fmt(n){ try{ return Number(n).toLocaleString("en-IN",{minimumFractionDigits:2,maximumFractionDigits:2}); }catch(e){ return String(n); } }
+
+  // live state, refreshed by resolveLtp()
+  var LTP=null, ATM=null, EXP=null, CE_TOKEN="", PE_TOKEN="", EXP_LABEL="";
+
+  /* ---- Plotline bridges (web first, then iOS, then Android) ---- */
+  function trackEvent(name, props){
+    var data=JSON.stringify({eventName:name, properties:props||{}});
+    try{
+      if(window.PlotlineWeb){ window.PlotlineWeb.onClick(null,"TRACK_EVENT",data,"WEB",false,false,false); }
+      if(window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.Plotline){ window.webkit.messageHandlers.Plotline.postMessage({action:null,effect:"TRACK_EVENT",target:data,platform:"IOS",requireDismiss:false,isDismissed:false}); }
+      if(window.Plotline){ window.Plotline.onClick(null,"TRACK_EVENT",data,"ANDROID",false,false); }
+    }catch(e){}
+  }
+  function redirect(url, actionId){
+    try{
+      if(window.PlotlineWeb){ window.PlotlineWeb.onClick(actionId,"REDIRECT",url,"WEB",true,false,true); return; }
+      if(window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.Plotline){ window.webkit.messageHandlers.Plotline.postMessage({action:actionId,effect:"REDIRECT",target:url,platform:"IOS",requireDismiss:true,isDismissed:false}); return; }
+      if(window.Plotline){ window.Plotline.onClick(actionId,"REDIRECT",url,"ANDROID",true,false); return; }
+    }catch(e){}
+  }
+
+  /* ---- Nifty candles (% positioned so the tile stays fluid) ---- */
+  var closes=[70,62,72,52,58,42,48,32,40,50,58,44,52,66,74,60];
+  function buildCandles(){
+    var plot=document.getElementById("plot"); if(!plot) return; var n=closes.length, html="";
+    for(var i=0;i<n;i++){
+      var close=closes[i], open=(i===0)?closes[0]+8:closes[i-1];
+      var bt=Math.min(open,close), bb=Math.max(open,close);
+      var wT=4+((i*7)%9), wB=4+((i*5)%8); var hi=bt-wT, lo=bb+wB;
+      var upc=close<open;
+      var span=92, left=(i*(span/n))+1, w=(span/n)*0.6;
+      html+='<div class="cn '+(upc?"up":"dn")+'" style="left:'+left+'%;width:'+w+'%">'
+          + '<span class="wk" style="top:'+hi+'px;height:'+(lo-hi)+'px"></span>'
+          + '<span class="bd" style="top:'+bt+'px;height:'+Math.max(bb-bt,2)+'px"></span></div>';
+    }
+    plot.innerHTML=html;
+  }
+  buildCandles();
+
+  /* ---- geometry measured from the real layout (accurate cursor targets) ---- */
+  var G=null;
+  function measure(){
+    var stage=document.getElementById("stage"), plot=document.getElementById("plot"), buy=document.getElementById("buybtn");
+    if(!stage||!plot||!buy) return null;
+    var sr=stage.getBoundingClientRect(), pr=plot.getBoundingClientRect(), br=buy.getBoundingClientRect();
+    var plotT=pr.top-sr.top, plotL=pr.left-sr.left, plotW=pr.width, plotH=pr.height;
+    var ltp=closes[closes.length-1];           // entry = CMP = LTP of the last candle
+    return {
+      plotT:plotT, plotL:plotL, plotW:plotW, plotH:plotH,
+      ltpPx:ltp, tpPx:ltp-30, slPx:ltp+26,     // TP above the LTP, SL below it (same px space as candles)
+      handleX:plotL+plotW-7,
+      buyX:(br.left-sr.left)+br.width/2, buyY:(br.top-sr.top)+br.height/2
+    };
+  }
+
+  /* ---- step-by-step choreography ---- */
+  var CYCLE=9600, W={};
+  function buildWaypoints(g){
+    var enY=g.plotT+g.ltpPx, tpY=g.plotT+g.tpPx, slY=g.plotT+g.slPx, cmpY=enY;
+    var exX=g.plotL+g.plotW+1;                 // exit X sits at the right edge, at the CMP level
+    W.cur=[
+      {t:0,    x:g.buyX+52, y:enY-14},
+      {t:300,  x:g.buyX+52, y:enY-14},
+      {t:1100, x:g.buyX,    y:g.buyY},          // 1. travel to Buy
+      {t:1450, x:g.buyX,    y:g.buyY},          //    tap (1-Click Buy)
+      {t:2050, x:g.handleX, y:enY},             // 2. to TP handle (at entry)
+      {t:3250, x:g.handleX, y:tpY},             //    drag TP up
+      {t:3900, x:g.handleX, y:enY},             // 3. back to entry
+      {t:5100, x:g.handleX, y:slY},             //    drag SL down
+      {t:5550, x:g.handleX, y:slY},
+      {t:6400, x:exX,       y:cmpY},            // 4. to X at the CMP
+      {t:6750, x:exX,       y:cmpY},            //    tap -> exit all 3 legs
+      {t:8300, x:exX,       y:cmpY},
+      {t:9600, x:g.buyX+52, y:enY-14}
+    ];
+    W.curO=[{t:0,o:0},{t:300,o:1},{t:8100,o:1},{t:8700,o:0},{t:9600,o:0}];
+    W.np =[{t:0,o:0},{t:1450,o:0},{t:1560,o:1},{t:6750,o:1},{t:6950,o:0},{t:9600,o:0}];
+    W.tp =[{t:0,top:g.ltpPx,o:0},{t:2050,top:g.ltpPx,o:0},{t:2120,top:g.ltpPx,o:1},{t:3250,top:g.tpPx,o:1},{t:6750,top:g.tpPx,o:1},{t:6950,top:g.tpPx,o:0},{t:9600,top:g.ltpPx,o:0}];
+    W.sl =[{t:0,top:g.ltpPx,o:0},{t:3900,top:g.ltpPx,o:0},{t:3970,top:g.ltpPx,o:1},{t:5100,top:g.slPx,o:1},{t:6750,top:g.slPx,o:1},{t:6950,top:g.slPx,o:0},{t:9600,top:g.ltpPx,o:0}];
+    W.exX=[{t:0,o:0},{t:1450,o:0},{t:1560,o:1},{t:6750,o:1},{t:6950,o:0},{t:9600,o:0}];
+    W.pnl=[{t:0,o:0},{t:5350,o:0},{t:5450,o:1},{t:6750,o:1},{t:6950,o:0},{t:9600,o:0}];
+    W.toast=[{t:0,o:0},{t:6800,o:0},{t:6900,o:1},{t:8300,o:1},{t:8550,o:0},{t:9600,o:0}];
+    W._enY=enY; W._cmpY=cmpY; W._exX=exX;
+  }
+
+  function lerp(t,arr,k){ for(var i=0;i<arr.length-1;i++){ if(t>=arr[i].t && t<=arr[i+1].t){ var f=(t-arr[i].t)/((arr[i+1].t-arr[i].t)||1); return arr[i][k]+(arr[i+1][k]-arr[i][k])*f; } } return arr[arr.length-1][k]; }
+  function pulse(t,c,h){ var d=Math.abs(t-c); return d<h?(1-d/h):0; }
+
+  var E={}, raf=null, t0=null, ocDone=false, ltpTimer=null;
+  function place(g){
+    // net position (entry) line sits on the LTP of the last candle (stage coords = plotT + px)
+    E.np.style.top=(g.plotT+g.ltpPx)+"px";
+    // exit X + CMP badge at the LTP/CMP level on the right
+    E.exitx.style.left=(g.plotL+g.plotW-6)+"px"; E.exitx.style.top=(g.plotT+g.ltpPx-7.5)+"px";
+    E.exitring.style.left=(g.plotL+g.plotW-7)+"px"; E.exitring.style.top=(g.plotT+g.ltpPx-8.5)+"px";
+    E.axnow.style.top=(g.plotT+g.ltpPx-6)+"px";
+    // buy ring over the Buy button
+    E.buyring.style.width="26px"; E.buyring.style.height="15px";
+    E.buyring.style.left=(g.buyX-13)+"px"; E.buyring.style.top=(g.buyY-8)+"px";
+    // pnl chip just above the entry line
+    E.pnl.style.top=(g.plotT+g.ltpPx-22)+"px";
+  }
+  function apply(t){
+    E.cur.style.left=lerp(t,W.cur,"x")+"px"; E.cur.style.top=lerp(t,W.cur,"y")+"px"; E.cur.style.opacity=lerp(t,W.curO,"o");
+    E.np.style.opacity=lerp(t,W.np,"o");
+    E.tp.style.top=(G.plotT+lerp(t,W.tp,"top"))+"px"; E.tp.style.opacity=lerp(t,W.tp,"o");
+    E.sl.style.top=(G.plotT+lerp(t,W.sl,"top"))+"px"; E.sl.style.opacity=lerp(t,W.sl,"o");
+    E.exitx.style.opacity=lerp(t,W.exX,"o");
+    E.pnl.style.opacity=lerp(t,W.pnl,"o");
+    E.toast.style.opacity=lerp(t,W.toast,"o");
+    E.buyring.style.opacity=pulse(t,1400,360);
+    E.exitring.style.opacity=pulse(t,6700,320);
+    if(!ocDone && t>340 && t<1100){ E.oc.classList.add("flash"); ocDone=true; }
+    if(t<200){ ocDone=false; E.oc.classList.remove("flash"); }
+  }
+  function frame(now){ if(t0===null) t0=now; var t=(now-t0)%CYCLE; apply(t); raf=requestAnimationFrame(frame); }
+  function relayout(){ G=measure(); if(!G) return; buildWaypoints(G); place(G); }
+
+  /* ---- live CMP -> ATM -> CE/PE tokens ---- */
+  function applyLtp(ltp){
+    LTP=ltp; ATM=atmStrike(ltp); EXP=nearestExpiry(new Date());
+    CE_TOKEN=optionToken(ATM,"CE",EXP); PE_TOKEN=optionToken(ATM,"PE",EXP);
+    EXP_LABEL=pad2(EXP.getDate())+" "+MMM[EXP.getMonth()].charAt(0)+MMM[EXP.getMonth()].slice(1).toLowerCase();
+    // reflect on the chart + meta line
+    var mL=document.getElementById("mLtp"), mA=document.getElementById("mAtm"), mE=document.getElementById("mExp"),
+        bo=document.getElementById("buyOpt"), so=document.getElementById("sellOpt"), ax=document.getElementById("axnow");
+    if(mL) mL.textContent=fmt(ltp);
+    if(mA) mA.textContent="ATM "+ATM;
+    if(mE) mE.textContent="Exp "+EXP_LABEL;
+    if(bo) bo.textContent=ATM+" CE";
+    if(so) so.textContent=ATM+" PE";
+    if(ax) ax.textContent=fmt(ltp);
+  }
+  /* ---- CMP sources (sandbox-safe; a delayed quote is fine) ---------------
+     Priority:
+       1. INJECTED_LTP  — Plotline Content API / Liquid templated into the HTML (works inside the sandbox)
+       2. LTP_ENDPOINT  — your CORS-enabled endpoint returning {ltp:<number>}
+                          RECOMMENDED: a tiny Cloudflare Worker / Vercel fn that proxies Yahoo ^NSEI.
+       3. Public CORS proxy -> Yahoo ^NSEI  (zero-infra fallback, rate-limited)
+       4. DEFAULT_LTP   — last resort so the tokens are always valid
+     ----------------------------------------------------------------------- */
+  var INJECTED_LTP = "{{NIFTY_LTP}}";   // Plotline replaces this at render; ignored if not a number
+  var LTP_ENDPOINT = "";                // e.g. "https://nifty-ltp.<you>.workers.dev"  -> {"ltp":24138.5}
+
+  function parseNum(x){ var n=Number(x); return (isFinite(n)&&n>0)?n:null; }
+  function sameFrameGlobal(){ try{ return parseNum(window.__NIFTY_LTP__); }catch(e){ return null; } }
+
+  function fromEndpoint(){
+    if(!LTP_ENDPOINT) return Promise.reject();
+    return fetch(LTP_ENDPOINT,{cache:"no-store"}).then(function(r){return r.json();}).then(function(j){
+      var n=parseNum(j.ltp!=null?j.ltp:(j.price!=null?j.price:j.lastPrice)); if(!n) throw 0; return n;
+    });
+  }
+  function fromYahoo(proxy){
+    var y="https://query1.finance.yahoo.com/v8/finance/chart/%5ENSEI?interval=5m&range=1d";
+    var url=proxy?(proxy+encodeURIComponent(y)):y;
+    return fetch(url,{cache:"no-store"}).then(function(r){return r.json();}).then(function(j){
+      var m=j.chart.result[0].meta; var n=parseNum(m.regularMarketPrice||m.previousClose); if(!n) throw 0; return n;
+    });
+  }
+  function resolveLtp(){
+    var inj=parseNum(INJECTED_LTP) || sameFrameGlobal();
+    if(inj){ applyLtp(inj); return; }
+    fromEndpoint()
+      .catch(function(){ return fromYahoo("https://corsproxy.io/?url="); })
+      .catch(function(){ return fromYahoo("https://api.allorigins.win/raw?url="); })
+      .then(applyLtp)
+      .catch(function(){ if(LTP==null) applyLtp(DEFAULT_LTP); });
+  }
+
+  function wireCTA(btnId, getToken, type, actionId, eventName){
+    var b=document.getElementById(btnId); if(!b) return;
+    b.addEventListener("click", function(ev){
+      ev.preventDefault();
+      var token=getToken(); var url=widgetsLink(token);
+      // fire analytics first, then redirect after 80ms (redirect kills the queue)
+      trackEvent(eventName, {surface:"nifty_instrument_page", action_id:actionId, side:type, strike:ATM, option_token:token, ltp:LTP, expiry:EXP_LABEL});
+      setTimeout(function(){ redirect(url, actionId); }, 80);
+    });
+  }
+
+  function start(){
+    document.getElementById("banner").classList.add("in");
+    E.cur=document.getElementById("cur"); E.np=document.getElementById("np"); E.tp=document.getElementById("tp"); E.sl=document.getElementById("sl");
+    E.exitx=document.getElementById("exitx"); E.exitring=document.getElementById("exitring"); E.buyring=document.getElementById("buyring");
+    E.pnl=document.getElementById("pnl"); E.toast=document.getElementById("toast"); E.axnow=document.getElementById("axnow"); E.oc=document.getElementById("oc");
+    relayout();
+    raf=requestAnimationFrame(frame);
+    window.addEventListener("resize", relayout);
+    trackEvent("plotline_nifty_chart_banner_viewed", {surface:"nifty_instrument_page", placement:"web_banner"});
+
+    applyLtp(DEFAULT_LTP);   // instant valid tokens, then refine with live data
+    resolveLtp();
+    ltpTimer=setInterval(resolveLtp, 60000);   // keep the strike relevant while the banner is open
+
+    wireCTA("buyBtn",  function(){ return CE_TOKEN; }, "buy",  "strikex_nifty_buy_ce_open",  "plotline_nifty_banner_buy_clicked");
+    wireCTA("sellBtn", function(){ return PE_TOKEN; }, "sell", "strikex_nifty_sell_pe_open", "plotline_nifty_banner_sell_clicked");
+  }
+  function boot(){ var f=(document.fonts&&document.fonts.ready)?document.fonts.ready:Promise.resolve(); Promise.all([f]).then(function(){ setTimeout(start,200); }); }
+  if(document.readyState==="loading"){ document.addEventListener("DOMContentLoaded", boot); } else { boot(); }
+  window.addEventListener("pagehide", function(){ if(raf){ cancelAnimationFrame(raf); raf=null; } if(ltpTimer){ clearInterval(ltpTimer); ltpTimer=null; } window.removeEventListener("resize", relayout); });
+})();
+</script>
+</body>
+</html>
