@@ -3,6 +3,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&display=swap');
   :root{
     /* Choice FinX brand tokens (02-color-system.md) */
     --navy:#1B1464; --blue:#2777F3; --info:#5D99F6; --green:#45B644; --red:#DE493B; --amber:#E2A33A;
@@ -16,7 +17,7 @@
   body{ padding:10px; overflow:hidden; }
   ::-webkit-scrollbar{ display:none; }
 
-  .banner{ display:flex; align-items:stretch; width:100%; max-width:980px; min-height:160px; margin:0 auto;
+  .banner{ display:flex; align-items:stretch; width:100%; max-width:980px; min-height:124px; margin:0 auto;
            background:#FCFCFE; border:1px solid var(--line); border-radius:16px; overflow:hidden;
            box-shadow:0 12px 32px rgba(20,20,40,.11); opacity:0; transform:translateY(6px);
            -webkit-transition:opacity .4s ease,-webkit-transform .4s ease; transition:opacity .4s ease,transform .4s ease; }
@@ -65,14 +66,14 @@
   .cur{ position:absolute; left:0; top:0; z-index:12; opacity:0; filter:drop-shadow(0 1px 1px rgba(0,0,0,.6)); }
 
   /* ---- right: copy + CTA ---- */
-  .right{ flex:1 1 auto; min-width:0; display:flex; flex-direction:column; justify-content:center; gap:11px; padding:clamp(16px,2.2vw,26px); }
-  .ttl{ font-size:clamp(17px,2.2vw,22px); font-weight:600; color:var(--navy); line-height:1.2; letter-spacing:-.1px; }
+  .right{ flex:1 1 auto; min-width:0; display:flex; flex-direction:column; justify-content:center; gap:8px; padding:clamp(12px,1.6vw,18px); }
+  .ttl{ font-size:14px; font-weight:600; color:var(--navy); line-height:1.25; letter-spacing:-.1px; }
   .ttl b{ color:var(--blue); font-weight:600; }
-  .sub{ font-size:clamp(12px,1.4vw,13.5px); line-height:1.5; color:var(--muted); margin-top:-3px; }
+  .sub{ font-size:11.5px; line-height:1.4; color:var(--muted); margin-top:-2px; }
   .meta{ font-size:11px; font-weight:600; color:#3A3F4C; letter-spacing:.1px; }
   .meta .dot{ color:#C6C4D8; font-weight:400; } .meta .live{ color:var(--green); } .meta .atm{ color:var(--navy); }
   .ctarow{ display:flex; gap:10px; flex-wrap:wrap; }
-  .cta{ flex:0 1 auto; display:inline-flex; align-items:center; justify-content:center; gap:7px; height:46px; padding:0 20px; border:none; border-radius:11px; color:#fff; font-family:var(--font); font-size:14px; font-weight:600; cursor:pointer; white-space:nowrap; -webkit-transition:filter .18s ease, transform .18s ease; transition:filter .18s ease, transform .18s ease; }
+  .cta{ flex:0 1 auto; display:inline-flex; align-items:center; justify-content:center; gap:7px; height:38px; padding:0 18px; border:none; border-radius:10px; color:#fff; font-family:var(--font); font-size:14px; font-weight:600; cursor:pointer; white-space:nowrap; -webkit-transition:filter .18s ease, transform .18s ease; transition:filter .18s ease, transform .18s ease; }
   .cta .opt{ font-size:11px; font-weight:600; opacity:.85; }
   .cta.buy{ background:var(--green); color:#06210d; } .cta.buy .opt{ color:#06210d; }
   .cta.sell{ background:var(--red); }
@@ -80,8 +81,8 @@
 
   @media (max-width:640px){
     .banner{ flex-direction:column; min-height:0; }
-    .stage{ width:100%; height:158px; border-right:none; border-bottom:1px solid var(--cborder); }
-    .right{ padding:16px; gap:10px; }
+    .stage{ width:100%; height:118px; border-right:none; border-bottom:1px solid var(--cborder); }
+    .right{ padding:14px; gap:8px; }
     .cta{ align-self:stretch; justify-content:center; }
   }
 </style>
@@ -216,14 +217,15 @@
     }catch(e){}
   }
 
-  /* ---- Nifty candles (% positioned so the tile stays fluid) ---- */
-  var closes=[70,62,72,52,58,42,48,32,40,50,58,44,52,66,74,60];
-  function buildCandles(){
-    var plot=document.getElementById("plot"); if(!plot) return; var n=closes.length, html="";
+  /* ---- Nifty candles as fractions of plot height -> fits any banner height ---- */
+  var closesF=[0.614,0.544,0.632,0.456,0.509,0.368,0.421,0.281,0.351,0.439,0.509,0.386,0.456,0.579,0.649,0.526];
+  var TP_GAP=0.263, SL_GAP=0.228;   // TP above / SL below the LTP, as a fraction of plot height
+  function buildCandles(plotH){
+    var plot=document.getElementById("plot"); if(!plot) return; var n=closesF.length, html="";
     for(var i=0;i<n;i++){
-      var close=closes[i], open=(i===0)?closes[0]+8:closes[i-1];
+      var close=closesF[i]*plotH, open=(i===0)?closesF[0]*plotH+6:closesF[i-1]*plotH;
       var bt=Math.min(open,close), bb=Math.max(open,close);
-      var wT=4+((i*7)%9), wB=4+((i*5)%8); var hi=bt-wT, lo=bb+wB;
+      var wT=2+((i*7)%6), wB=2+((i*5)%5); var hi=bt-wT, lo=bb+wB;
       var upc=close<open;
       var span=92, left=(i*(span/n))+1, w=(span/n)*0.6;
       html+='<div class="cn '+(upc?"up":"dn")+'" style="left:'+left+'%;width:'+w+'%">'
@@ -232,7 +234,6 @@
     }
     plot.innerHTML=html;
   }
-  buildCandles();
 
   /* ---- geometry measured from the real layout (accurate cursor targets) ---- */
   var G=null;
@@ -241,10 +242,10 @@
     if(!stage||!plot||!buy) return null;
     var sr=stage.getBoundingClientRect(), pr=plot.getBoundingClientRect(), br=buy.getBoundingClientRect();
     var plotT=pr.top-sr.top, plotL=pr.left-sr.left, plotW=pr.width, plotH=pr.height;
-    var ltp=closes[closes.length-1];           // entry = CMP = LTP of the last candle
+    var ltpPx=closesF[closesF.length-1]*plotH;   // entry = CMP = LTP of the last candle
     return {
       plotT:plotT, plotL:plotL, plotW:plotW, plotH:plotH,
-      ltpPx:ltp, tpPx:ltp-30, slPx:ltp+26,     // TP above the LTP, SL below it (same px space as candles)
+      ltpPx:ltpPx, tpPx:ltpPx-TP_GAP*plotH, slPx:ltpPx+SL_GAP*plotH,
       handleX:plotL+plotW-7,
       buyX:(br.left-sr.left)+br.width/2, buyY:(br.top-sr.top)+br.height/2
     };
@@ -311,7 +312,7 @@
     if(t<200){ ocDone=false; E.oc.classList.remove("flash"); }
   }
   function frame(now){ if(t0===null) t0=now; var t=(now-t0)%CYCLE; apply(t); raf=requestAnimationFrame(frame); }
-  function relayout(){ G=measure(); if(!G) return; buildWaypoints(G); place(G); }
+  function relayout(){ G=measure(); if(!G) return; buildCandles(G.plotH); buildWaypoints(G); place(G); }
 
   /* ---- live CMP -> ATM -> CE/PE tokens ---- */
   function applyLtp(ltp){
