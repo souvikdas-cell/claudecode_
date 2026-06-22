@@ -17,7 +17,7 @@
   body{ padding:10px; overflow:hidden; }
   ::-webkit-scrollbar{ display:none; }
 
-  .banner{ display:flex; align-items:stretch; width:100%; max-width:980px; min-height:124px; margin:0 auto;
+  .banner{ display:flex; align-items:stretch; width:100%; max-width:980px; min-height:104px; margin:0 auto;
            background:#FCFCFE; border:1px solid var(--line); border-radius:16px; overflow:hidden;
            box-shadow:0 12px 32px rgba(20,20,40,.11); opacity:0; transform:translateY(6px);
            -webkit-transition:opacity .4s ease,-webkit-transform .4s ease; transition:opacity .4s ease,transform .4s ease; }
@@ -27,7 +27,7 @@
   .stage{ flex:none; position:relative; width:clamp(300px,42vw,430px); background:var(--cbg); overflow:hidden; border-right:1px solid var(--cborder); }
   .grid{ position:absolute; inset:0; background-image:linear-gradient(var(--cgrid) 1px,transparent 1px),linear-gradient(90deg,var(--cgrid) 1px,transparent 1px); background-size:30px 24px; }
 
-  .tbar{ position:absolute; top:0; left:0; right:0; height:22px; display:flex; align-items:center; gap:5px; padding:0 7px; border-bottom:1px solid #14151C; background:#0B0917; z-index:7; }
+  .tbar{ position:absolute; top:0; left:0; right:0; height:20px; display:flex; align-items:center; gap:5px; padding:0 7px; border-bottom:1px solid #14151C; background:#0B0917; z-index:7; }
   .tm{ font-size:8px; color:#8a8ba0; margin-right:1px; }
   .tbtn{ font-size:8px; font-weight:600; border-radius:4px; padding:2px 6px; line-height:1; }
   .tbtn.buy{ background:var(--green); color:#06210d; } .tbtn.sell{ background:var(--red); color:#2a0708; }
@@ -36,14 +36,14 @@
   @-webkit-keyframes ocf{0%,100%{box-shadow:0 0 0 0 rgba(226,163,58,0)}50%{box-shadow:0 0 0 3px rgba(226,163,58,.5)}}
   @keyframes ocf{0%,100%{box-shadow:0 0 0 0 rgba(226,163,58,0)}50%{box-shadow:0 0 0 3px rgba(226,163,58,.5)}}
 
-  .instr{ position:absolute; top:26px; left:8px; z-index:6; font-size:8px; color:#9298a6; }
+  .instr{ position:absolute; top:22px; left:8px; z-index:6; font-size:8px; color:#9298a6; }
   .instr b{ color:#e7e9f1; font-weight:600; } .instr .o{ color:#7a808f; }
 
-  .axis{ position:absolute; top:22px; right:0; bottom:0; width:44px; border-left:1px solid #14151C; background:#0A0817; z-index:5; }
+  .axis{ position:absolute; top:20px; right:0; bottom:0; width:44px; border-left:1px solid #14151C; background:#0A0817; z-index:5; }
   .ax{ position:absolute; right:5px; font-size:7px; color:#6b7080; }
   .axnow{ position:absolute; right:3px; z-index:7; font-size:7px; font-weight:600; color:#fff; background:#2A2937; border-radius:3px; padding:1px 4px; }
 
-  .plot{ position:absolute; left:8px; right:44px; top:40px; bottom:10px; z-index:2; }
+  .plot{ position:absolute; left:8px; right:44px; top:34px; bottom:8px; z-index:2; }
   .cn{ position:absolute; top:0; bottom:0; }
   .cn .wk{ position:absolute; left:50%; transform:translateX(-50%); width:1.4px; }
   .cn .bd{ position:absolute; left:0; right:0; border-radius:.5px; min-height:1.5px; }
@@ -66,14 +66,14 @@
   .cur{ position:absolute; left:0; top:0; z-index:12; opacity:0; filter:drop-shadow(0 1px 1px rgba(0,0,0,.6)); }
 
   /* ---- right: copy + CTA ---- */
-  .right{ flex:1 1 auto; min-width:0; display:flex; flex-direction:column; justify-content:center; gap:8px; padding:clamp(12px,1.6vw,18px); }
-  .ttl{ font-size:14px; font-weight:600; color:var(--navy); line-height:1.25; letter-spacing:-.1px; }
+  .right{ flex:1 1 auto; min-width:0; display:flex; flex-direction:column; justify-content:center; gap:6px; padding:clamp(10px,1.2vw,14px); }
+  .ttl{ font-size:14px; font-weight:600; color:var(--navy); line-height:1.2; letter-spacing:-.1px; }
   .ttl b{ color:var(--blue); font-weight:600; }
-  .sub{ font-size:11.5px; line-height:1.4; color:var(--muted); margin-top:-2px; }
+  .sub{ font-size:11px; line-height:1.35; color:var(--muted); margin-top:-1px; }
   .meta{ font-size:11px; font-weight:600; color:#3A3F4C; letter-spacing:.1px; }
   .meta .dot{ color:#C6C4D8; font-weight:400; } .meta .live{ color:var(--green); } .meta .atm{ color:var(--navy); }
   .ctarow{ display:flex; gap:10px; flex-wrap:wrap; }
-  .cta{ flex:0 1 auto; display:inline-flex; align-items:center; justify-content:center; gap:7px; height:38px; padding:0 18px; border:none; border-radius:10px; color:#fff; font-family:var(--font); font-size:14px; font-weight:600; cursor:pointer; white-space:nowrap; -webkit-transition:filter .18s ease, transform .18s ease; transition:filter .18s ease, transform .18s ease; }
+  .cta{ flex:0 1 auto; display:inline-flex; align-items:center; justify-content:center; gap:7px; height:34px; padding:0 18px; border:none; border-radius:9px; color:#fff; font-family:var(--font); font-size:14px; font-weight:600; cursor:pointer; white-space:nowrap; -webkit-transition:filter .18s ease, transform .18s ease; transition:filter .18s ease, transform .18s ease; }
   .cta .opt{ font-size:11px; font-weight:600; opacity:.85; }
   .cta.buy{ background:var(--green); color:#06210d; } .cta.buy .opt{ color:#06210d; }
   .cta.sell{ background:var(--red); }
@@ -81,8 +81,8 @@
 
   @media (max-width:640px){
     .banner{ flex-direction:column; min-height:0; }
-    .stage{ width:100%; height:118px; border-right:none; border-bottom:1px solid var(--cborder); }
-    .right{ padding:14px; gap:8px; }
+    .stage{ width:100%; height:104px; border-right:none; border-bottom:1px solid var(--cborder); }
+    .right{ padding:12px; gap:6px; }
     .cta{ align-self:stretch; justify-content:center; }
   }
 </style>
@@ -122,7 +122,7 @@
 
     <div class="right">
       <div class="ttl">You can now trade Nifty <b>directly from Charts</b></div>
-      <div class="sub">One-click buy, drag your target and stop-loss on the candle, exit all legs in a single tap.</div>
+      <div class="sub">One-click buy, drag your target and stop-loss, exit in one tap.</div>
       <div class="ctarow">
         <button class="cta buy" id="buyBtn" type="button">Buy Nifty</button>
         <button class="cta sell" id="sellBtn" type="button">Sell Nifty</button>
