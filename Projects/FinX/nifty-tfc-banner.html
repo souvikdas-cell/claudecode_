@@ -148,31 +148,52 @@
      production, source the LTP + exact CE/PE token from FinX's option master
      (Plotline Content API or window.__NIFTY_LTP__) — see resolveLtp() below.
      ===================================================================== */
+  /* ---- INDEX CONFIG — swap this whole block to make a Sensex banner ---- */
+  var INDEX = {
+    name:         "Nifty",
+    ltpUrl:       "https://niftyprice.souvik-das.workers.dev/?index=nifty",
+    spotToken:    "Nifty 50",       // internalToken of the spot chart widget
+    tokenPrefix:  "NIFTY",
+    segment:      "NFO",            // NSE F&O
+    strikeStep:   50,               // ATM rounding step
+    expiryWeekday:2,                // 0=Sun..6=Sat ; weekly expiry day (Nifty = Tuesday)
+    cutoffMin:    15*60+30,         // after 15:30 IST on expiry day -> roll to next week
+    defaultLtp:   24100             // fallback only; overridden by live data
+  };
+  /* SENSEX banner -> replace INDEX with (CONFIRM grammar/segment/step/day with StrikeX,
+     no Sensex token sample on hand yet):
+     { name:"Sensex", ltpUrl:"https://niftyprice.souvik-das.workers.dev/?index=sensex",
+       spotToken:"SENSEX", tokenPrefix:"SENSEX", segment:"BFO", strikeStep:100,
+       expiryWeekday:2, cutoffMin:15*60+30, defaultLtp:77000 } */
+
   var BASE = "https://finx.choiceindia.com?productType=strikex&widgets=";
-  var SPOT = "name:chart,internalToken:Nifty 50";
-  var STRIKE_STEP = 50;            // ATM rounding
-  var EXPIRY_WEEKDAY = 2;          // 0=Sun ... 2=Tue
-  var DEFAULT_LTP = 24138;         // fallback only (rounds to ATM 24150) — overridden by live data
-  var MMM = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
+  var MMM  = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
 
   function pad2(n){ return (n<10?"0":"")+n; }
-  function monthDigit(m){ return m<=9 ? String(m) : {10:"O",11:"N",12:"D"}[m]; } // m = 1..12
-  function atmStrike(ltp){ return Math.round(ltp/STRIKE_STEP)*STRIKE_STEP; }
-  function nearestExpiry(now){
-    var d=new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    d.setDate(d.getDate() + ((EXPIRY_WEEKDAY - d.getDay() + 7) % 7)); // this/next Tuesday
-    return d;
+  function monthDigit(m){ return m<=9 ? String(m) : {10:"O",11:"N",12:"D"}[m]; }   // m = 1..12
+  function atmStrike(ltp){ return Math.round(ltp/INDEX.strikeStep)*INDEX.strikeStep; }
+
+  // IST wall-clock parts, independent of the device timezone
+  function istParts(){ var d=new Date(Date.now()+5.5*3600000); return {y:d.getUTCFullYear(),mo:d.getUTCMonth(),day:d.getUTCDate(),dow:d.getUTCDay(),h:d.getUTCHours(),mi:d.getUTCMinutes()}; }
+  // active weekly expiry {y,m0,d}; rolls to next week after the cutoff on expiry day
+  function activeExpiry(){
+    var p=istParts(), add=(INDEX.expiryWeekday - p.dow + 7) % 7;
+    if(add===0 && (p.h*60+p.mi) >= INDEX.cutoffMin) add=7;
+    var dt=new Date(Date.UTC(p.y,p.mo,p.day+add));
+    return {y:dt.getUTCFullYear(), m0:dt.getUTCMonth(), d:dt.getUTCDate()};
   }
-  function isLastWeekdayOfMonth(d){ var p=new Date(d.getFullYear(), d.getMonth(), d.getDate()+7); return p.getMonth()!==d.getMonth(); }
-  function optionToken(strike, type, exp){
-    var yy = exp.getFullYear()%100;
-    if(isLastWeekdayOfMonth(exp)){ return "NIFTY"+yy+MMM[exp.getMonth()]+strike+type+"-NFO"; }   // monthly
-    return "NIFTY"+yy+monthDigit(exp.getMonth()+1)+pad2(exp.getDate())+strike+type+"-NFO";        // weekly
+  function addWeeks(e,w){ var dt=new Date(Date.UTC(e.y,e.m0,e.d+7*w)); return {y:dt.getUTCFullYear(),m0:dt.getUTCMonth(),d:dt.getUTCDate()}; }
+  function isMonthlyExpiry(e){ var nx=new Date(Date.UTC(e.y,e.m0,e.d+7)); return nx.getUTCMonth()!==e.m0; } // last expiry-weekday of month -> monthly contract
+  function optionToken(strike, type, e){
+    var yy = e.y % 100;
+    if(isMonthlyExpiry(e)){ return INDEX.tokenPrefix+yy+MMM[e.m0]+strike+type+"-"+INDEX.segment; }      // monthly: MMM
+    return INDEX.tokenPrefix+yy+monthDigit(e.m0+1)+pad2(e.d)+strike+type+"-"+INDEX.segment;             // weekly: Mdigit + DD
   }
   function widgetsLink(optToken){
-    var raw = BASE + SPOT + "|name:chart,internalToken:" + optToken;
-    return raw.split(" ").join("%20"); // encode spaces only; keep | : , raw (matches the sample link)
+    var raw = BASE + "name:chart,internalToken:" + INDEX.spotToken + "|name:chart,internalToken:" + optToken;
+    return raw.split(" ").join("%20"); // encode spaces only; keep | : , raw
   }
+  function expLabel(e){ return pad2(e.d)+" "+MMM[e.m0].charAt(0)+MMM[e.m0].slice(1).toLowerCase(); }
   function fmt(n){ try{ return Number(n).toLocaleString("en-IN",{minimumFractionDigits:2,maximumFractionDigits:2}); }catch(e){ return String(n); } }
 
   // live state, refreshed by resolveLtp()
@@ -294,18 +315,10 @@
 
   /* ---- live CMP -> ATM -> CE/PE tokens ---- */
   function applyLtp(ltp){
-    LTP=ltp; ATM=atmStrike(ltp); EXP=nearestExpiry(new Date());
+    LTP=ltp; ATM=atmStrike(ltp); EXP=activeExpiry();
     CE_TOKEN=optionToken(ATM,"CE",EXP); PE_TOKEN=optionToken(ATM,"PE",EXP);
-    EXP_LABEL=pad2(EXP.getDate())+" "+MMM[EXP.getMonth()].charAt(0)+MMM[EXP.getMonth()].slice(1).toLowerCase();
-    // reflect on the chart + meta line
-    var mL=document.getElementById("mLtp"), mA=document.getElementById("mAtm"), mE=document.getElementById("mExp"),
-        bo=document.getElementById("buyOpt"), so=document.getElementById("sellOpt"), ax=document.getElementById("axnow");
-    if(mL) mL.textContent=fmt(ltp);
-    if(mA) mA.textContent="ATM "+ATM;
-    if(mE) mE.textContent="Exp "+EXP_LABEL;
-    if(bo) bo.textContent=ATM+" CE";
-    if(so) so.textContent=ATM+" PE";
-    if(ax) ax.textContent=fmt(ltp);
+    EXP_LABEL=expLabel(EXP);
+    var ax=document.getElementById("axnow"); if(ax) ax.textContent=fmt(ltp);   // reflect live CMP on the chart axis
   }
   /* ---- CMP sources (sandbox-safe; a delayed quote is fine) ---------------
      Priority:
@@ -315,8 +328,8 @@
        3. Public CORS proxy -> Yahoo ^NSEI  (zero-infra fallback, rate-limited)
        4. DEFAULT_LTP   — last resort so the tokens are always valid
      ----------------------------------------------------------------------- */
-  var INJECTED_LTP = "{{NIFTY_LTP}}";   // Plotline replaces this at render; ignored if not a number
-  var LTP_ENDPOINT = "https://niftyprice.souvik-das.workers.dev/";   // FinX Cloudflare Worker -> {"ltp":24102.9}
+  var INJECTED_LTP = "{{INDEX_LTP}}";   // optional Plotline Liquid inject; ignored if not a number
+  var LTP_ENDPOINT = INDEX.ltpUrl;       // Cloudflare Worker (per-index) -> {"ltp":24102.9}
 
   function parseNum(x){ var n=Number(x); return (isFinite(n)&&n>0)?n:null; }
   function sameFrameGlobal(){ try{ return parseNum(window.__NIFTY_LTP__); }catch(e){ return null; } }
@@ -341,7 +354,7 @@
       .catch(function(){ return fromYahoo("https://corsproxy.io/?url="); })
       .catch(function(){ return fromYahoo("https://api.allorigins.win/raw?url="); })
       .then(applyLtp)
-      .catch(function(){ if(LTP==null) applyLtp(DEFAULT_LTP); });
+      .catch(function(){ if(LTP==null) applyLtp(INDEX.defaultLtp); });
   }
 
   function wireCTA(btnId, getToken, type, actionId, eventName){
@@ -350,7 +363,7 @@
       ev.preventDefault();
       var token=getToken(); var url=widgetsLink(token);
       // fire analytics first, then redirect after 80ms (redirect kills the queue)
-      trackEvent(eventName, {surface:"nifty_instrument_page", action_id:actionId, side:type, strike:ATM, option_token:token, ltp:LTP, expiry:EXP_LABEL});
+      trackEvent(eventName, {surface:INDEX.name.toLowerCase()+"_instrument_page", index:INDEX.name, action_id:actionId, side:type, strike:ATM, option_token:token, ltp:LTP, expiry:EXP_LABEL});
       setTimeout(function(){ redirect(url, actionId); }, 80);
     });
   }
@@ -363,14 +376,15 @@
     relayout();
     raf=requestAnimationFrame(frame);
     window.addEventListener("resize", relayout);
-    trackEvent("plotline_nifty_chart_banner_viewed", {surface:"nifty_instrument_page", placement:"web_banner"});
+    var idx = INDEX.name.toLowerCase();
+    trackEvent("plotline_"+idx+"_chart_banner_viewed", {surface:idx+"_instrument_page", placement:"web_banner"});
 
-    applyLtp(DEFAULT_LTP);   // instant valid tokens, then refine with live data
+    applyLtp(INDEX.defaultLtp);   // instant valid tokens, then refine with live data
     resolveLtp();
     ltpTimer=setInterval(resolveLtp, 60000);   // keep the strike relevant while the banner is open
 
-    wireCTA("buyBtn",  function(){ return CE_TOKEN; }, "buy",  "strikex_nifty_buy_ce_open",  "plotline_nifty_banner_buy_clicked");
-    wireCTA("sellBtn", function(){ return PE_TOKEN; }, "sell", "strikex_nifty_sell_pe_open", "plotline_nifty_banner_sell_clicked");
+    wireCTA("buyBtn",  function(){ return CE_TOKEN; }, "buy",  "strikex_"+idx+"_buy_ce_open",  "plotline_"+idx+"_banner_buy_clicked");
+    wireCTA("sellBtn", function(){ return PE_TOKEN; }, "sell", "strikex_"+idx+"_sell_pe_open", "plotline_"+idx+"_banner_sell_clicked");
   }
   function boot(){ var f=(document.fonts&&document.fonts.ready)?document.fonts.ready:Promise.resolve(); Promise.all([f]).then(function(){ setTimeout(start,200); }); }
   if(document.readyState==="loading"){ document.addEventListener("DOMContentLoaded", boot); } else { boot(); }
