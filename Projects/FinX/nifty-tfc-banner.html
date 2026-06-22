@@ -334,10 +334,18 @@
   function parseNum(x){ var n=Number(x); return (isFinite(n)&&n>0)?n:null; }
   function sameFrameGlobal(){ try{ return parseNum(window.__NIFTY_LTP__); }catch(e){ return null; } }
 
+  function pickLtp(j){
+    if(!j) return null;
+    var n=parseNum(j.ltp!=null?j.ltp:(j.price!=null?j.price:j.lastPrice));   // single shape {ltp}/{price}
+    if(n) return n;
+    var key=INDEX.name.toLowerCase();                                        // combined shape {nifty:{ltp},sensex:{ltp}}
+    if(j[key]) return parseNum(j[key].ltp!=null?j[key].ltp:j[key].price);
+    return null;
+  }
   function fromEndpoint(){
     if(!LTP_ENDPOINT) return Promise.reject();
     return fetch(LTP_ENDPOINT,{cache:"no-store"}).then(function(r){return r.json();}).then(function(j){
-      var n=parseNum(j.ltp!=null?j.ltp:(j.price!=null?j.price:j.lastPrice)); if(!n) throw 0; return n;
+      var n=pickLtp(j); if(!n) throw 0; return n;   // this Nifty banner reads only the Nifty LTP
     });
   }
   function fromYahoo(proxy){
