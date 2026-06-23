@@ -17,7 +17,7 @@
   body{ padding:10px; overflow:hidden; }
   ::-webkit-scrollbar{ display:none; }
 
-  .banner{ display:flex; align-items:stretch; width:100%; max-width:980px; min-height:104px; margin:0 auto;
+  .banner{ display:flex; align-items:stretch; width:100%; max-width:980px; min-height:140px; margin:0 auto;
            background:#FCFCFE; border:1px solid var(--line); border-radius:16px; overflow:hidden;
            box-shadow:0 12px 32px rgba(20,20,40,.11); opacity:0; transform:translateY(6px);
            -webkit-transition:opacity .4s ease,-webkit-transform .4s ease; transition:opacity .4s ease,transform .4s ease; }
@@ -66,13 +66,13 @@
   .cur{ position:absolute; left:0; top:0; z-index:12; opacity:0; filter:drop-shadow(0 1px 1px rgba(0,0,0,.6)); }
 
   /* ---- right: copy + CTA ---- */
-  .right{ flex:1 1 auto; min-width:0; display:flex; flex-direction:column; justify-content:center; gap:6px; padding:clamp(10px,1.2vw,14px); }
+  .right{ flex:1 1 auto; min-width:0; display:flex; flex-direction:column; align-items:center; text-align:center; justify-content:center; gap:8px; padding:clamp(12px,1.6vw,18px); }
   .ttl{ font-size:14px; font-weight:600; color:var(--navy); line-height:1.2; letter-spacing:-.1px; }
   .ttl b{ color:var(--blue); font-weight:600; }
   .sub{ font-size:11px; line-height:1.35; color:var(--muted); margin-top:-1px; }
   .meta{ font-size:11px; font-weight:600; color:#3A3F4C; letter-spacing:.1px; }
   .meta .dot{ color:#C6C4D8; font-weight:400; } .meta .live{ color:var(--green); } .meta .atm{ color:var(--navy); }
-  .ctarow{ display:flex; gap:10px; flex-wrap:wrap; }
+  .ctarow{ display:flex; gap:10px; flex-wrap:wrap; justify-content:center; }
   .cta{ flex:0 1 auto; display:inline-flex; align-items:center; justify-content:center; gap:7px; height:34px; padding:0 18px; border:none; border-radius:9px; color:#fff; font-family:var(--font); font-size:14px; font-weight:600; cursor:pointer; white-space:nowrap; -webkit-transition:filter .18s ease, transform .18s ease; transition:filter .18s ease, transform .18s ease; }
   .cta .opt{ font-size:11px; font-weight:600; opacity:.85; }
   .cta.buy{ background:var(--green); color:#06210d; } .cta.buy .opt{ color:#06210d; }
@@ -121,7 +121,7 @@
     </div>
 
     <div class="right">
-      <div class="ttl">You can now trade Nifty <b>directly from Charts</b></div>
+      <div class="ttl" id="ttl">You can now trade Nifty <b>directly from Charts</b></div>
       <div class="sub">One-click buy, drag your target and stop-loss, exit in one tap.</div>
       <div class="ctarow">
         <button class="cta buy" id="buyBtn" type="button">Buy Nifty</button>
@@ -149,18 +149,24 @@
      production, source the LTP + exact CE/PE token from FinX's option master
      (Plotline Content API or window.__NIFTY_LTP__) — see resolveLtp() below.
      ===================================================================== */
-  /* ---- INDEX CONFIG — swap this whole block to make a Sensex banner ---- */
-  var INDEX = {
-    name:         "Nifty",
-    ltpUrl:       "https://niftyprice.souvik-das.workers.dev/?index=nifty",
-    spotToken:    "Nifty 50",       // internalToken of the spot chart widget
-    tokenPrefix:  "NIFTY",
-    segment:      "NFO",            // NSE F&O
-    strikeStep:   50,               // ATM rounding step
-    expiryWeekday:2,                // 0=Sun..6=Sat ; weekly expiry day (Nifty = Tuesday)
-    cutoffMin:    15*60+30,         // after 15:30 IST on expiry day -> roll to next week
-    defaultLtp:   24100             // fallback only; overridden by live data
+  /* ---- INDEX CONFIGS + automatic Nifty <-> Sensex switch ----
+     Nifty weekly expiry = Tuesday, Sensex weekly expiry = Thursday.
+     Show Sensex from Tue 15:30 to Thu 15:30 IST, Nifty the rest of the week.
+     Sensex grammar from samples: SENSEX26JUN76200CE-BFO / SENSEX2670277800CE-BFO. */
+  var INDEXES = {
+    nifty:  { name:"Nifty",  display:"NIFTY 50", exch:"NSE", spotToken:"Nifty 50", yahoo:"%5ENSEI",
+              ltpUrl:"https://niftyprice.souvik-das.workers.dev/?index=nifty",
+              tokenPrefix:"NIFTY",  segment:"NFO", strikeStep:50,  expiryWeekday:2, cutoffMin:15*60+30, defaultLtp:24100 },
+    sensex: { name:"Sensex", display:"SENSEX",   exch:"BSE", spotToken:"SENSEX", yahoo:"%5EBSESN",
+              ltpUrl:"https://niftyprice.souvik-das.workers.dev/?index=sensex",
+              tokenPrefix:"SENSEX", segment:"BFO", strikeStep:100, expiryWeekday:4, cutoffMin:15*60+30, defaultLtp:77000 }
   };
+  var INDEX = INDEXES.nifty;   // set live by refreshIndex()
+  function activeIndexKey(){
+    var p=istParts(), mof=p.dow*1440 + p.h*60 + p.mi;          // minutes since Sunday 00:00 IST
+    var TUE=2*1440+(15*60+30), THU=4*1440+(15*60+30);
+    return (mof>=TUE && mof<THU) ? "sensex" : "nifty";          // Tue 15:30 -> Sensex, Thu 15:30 -> Nifty
+  }
   /* SENSEX banner -> replace INDEX with (CONFIRM grammar/segment/step/day with StrikeX,
      no Sensex token sample on hand yet):
      { name:"Sensex", ltpUrl:"https://niftyprice.souvik-das.workers.dev/?index=sensex",
@@ -321,6 +327,15 @@
     EXP_LABEL=expLabel(EXP);
     var ax=document.getElementById("axnow"); if(ax) ax.textContent=fmt(ltp);   // reflect live CMP on the chart axis
   }
+  /* ---- switch the whole widget between Nifty and Sensex by time of week ---- */
+  function applyIndexLabels(){
+    var nm=INDEX.name;
+    var instr=document.querySelector(".instr"); if(instr) instr.innerHTML="<b>"+INDEX.display+"</b> &middot; "+INDEX.exch+" &middot; 1m";
+    var ttl=document.getElementById("ttl"); if(ttl) ttl.innerHTML="You can now trade "+nm+" <b>directly from Charts</b>";
+    var bb=document.getElementById("buyBtn"); if(bb) bb.textContent="Buy "+nm;
+    var sb=document.getElementById("sellBtn"); if(sb) sb.textContent="Sell "+nm;
+  }
+  function refreshIndex(){ INDEX=INDEXES[activeIndexKey()]; LTP_ENDPOINT=INDEX.ltpUrl; applyIndexLabels(); }
   /* ---- CMP sources (sandbox-safe; a delayed quote is fine) ---------------
      Priority:
        1. INJECTED_LTP  — Plotline Content API / Liquid templated into the HTML (works inside the sandbox)
@@ -350,7 +365,7 @@
     });
   }
   function fromYahoo(proxy){
-    var y="https://query1.finance.yahoo.com/v8/finance/chart/%5ENSEI?interval=5m&range=1d";
+    var y="https://query1.finance.yahoo.com/v8/finance/chart/"+INDEX.yahoo+"?interval=5m&range=1d";
     var url=proxy?(proxy+encodeURIComponent(y)):y;
     return fetch(url,{cache:"no-store"}).then(function(r){return r.json();}).then(function(j){
       var m=j.chart.result[0].meta; var n=parseNum(m.regularMarketPrice||m.previousClose); if(!n) throw 0; return n;
@@ -366,14 +381,18 @@
       .catch(function(){ if(LTP==null) applyLtp(INDEX.defaultLtp); });
   }
 
-  function wireCTA(btnId, getToken, type, actionId, eventName){
+  function wireCTA(btnId, side){
     var b=document.getElementById(btnId); if(!b) return;
     b.addEventListener("click", function(ev){
       ev.preventDefault();
-      var token=getToken(); var url=widgetsLink(token);
+      var idx=INDEX.name.toLowerCase();
+      var token=(side==="buy")?CE_TOKEN:PE_TOKEN;
+      var cePe=(side==="buy")?"buy_ce":"sell_pe";
+      var actionId="strikex_"+idx+"_"+cePe+"_banner";
+      var eventName="plotline_"+idx+"_banner_"+side+"_clicked";
       // fire analytics first, then redirect after 80ms (redirect kills the queue)
-      trackEvent(eventName, {surface:INDEX.name.toLowerCase()+"_instrument_page", index:INDEX.name, action_id:actionId, side:type, strike:ATM, option_token:token, ltp:LTP, expiry:EXP_LABEL});
-      setTimeout(function(){ redirect(url, actionId); }, 80);
+      trackEvent(eventName, {surface:idx+"_instrument_page", index:INDEX.name, action_id:actionId, side:side, strike:ATM, option_token:token, ltp:LTP, expiry:EXP_LABEL});
+      setTimeout(function(){ redirect(widgetsLink(token), actionId); }, 80);
     });
   }
 
@@ -382,18 +401,18 @@
     E.cur=document.getElementById("cur"); E.np=document.getElementById("np"); E.tp=document.getElementById("tp"); E.sl=document.getElementById("sl");
     E.exitx=document.getElementById("exitx"); E.exitring=document.getElementById("exitring"); E.buyring=document.getElementById("buyring");
     E.pnl=document.getElementById("pnl"); E.toast=document.getElementById("toast"); E.axnow=document.getElementById("axnow"); E.oc=document.getElementById("oc");
+    refreshIndex();                          // pick Nifty/Sensex by time + set labels
     relayout();
     raf=requestAnimationFrame(frame);
     window.addEventListener("resize", relayout);
-    var idx = INDEX.name.toLowerCase();
-    trackEvent("plotline_"+idx+"_chart_banner_viewed", {surface:idx+"_instrument_page", placement:"web_banner"});
+    trackEvent("plotline_"+INDEX.name.toLowerCase()+"_chart_banner_viewed", {surface:INDEX.name.toLowerCase()+"_instrument_page", placement:"web_banner", index:INDEX.name});
 
     applyLtp(INDEX.defaultLtp);   // instant valid tokens, then refine with live data
     resolveLtp();
-    ltpTimer=setInterval(resolveLtp, 60000);   // keep the strike relevant while the banner is open
+    ltpTimer=setInterval(function(){ refreshIndex(); resolveLtp(); }, 60000);   // re-pick index + price; flips Nifty/Sensex at the cutoff
 
-    wireCTA("buyBtn",  function(){ return CE_TOKEN; }, "buy",  "strikex_"+idx+"_buy_ce_open",  "plotline_"+idx+"_banner_buy_clicked");
-    wireCTA("sellBtn", function(){ return PE_TOKEN; }, "sell", "strikex_"+idx+"_sell_pe_open", "plotline_"+idx+"_banner_sell_clicked");
+    wireCTA("buyBtn",  "buy");
+    wireCTA("sellBtn", "sell");
   }
   function boot(){ var f=(document.fonts&&document.fonts.ready)?document.fonts.ready:Promise.resolve(); Promise.all([f]).then(function(){ setTimeout(start,200); }); }
   if(document.readyState==="loading"){ document.addEventListener("DOMContentLoaded", boot); } else { boot(); }
