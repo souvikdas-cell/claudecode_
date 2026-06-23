@@ -65,25 +65,25 @@
   .toast{ position:absolute; left:50%; transform:translateX(-50%); bottom:9px; z-index:11; font-size:8px; font-weight:600; color:#cfead6; background:#0B1A12; border:1px solid #1f5a37; border-radius:6px; padding:3px 9px; opacity:0; white-space:nowrap; }
   .cur{ position:absolute; left:0; top:0; z-index:12; opacity:0; filter:drop-shadow(0 1px 1px rgba(0,0,0,.6)); }
 
-  /* ---- right: copy + CTA ---- */
-  .right{ flex:1 1 auto; min-width:0; display:flex; flex-direction:column; align-items:center; text-align:center; justify-content:center; gap:8px; padding:clamp(12px,1.6vw,18px); }
-  .ttl{ font-size:14px; font-weight:600; color:var(--navy); line-height:1.2; letter-spacing:-.1px; }
+  /* ---- middle: copy ---- */
+  .mid{ flex:1 1 auto; min-width:0; display:flex; flex-direction:column; justify-content:center; gap:6px; padding:clamp(14px,1.8vw,22px); }
+  .ttl{ font-size:15px; font-weight:600; color:var(--navy); line-height:1.25; letter-spacing:-.1px; }
   .ttl b{ color:var(--blue); font-weight:600; }
-  .sub{ font-size:11px; line-height:1.35; color:var(--muted); margin-top:-1px; }
-  .meta{ font-size:11px; font-weight:600; color:#3A3F4C; letter-spacing:.1px; }
-  .meta .dot{ color:#C6C4D8; font-weight:400; } .meta .live{ color:var(--green); } .meta .atm{ color:var(--navy); }
-  .ctarow{ display:flex; gap:10px; flex-wrap:wrap; justify-content:center; }
-  .cta{ flex:0 1 auto; display:inline-flex; align-items:center; justify-content:center; gap:7px; height:34px; padding:0 18px; border:none; border-radius:9px; color:#fff; font-family:var(--font); font-size:14px; font-weight:600; cursor:pointer; white-space:nowrap; -webkit-transition:filter .18s ease, transform .18s ease; transition:filter .18s ease, transform .18s ease; }
-  .cta .opt{ font-size:11px; font-weight:600; opacity:.85; }
-  .cta.buy{ background:var(--green); color:#06210d; } .cta.buy .opt{ color:#06210d; }
+  .sub{ font-size:11.5px; line-height:1.4; color:var(--muted); margin-top:-1px; max-width:42ch; }
+
+  /* ---- right: stacked CTAs ---- */
+  .ctas{ flex:none; display:flex; flex-direction:column; justify-content:center; gap:9px; padding:clamp(12px,1.6vw,18px) clamp(16px,1.8vw,22px) clamp(12px,1.6vw,18px) 0; }
+  .cta{ display:inline-flex; align-items:center; justify-content:center; gap:7px; width:138px; height:40px; border:none; border-radius:10px; color:#fff; font-family:var(--font); font-size:14px; font-weight:600; cursor:pointer; white-space:nowrap; -webkit-transition:filter .18s ease, transform .18s ease; transition:filter .18s ease, transform .18s ease; }
+  .cta.buy{ background:var(--green); color:#06210d; }
   .cta.sell{ background:var(--red); }
   .cta:hover{ filter:brightness(1.06); } .cta:active{ transform:scale(.98); }
 
-  @media (max-width:640px){
+  @media (max-width:680px){
     .banner{ flex-direction:column; min-height:0; }
-    .stage{ width:100%; height:104px; border-right:none; border-bottom:1px solid var(--cborder); }
-    .right{ padding:12px; gap:6px; }
-    .cta{ align-self:stretch; justify-content:center; }
+    .stage{ width:100%; height:118px; border-right:none; border-bottom:1px solid var(--cborder); }
+    .mid{ padding:14px 14px 4px; }
+    .ctas{ flex-direction:row; padding:0 14px 14px; }
+    .cta{ flex:1 1 0; width:auto; }
   }
 </style>
 </head>
@@ -120,13 +120,13 @@
       </div>
     </div>
 
-    <div class="right">
+    <div class="mid">
       <div class="ttl" id="ttl">You can now trade Nifty <b>directly from Charts</b></div>
       <div class="sub">One-click buy, drag your target and stop-loss, exit in one tap.</div>
-      <div class="ctarow">
-        <button class="cta buy" id="buyBtn" type="button">Buy Nifty</button>
-        <button class="cta sell" id="sellBtn" type="button">Sell Nifty</button>
-      </div>
+    </div>
+    <div class="ctas">
+      <button class="cta buy" id="buyBtn" type="button">Buy Nifty</button>
+      <button class="cta sell" id="sellBtn" type="button">Sell Nifty</button>
     </div>
   </div>
 <script>
