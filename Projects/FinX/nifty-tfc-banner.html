@@ -72,8 +72,8 @@
   .sub{ font-size:11.5px; line-height:1.4; color:var(--muted); margin-top:-1px; max-width:42ch; }
 
   /* ---- right: stacked CTAs ---- */
-  .ctas{ flex:none; display:flex; flex-direction:column; justify-content:center; gap:9px; padding:clamp(12px,1.6vw,18px) clamp(16px,1.8vw,22px) clamp(12px,1.6vw,18px) 0; }
-  .cta{ display:inline-flex; align-items:center; justify-content:center; gap:7px; width:138px; height:40px; border:none; border-radius:10px; color:#fff; font-family:var(--font); font-size:14px; font-weight:600; cursor:pointer; white-space:nowrap; -webkit-transition:filter .18s ease, transform .18s ease; transition:filter .18s ease, transform .18s ease; }
+  .ctas{ flex:none; display:flex; flex-direction:row; align-items:center; gap:10px; padding:clamp(12px,1.6vw,18px) clamp(16px,1.8vw,22px) clamp(12px,1.6vw,18px) 0; }
+  .cta{ display:inline-flex; align-items:center; justify-content:center; gap:7px; width:100px; height:40px; border:none; border-radius:10px; color:#fff; font-family:var(--font); font-size:14px; font-weight:600; cursor:pointer; white-space:nowrap; -webkit-transition:filter .18s ease, transform .18s ease; transition:filter .18s ease, transform .18s ease; }
   .cta.buy{ background:var(--green); color:#06210d; }
   .cta.sell{ background:var(--red); }
   .cta:hover{ filter:brightness(1.06); } .cta:active{ transform:scale(.98); }
@@ -125,8 +125,8 @@
       <div class="sub">One-click buy, drag your target and stop-loss, exit in one tap.</div>
     </div>
     <div class="ctas">
-      <button class="cta buy" id="buyBtn" type="button">Buy Nifty</button>
-      <button class="cta sell" id="sellBtn" type="button">Sell Nifty</button>
+      <button class="cta buy" id="buyBtn" type="button">Buy</button>
+      <button class="cta sell" id="sellBtn" type="button">Sell</button>
     </div>
   </div>
 <script>
@@ -332,8 +332,6 @@
     var nm=INDEX.name;
     var instr=document.querySelector(".instr"); if(instr) instr.innerHTML="<b>"+INDEX.display+"</b> &middot; "+INDEX.exch+" &middot; 1m";
     var ttl=document.getElementById("ttl"); if(ttl) ttl.innerHTML="You can now trade "+nm+" <b>directly from Charts</b>";
-    var bb=document.getElementById("buyBtn"); if(bb) bb.textContent="Buy "+nm;
-    var sb=document.getElementById("sellBtn"); if(sb) sb.textContent="Sell "+nm;
   }
   function refreshIndex(){ INDEX=INDEXES[activeIndexKey()]; LTP_ENDPOINT=INDEX.ltpUrl; applyIndexLabels(); }
   /* ---- CMP sources (sandbox-safe; a delayed quote is fine) ---------------

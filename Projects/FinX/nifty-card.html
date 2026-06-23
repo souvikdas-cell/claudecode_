@@ -119,8 +119,8 @@
       <div class="ttl" id="ttl">Trade Nifty <b>directly from Charts</b></div>
       <div class="sub">One-click buy, drag TP and SL, exit in a tap.</div>
       <div class="ctarow">
-        <button class="cta buy" id="buyBtn" type="button">Buy Nifty</button>
-        <button class="cta sell" id="sellBtn" type="button">Sell Nifty</button>
+        <button class="cta buy" id="buyBtn" type="button">Buy</button>
+        <button class="cta sell" id="sellBtn" type="button">Sell</button>
       </div>
     </div>
   </div>
@@ -325,8 +325,6 @@
     var tnm=document.querySelector(".tnm"); if(tnm) tnm.textContent=INDEX.display;
     var instr=document.querySelector(".instr"); if(instr) instr.innerHTML="<b>"+INDEX.display+"</b> &middot; "+INDEX.exch+" &middot; 1m";
     var ttl=document.getElementById("ttl"); if(ttl) ttl.innerHTML="Trade "+nm+" <b>directly from Charts</b>";
-    var bb=document.getElementById("buyBtn"); if(bb) bb.textContent="Buy "+nm;
-    var sb=document.getElementById("sellBtn"); if(sb) sb.textContent="Sell "+nm;
   }
   function refreshIndex(){ INDEX=INDEXES[activeIndexKey()]; LTP_ENDPOINT=INDEX.ltpUrl; applyIndexLabels(); }
   /* ---- CMP sources (sandbox-safe; a delayed quote is fine) ---------------
